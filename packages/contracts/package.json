@@ -1,0 +1,24 @@
+{
+    "type": "module",
+    "name": "dxd-redemptor",
+    "version": "0.1.0",
+    "private": true,
+    "description": "A smart contract to carry out DXD redemptions.",
+    "author": "Federico Luzzi <federico.luzzi@protonmail.com>",
+    "license": "GPL-3.0-or-later",
+    "files": [
+        "abis/*.json",
+        ".addresses.json"
+    ],
+    "scripts": {
+        "lint": "forge fmt --check && prettier -l ./*.md ./*.js ./*.json",
+        "test": "forge test",
+        "test:coverage": "forge coverage",
+        "test:gasreport": "forge test --gas-report",
+        "snapshot": "forge snapshot",
+        "build": "./build.js"
+    },
+    "devDependencies": {
+        "eslint-config-custom": "workspace:*"
+    }
+}

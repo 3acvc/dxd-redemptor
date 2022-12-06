@@ -1,0 +1,2 @@
+pnpm -w lint
+pnpm -w test
