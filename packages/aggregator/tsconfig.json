@@ -1,0 +1,5 @@
+{
+    "extends": "tsconfig/aggregator.json",
+    "include": ["./src/**/*.ts"],
+    "exclude": ["node_modules"]
+}
