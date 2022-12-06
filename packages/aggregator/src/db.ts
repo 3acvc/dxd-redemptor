@@ -1,8 +1,8 @@
-import { LeanDocument } from 'mongoose';
+import { LeanDocument } from "mongoose";
 
-import { getDXDRedemptorContract } from '../redemptor-contract';
+import { getDXDRedemptorContract } from "../redemptor-contract";
 
-import { OracleSignerDocument, OracleSignerModel } from './models/Signer.model';
+import { OracleSignerDocument, OracleSignerModel } from "./models/Signer.model";
 
 type VerifiedOralceSigner = LeanDocument<OracleSignerDocument> & {
   isSigner: boolean;
@@ -17,7 +17,7 @@ export async function getVerifiedOracleSigners(): Promise<
   const oracleSignerFromDBList = await OracleSignerModel.find().lean();
 
   const oracleSignerList: VerifiedOralceSigner[] = await Promise.all(
-    oracleSignerFromDBList.map(async signer => {
+    oracleSignerFromDBList.map(async (signer) => {
       const isSigner = await getDXDRedemptorContract().isSigner(signer.address);
 
       return {
@@ -25,8 +25,7 @@ export async function getVerifiedOracleSigners(): Promise<
         isSigner,
       };
     })
-  ).then(signers => signers.filter(signer => signer));
+  ).then((signers) => signers.filter((signer) => signer));
 
   return oracleSignerList;
 }
-

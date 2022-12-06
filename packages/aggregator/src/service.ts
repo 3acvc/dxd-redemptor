@@ -1,10 +1,8 @@
-import * as Sentry from '@sentry/node';
-import chalk from 'chalk';
-import Mongoose from 'mongoose';
+import * as Sentry from "@sentry/node";
+import * as chalk from "chalk";
+import Mongoose from "mongoose";
 
-import { createBareHapiServer } from '../lib/server';
-
-import { configure } from './server';
+import { createBareHapiServer, configure } from "./server";
 
 export async function startService() {
   if (process.env.SENTRY_DSN) {
@@ -15,24 +13,24 @@ export async function startService() {
       dsn: process.env.SENTRY_DSN,
     });
   } else {
-    console.warn(chalk.yellowBright('Sentry: Sentry is not configured'));
+    console.warn(chalk.yellowBright("Sentry: Sentry is not configured"));
   }
 
   // Mongoose watchdog
-  Mongoose.connection.on('error', error => {
+  Mongoose.connection.on("error", (error) => {
     Sentry.captureException(error);
     process.exit(100);
   });
 
   // Mongo connect
   if (!process.env.MONGO_URI) {
-    console.error(chalk.redBright('Mongo: process.env.MONGO_URI is missing'));
+    console.error(chalk.redBright("Mongo: process.env.MONGO_URI is missing"));
     process.exit(1);
   }
 
   await Mongoose.connect(process.env.MONGO_URI as string, {});
 
-  Mongoose.set('debug', process.env.MONGO_DEBUG === 'true');
+  Mongoose.set("debug", process.env.MONGO_DEBUG === "true");
 
   const server = createBareHapiServer();
 
@@ -46,4 +44,3 @@ export async function startService() {
     )
   );
 }
-

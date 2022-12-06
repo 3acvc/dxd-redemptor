@@ -1,12 +1,12 @@
-import { badRequest } from '@hapi/boom';
-import { captureException } from '@sentry/node';
-import { Wallet } from 'ethers';
+import { badRequest } from "@hapi/boom";
+import { captureException } from "@sentry/node";
+import { Wallet } from "ethers";
 
-import { getDXDCirculatingSupply } from '../../dxdao';
-import { ChainId } from '../../lib/web3';
-import { getDXDRedemptorContract } from '../../redemptor-contract';
+import { getDXDCirculatingSupply } from "../../dxdao";
+import { ChainId } from "../../lib/web3";
+import { getDXDRedemptorContract } from "../../redemptor-contract";
 
-import { IVerifyAndSignOracleAggreagatorMessageRequest } from './types';
+import { IVerifyAndSignOracleAggreagatorMessageRequest } from "./types";
 
 /**
  * Verifies and signs a message from the oracle aggregator
@@ -24,7 +24,7 @@ export async function verifyAndSignOracleAggreagatorMessageController(
 
     const responseBody = {
       data: {
-        signature: '',
+        signature: "",
       },
     };
 
@@ -51,19 +51,19 @@ export async function verifyAndSignOracleAggreagatorMessageController(
     // When the message is correct, sign it and return the signature
     responseBody.data.signature = await signer._signTypedData(
       {
-        name: 'DXD redemptor',
-        version: '1',
+        name: "DXD redemptor",
+        version: "1",
         chainId: ChainId.Ethereum,
         verifyingContract: redemptor.address,
       },
       {
         oracleMessage: [
-          { name: 'redeemedDXD', type: 'uint256' },
-          { name: 'circulatingDXDSupply', type: 'uint256' },
-          { name: 'redeemedToken', type: 'address' },
-          { name: 'redeemedTokenUSDPrice', type: 'uint256' },
-          { name: 'redeemedAmount', type: 'uint256' },
-          { name: 'collateralUSDValue', type: 'uint256' },
+          { name: "redeemedDXD", type: "uint256" },
+          { name: "circulatingDXDSupply", type: "uint256" },
+          { name: "redeemedToken", type: "address" },
+          { name: "redeemedTokenUSDPrice", type: "uint256" },
+          { name: "redeemedAmount", type: "uint256" },
+          { name: "collateralUSDValue", type: "uint256" },
         ],
       },
       aggregatorMessage // Sign the same message from the aggregator node
@@ -81,4 +81,3 @@ export async function verifyAndSignOracleAggreagatorMessageController(
     throw badRequest(error);
   }
 }
-

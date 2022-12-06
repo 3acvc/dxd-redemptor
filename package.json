@@ -1,37 +1,37 @@
 {
-    "name": "@3ac/dxd-redemptor-monorepo",
-    "version": "0.1.0",
-    "private": true,
-    "packageManager": "pnpm@7.14.2",
-    "contributors": [
-        {
-            "email": "adam@adamazad.com",
-            "name": "Adam Azad",
-            "url": "https://adamazad.com"
-        },
-        {
-            "email": "federico.luzzi@protonmail.com",
-            "name": "Federico Luzzi"
-        }
-    ],
-    "scripts": {
-        "build": "turbo run build",
-        "test": "turbo run test",
-        "dev": "turbo run dev --parallel",
-        "lint": "turbo run lint",
-        "lint:commit-message": "commitlint -e",
-        "format": "forge fmt && prettier --write \"**/*.{ts,tsx,js,jsx,md,json}\"",
-        "prepare": "husky install"
+  "name": "@3ac/dxd-redemptor-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@7.14.2",
+  "contributors": [
+    {
+      "email": "adam@adamazad.com",
+      "name": "Adam Azad",
+      "url": "https://adamazad.com"
     },
-    "devDependencies": {
-        "@commitlint/cli": "^17.0.3",
-        "@commitlint/config-conventional": "^17.0.3",
-        "husky": "^8.0.1",
-        "eslint-config-custom": "workspace:*",
-        "prettier": "^2.8.0",
-        "turbo": "^1.6.3"
-    },
-    "engines": {
-        "node": ">=14.0.0"
+    {
+      "email": "federico.luzzi@protonmail.com",
+      "name": "Federico Luzzi"
     }
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "lint:commit-message": "commitlint -e",
+    "format": "forge fmt && prettier --write \"**/*.{ts,tsx,js,jsx,md,json}\"",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.0.3",
+    "@commitlint/config-conventional": "^17.0.3",
+    "husky": "^8.0.1",
+    "eslint-config-custom": "workspace:*",
+    "prettier": "^2.8.0",
+    "turbo": "^1.6.3"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
 }
