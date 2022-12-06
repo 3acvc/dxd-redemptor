@@ -8,7 +8,7 @@ import {
   USDT,
 } from "@swapr/sdk";
 
-import { ChainId } from "../../lib/web3";
+import { ChainId } from "../lib/web3";
 
 /**
  * DXD Contract Address

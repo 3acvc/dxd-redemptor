@@ -1,12 +1,35 @@
 {
-  "name": "@3ac.vc/dxdao-addresses",
+  "name": "@3ac.vc/oracle",
+  "type": "module",
+  "private": true,
   "version": "1.0.0",
   "dependencies": {
-    "@3ac.vc/generated": "*",
+    "@ethersproject/abi": "^5.7.0",
     "@ethersproject/abstract-provider": "^5.7.0",
+    "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/address": "^5.7.0",
-    "@ethersproject/providers": "^5.7.2",
     "@swapr/sdk": "1.7.0-beta.0",
+    "graphql-request": "^5.0.0",
+    "graphql-tag": "^2.12.6"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@ethersproject/providers": "^5.7.2",
+    "ethers": "^5.7.2",
+    "typescript": "^4.7.4"
+  },
+  "peerDependencies": {
     "ethers": "^5.7.2"
-  }
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "types": "dist/index.d.ts"
 }

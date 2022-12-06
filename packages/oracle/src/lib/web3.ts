@@ -1,6 +1,11 @@
-import { Provider } from "@ethersproject/abstract-provider";
+import type { Provider } from "@ethersproject/abstract-provider";
+import type { Signer } from "@ethersproject/abstract-signer";
 import { JsonRpcProvider } from "@ethersproject/providers";
+import { DXDRedemptor, DXDRedemptor__factory } from "../generated/contracts";
 
+/**
+ * ChainId enum
+ */
 export enum ChainId {
   Ethereum = 1,
   Gnosis = 100,
@@ -37,4 +42,16 @@ export function getProviderList(): Record<string, Provider> {
     [ChainId.Ethereum]: getProvider(ChainId.Ethereum),
     [ChainId.Gnosis]: getProvider(ChainId.Gnosis),
   };
+}
+
+/**
+ * Gets the DXDRedemptor contract
+ * @param address The address of the contract
+ * @param signerOrProvider The signer or provider
+ */
+export function getDXDRedemptorContract(
+  address: string,
+  signerOrProvider: Signer | Provider
+): DXDRedemptor {
+  return DXDRedemptor__factory.connect(address, signerOrProvider);
 }
