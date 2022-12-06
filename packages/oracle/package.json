@@ -2,7 +2,10 @@
   "name": "@3ac.vc/dxdao-addresses",
   "version": "1.0.0",
   "dependencies": {
+    "@3ac.vc/generated": "*",
+    "@ethersproject/abstract-provider": "^5.7.0",
     "@ethersproject/address": "^5.7.0",
+    "@ethersproject/providers": "^5.7.2",
     "@swapr/sdk": "1.7.0-beta.0",
     "ethers": "^5.7.2"
   }

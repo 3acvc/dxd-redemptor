@@ -1,7 +1,7 @@
 import { BigNumber } from "ethers";
 
-import { ERC20, ERC20__factory } from "../generated/contracts";
-import { ChainId, getProvider } from "../../lib/web3";
+import { ERC20, ERC20__factory } from "@3ac.vc/generated/generated/contracts";
+import { ChainId, getProvider } from "../lib/web3";
 
 import {
   dxdaoDXDVestingAddress,

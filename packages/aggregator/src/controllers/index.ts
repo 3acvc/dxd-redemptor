@@ -1,20 +1,19 @@
-import { badRequest } from '@hapi/boom';
-import { ResponseObject, ResponseToolkit } from '@hapi/hapi';
-import { captureException } from '@sentry/node';
+import { badRequest } from "@hapi/boom";
+import { ResponseObject, ResponseToolkit } from "@hapi/hapi";
+import { captureException } from "@sentry/node";
 
-import { getDXDCirculatingSupply } from '../../dxdao';
-import { ChainId, getProviderList } from '../../lib/web3';
-import { getOracleMessagePayload } from '../../oracle';
-import { getDXDRedemptorContract } from '../../redemptor-contract';
-import { getVerifiedOracleSigners } from '../db';
-import { OracleSignerModel } from '../models/Signer.model';
-import { getSignatureFromExternalSigner } from '../signers';
+import { ChainId, getProviderList } from "../../lib/web3";
+import { getOracleMessagePayload } from "../../oracle";
+import { getDXDRedemptorContract } from "../../redemptor-contract";
+import { getVerifiedOracleSigners } from "../db";
+import { OracleSignerModel } from "../models/Signer.model";
+import { getSignatureFromExternalSigner } from "../signers";
 
 import {
   IGetOrderQuotePayloadRequest,
   IGetOrderQuotePayloadResponse,
   IRegisterSignerRequest,
-} from './types';
+} from "./types";
 
 /**
  * Returns a quote for the given amount of DXD.
@@ -120,4 +119,3 @@ export async function registerSignerController(
     throw badRequest(error);
   }
 }
-

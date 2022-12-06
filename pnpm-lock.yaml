@@ -160,13 +160,22 @@ importers:
     devDependencies:
       typescript: 4.9.3
 
+  packages/generated:
+    specifiers: {}
+
   packages/oracle:
     specifiers:
+      '@3ac.vc/generated': '*'
+      '@ethersproject/abstract-provider': ^5.7.0
       '@ethersproject/address': ^5.7.0
+      '@ethersproject/providers': ^5.7.2
       '@swapr/sdk': 1.7.0-beta.0
       ethers: ^5.7.2
     dependencies:
+      '@3ac.vc/generated': link:../generated
+      '@ethersproject/abstract-provider': 5.7.0
       '@ethersproject/address': 5.7.0
+      '@ethersproject/providers': 5.7.2
       '@swapr/sdk': 1.7.0-beta.0_uqxo3x6rp73ve5om3wwtkphrpi
       ethers: 5.7.2
 
@@ -5689,7 +5698,7 @@ packages:
   /axios/0.27.2:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
     dependencies:
-      follow-redirects: 1.15.2
+      follow-redirects: 1.15.2_debug@4.3.4
       form-data: 4.0.0
     transitivePeerDependencies:
       - debug
@@ -7571,15 +7580,6 @@ packages:
   /flatted/3.2.7:
     resolution: {integrity: sha512-5nqDSxl8nn5BSNxyR3n4I6eDmbolI6WT+QqR547RwxQapgjQBmtktdP+HTBb/a/zLsbzERTONyUB5pefh5TtjQ==}
 
-  /follow-redirects/1.15.2:
-    resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
-    engines: {node: '>=4.0'}
-    peerDependencies:
-      debug: '*'
-    peerDependenciesMeta:
-      debug:
-        optional: true
-
   /follow-redirects/1.15.2_debug@4.3.4:
     resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
     engines: {node: '>=4.0'}
@@ -7590,7 +7590,6 @@ packages:
         optional: true
     dependencies:
       debug: 4.3.4
-    dev: false
 
   /form-data-encoder/1.7.2:
     resolution: {integrity: sha512-qfqtYan3rxrnCk1VYaA4H+Ms9xdpPqvLZa6xmMgFvhO32x7/3J/ExcTd6qpxM0vH2GdMI+poehyBZvqfMTto8A==}
