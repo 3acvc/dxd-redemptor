@@ -1,14 +1,14 @@
 import type { Provider } from "@ethersproject/abstract-provider";
 import type { Signer } from "@ethersproject/abstract-signer";
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { DXDRedemptor, DXDRedemptor__factory } from "../generated/contracts";
+import { Redemptor, Redemptor__factory } from "../generated/contracts";
 
 /**
  * ChainId enum
  */
 export enum ChainId {
-  Ethereum = 1,
-  Gnosis = 100,
+    Ethereum = 1,
+    Gnosis = 100,
 }
 
 /**
@@ -17,19 +17,19 @@ export enum ChainId {
  * @returns
  */
 export function getProvider(chainId: ChainId = ChainId.Ethereum): Provider {
-  if (chainId === ChainId.Gnosis) {
-    if (!process.env.JSON_RPC_PROVIDER_GNOSIS) {
-      throw new Error("JSON_RPC_PROVIDER_GNOSIS is not defined");
+    if (chainId === ChainId.Gnosis) {
+        if (!process.env.JSON_RPC_PROVIDER_GNOSIS) {
+            throw new Error("JSON_RPC_PROVIDER_GNOSIS is not defined");
+        }
+
+        return new JsonRpcProvider(process.env.JSON_RPC_PROVIDER_GNOSIS);
     }
 
-    return new JsonRpcProvider(process.env.JSON_RPC_PROVIDER_GNOSIS);
-  }
+    if (!process.env.JSON_RPC_PROVIDER_ETHEREUM) {
+        throw new Error("JSON_RPC_PROVIDER_ETHEREUM is not defined");
+    }
 
-  if (!process.env.JSON_RPC_PROVIDER_ETHEREUM) {
-    throw new Error("JSON_RPC_PROVIDER_ETHEREUM is not defined");
-  }
-
-  return new JsonRpcProvider(process.env.JSON_RPC_PROVIDER_ETHEREUM);
+    return new JsonRpcProvider(process.env.JSON_RPC_PROVIDER_ETHEREUM);
 }
 
 /**
@@ -37,11 +37,11 @@ export function getProvider(chainId: ChainId = ChainId.Ethereum): Provider {
  * @returns
  */
 export function getProviderList(): Record<string, Provider> {
-  // lock the block number
-  return {
-    [ChainId.Ethereum]: getProvider(ChainId.Ethereum),
-    [ChainId.Gnosis]: getProvider(ChainId.Gnosis),
-  };
+    // lock the block number
+    return {
+        [ChainId.Ethereum]: getProvider(ChainId.Ethereum),
+        [ChainId.Gnosis]: getProvider(ChainId.Gnosis),
+    };
 }
 
 /**
@@ -50,8 +50,8 @@ export function getProviderList(): Record<string, Provider> {
  * @param signerOrProvider The signer or provider
  */
 export function getDXDRedemptorContract(
-  address: string,
-  signerOrProvider: Signer | Provider
-): DXDRedemptor {
-  return DXDRedemptor__factory.connect(address, signerOrProvider);
+    address: string,
+    signerOrProvider: Signer | Provider
+): Redemptor {
+    return Redemptor__factory.connect(address, signerOrProvider);
 }

@@ -3,6 +3,7 @@ import { join } from "path";
 import { HandlerDecorations, Server } from "@hapi/hapi";
 import * as inert from "@hapi/inert";
 import * as vision from "@hapi/vision";
+// eslint-disable-next-line
 // @ts-ignore
 import hapiRateLimit from "hapi-rate-limit";
 import * as hapiSwagger from "hapi-swagger";
@@ -17,20 +18,20 @@ import { verifyAndSignOracleAggreagatorMessageController } from "./controllers";
  * @returns Server
  */
 export function createBareHapiServer(): Server {
-  return new Server({
-    port: process.env.SERVER_PORT,
-    host: process.env.SERVER_HOST,
-    routes: {
-      auth: false,
-      cors: {
-        origin: ["*"],
-      },
-    },
-    debug: {
-      request: ["*"],
-      log: ["*"],
-    },
-  });
+    return new Server({
+        port: process.env.SERVER_PORT,
+        host: process.env.SERVER_HOST,
+        routes: {
+            auth: false,
+            cors: {
+                origin: ["*"],
+            },
+        },
+        debug: {
+            request: ["*"],
+            log: ["*"],
+        },
+    });
 }
 
 /**
@@ -40,69 +41,70 @@ export function createBareHapiServer(): Server {
  * - Register routes
  */
 export async function configure(server: Server): Promise<Server> {
-  // Register Joi
-  await server.validator(Joi);
-  // Rate-limit in production
-  if (process.env.NODE_ENV === "production") {
-    await server.register({
-      plugin: hapiRateLimit,
-      options: {
-        userLimit: 60000,
-      },
+    // Register Joi
+    await server.validator(Joi);
+    // Rate-limit in production
+    if (process.env.NODE_ENV === "production") {
+        await server.register({
+            plugin: hapiRateLimit,
+            options: {
+                userLimit: 60000,
+            },
+        });
+    }
+
+    // Register routes
+    server.route({
+        method: "POST",
+        path: "/verify",
+        handler:
+            verifyAndSignOracleAggreagatorMessageController as HandlerDecorations,
+        options: {
+            description: "Verify and sign a message from the Oracle Aggregator",
+            validate: {
+                payload: Joi.object({
+                    message: Joi.object({
+                        redeemedDXD: Joi.string().required(),
+                        circulatingDXDSupply: Joi.string().required(),
+                        redeemedToken: Joi.string().required(),
+                        redeemedTokenUSDPrice: Joi.string().required(),
+                        redeemedAmount: Joi.string().required(),
+                        collateralUSDValue: Joi.string().required(),
+                    }),
+                    blockNumber: Joi.object().keys({
+                        "1": Joi.number().required(),
+                        "100": Joi.number().required(),
+                    }),
+                }),
+            },
+        },
     });
-  }
 
-  // Register routes
-  server.route({
-    method: "POST",
-    path: "/verify",
-    handler: verifyAndSignOracleAggreagatorMessageController as HandlerDecorations,
-    options: {
-      description: "Verify and sign a message from the Oracle Aggregator",
-      validate: {
-        payload: Joi.object({
-          message: Joi.object({
-            redeemedDXD: Joi.string().required(),
-            circulatingDXDSupply: Joi.string().required(),
-            redeemedToken: Joi.string().required(),
-            redeemedTokenUSDPrice: Joi.string().required(),
-            redeemedAmount: Joi.string().required(),
-            collateralUSDValue: Joi.string().required(),
-          }),
-          blockNumber: Joi.object().keys({
-            "1": Joi.number().required(),
-            "100": Joi.number().required(),
-          }),
-        }),
-      },
-    },
-  });
+    const swaggerBasePathProd =
+        process.env.NODE_ENV === "production" ? join("/") : "/";
 
-  const swaggerBasePathProd =
-    process.env.NODE_ENV === "production" ? join("/") : "/";
+    const swaggerOptions: hapiSwagger.RegisterOptions = {
+        info: {
+            title: "DXdao Redeemption API Documentation",
+        },
+        debug: true,
+        deReference: true, // works better with codegens
+        // // reverse proxy support
+        documentationPath: join(swaggerBasePathProd, "/docs"),
+        swaggerUIPath: join(swaggerBasePathProd, "/swaggerui/"),
+        jsonPath: join(swaggerBasePathProd, "/swagger.json"),
+        basePath: join(swaggerBasePathProd, "/"),
+    };
 
-  const swaggerOptions: hapiSwagger.RegisterOptions = {
-    info: {
-      title: "DXdao Redeemption API Documentation",
-    },
-    debug: true,
-    deReference: true, // works better with codegens
-    // // reverse proxy support
-    documentationPath: join(swaggerBasePathProd, "/docs"),
-    swaggerUIPath: join(swaggerBasePathProd, "/swaggerui/"),
-    jsonPath: join(swaggerBasePathProd, "/swagger.json"),
-    basePath: join(swaggerBasePathProd, "/"),
-  };
+    console.log("[Swagger] swaggerOptions", swaggerOptions);
 
-  console.log("[Swagger] swaggerOptions", swaggerOptions);
+    // Register Swagger
+    await server.register([
+        { plugin: inert },
+        { plugin: vision },
+        { plugin: hapiSwagger, options: swaggerOptions },
+    ]);
 
-  // Register Swagger
-  await server.register([
-    { plugin: inert },
-    { plugin: vision },
-    { plugin: hapiSwagger, options: swaggerOptions },
-  ]);
-
-  // Return configured server
-  return server;
+    // Return configured server
+    return server;
 }

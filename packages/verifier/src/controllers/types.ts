@@ -1,9 +1,8 @@
-import { OracleMessageStruct } from '../../generated/contracts/DXDRedemptor';
+import { OracleMessageStruct } from "../../generated/contracts/DXDRedemptor";
 
 export interface IVerifyAndSignOracleAggreagatorMessageRequest extends Request {
-  payload: {
-    message: OracleMessageStruct;
-    blockNumber: Record<string, number>;
-  };
+    payload: {
+        message: OracleMessageStruct;
+        blockNumber: Record<string, number>;
+    };
 }
-

@@ -1,8 +1,8 @@
 generates:
   # Uniswap V3
-  src/modules/generated/graphql/generated/uniswap-v3-queries.ts:
+  src/generated/graphql/uniswap-v3-queries.ts:
     schema: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3"
-    documents: "src/modules/graphql/uniswap-v3-queries.ts"
+    documents: "graphql/uniswap-v3-queries.ts"
     plugins:
       - typescript
       - typescript-operations

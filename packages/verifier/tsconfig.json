@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig/verifier.json",
-  "include": ["./src/**/*.ts"],
-  "exclude": ["node_modules"]
+    "extends": "tsconfig/verifier.json",
+    "include": ["./src/**/*.ts"],
+    "exclude": ["node_modules"]
 }

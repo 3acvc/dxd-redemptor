@@ -1,6 +1,6 @@
 {
     "type": "module",
-    "name": "dxd-redemptor",
+    "name": "dxd-redemptor-contracts",
     "version": "0.1.0",
     "private": true,
     "description": "A smart contract to carry out DXD redemptions.",
@@ -11,7 +11,8 @@
         ".addresses.json"
     ],
     "scripts": {
-        "lint": "forge fmt --check && prettier -l ./*.md ./*.js ./*.json",
+        "lint": "forge fmt --check && prettier --check . !./src !./lib !./scripts !./tests !./.turbo !./abis !./out",
+        "format": "forge fmt && prettier --write . !./src !./lib !./scripts !./tests !./.turbo !./abis !./out",
         "test": "forge test",
         "test:coverage": "forge coverage",
         "test:gasreport": "forge test --gas-report",

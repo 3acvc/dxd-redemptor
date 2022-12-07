@@ -1,10 +1,9 @@
-import { captureException } from '@sentry/node';
+import { captureException } from "@sentry/node";
 
-import { startService } from './service';
+import { startService } from "./service";
 
-startService().catch(error => {
-  console.error(error);
-  captureException(error);
-  process.exit(1);
+startService().catch((error) => {
+    console.error(error);
+    captureException(error);
+    process.exit(1);
 });
-
