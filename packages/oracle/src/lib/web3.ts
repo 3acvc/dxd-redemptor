@@ -1,7 +1,8 @@
-import type { Provider } from "@ethersproject/abstract-provider";
-import type { Signer } from "@ethersproject/abstract-signer";
+import { Signer } from "@ethersproject/abstract-signer";
+import { Provider } from "@ethersproject/abstract-provider";
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { Redemptor, Redemptor__factory } from "../generated/contracts";
+import { REDEMPTOR_ABI } from "../abis/redemptor";
+import { Contract } from "@ethersproject/contracts";
 
 /**
  * ChainId enum
@@ -51,7 +52,7 @@ export function getProviderList(): Record<string, Provider> {
  */
 export function getDXDRedemptorContract(
     address: string,
-    signerOrProvider: Signer | Provider
-): Redemptor {
-    return Redemptor__factory.connect(address, signerOrProvider);
+    signerOrProvider: Signer | JsonRpcProvider
+): Contract {
+    return new Contract(address, REDEMPTOR_ABI, signerOrProvider);
 }

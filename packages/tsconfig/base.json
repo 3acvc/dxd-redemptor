@@ -15,7 +15,11 @@
         "noUnusedParameters": false,
         "preserveWatchOutput": true,
         "skipLibCheck": true,
-        "strict": true
+        "strict": true,
+
+        "paths": {
+            "tslib": ["./node_modules/tslib/"]
+        }
     },
     "exclude": ["node_modules"]
 }

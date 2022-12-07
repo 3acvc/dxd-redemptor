@@ -11,5 +11,8 @@
         "aggregator.json",
         "oracle.json",
         "verifier.json"
-    ]
+    ],
+    "devDependencies": {
+        "tslib": "^2.4.1"
+    }
 }

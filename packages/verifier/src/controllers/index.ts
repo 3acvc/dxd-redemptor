@@ -1,10 +1,12 @@
 import { badRequest } from "@hapi/boom";
 import { captureException } from "@sentry/node";
-import { Wallet } from "ethers";
+import { Wallet } from "@ethersproject/wallet";
 
-import { getDXDCirculatingSupply } from "../../dxdao";
-import { ChainId } from "../../lib/web3";
-import { getDXDRedemptorContract } from "../../redemptor-contract";
+import {
+    ChainId,
+    getDXDCirculatingSupply,
+    getDXDRedemptorContract,
+} from "dxd-redemptor-oracle";
 
 import { IVerifyAndSignOracleAggreagatorMessageRequest } from "./types";
 

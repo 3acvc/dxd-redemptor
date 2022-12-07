@@ -31,6 +31,7 @@
         "axios": "^0.27.2",
         "chalk": "^4.1.2",
         "dotenv": "^16.0.1",
+        "dxd-redemptor-oracle": "workspace:*",
         "graphql-request": "^5.0.0",
         "graphql-tag": "^2.12.6",
         "hapi-rate-limit": "^6.0.0",

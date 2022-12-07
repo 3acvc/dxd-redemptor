@@ -2,9 +2,13 @@ import { badRequest } from "@hapi/boom";
 import { ResponseObject, ResponseToolkit } from "@hapi/hapi";
 import { captureException } from "@sentry/node";
 
-import { ChainId, getProviderList } from "../../lib/web3";
-import { getOracleMessagePayload } from "../../oracle";
-import { getDXDRedemptorContract } from "../../redemptor-contract";
+import {
+    ChainId,
+    getProviderList,
+    getOracleMessagePayload,
+    getDXDRedemptorContract,
+    getDXDCirculatingSupply,
+} from "dxd-redemptor-oracle";
 import { getVerifiedOracleSigners } from "../db";
 import { OracleSignerModel } from "../models/Signer.model";
 import { getSignatureFromExternalSigner } from "../signers";

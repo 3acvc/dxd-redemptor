@@ -1,9 +1,7 @@
 import * as Sentry from "@sentry/node";
 import chalk from "chalk";
 
-import { createBareHapiServer } from "../lib/server";
-
-import { configure } from "./server";
+import { createBareHapiServer, configure } from "./server";
 
 export async function startService() {
     // Require the private key of the signer

@@ -4,7 +4,7 @@
 
 import axios from "axios";
 
-import { OracleMessageStruct } from "../generated/contracts/DXDRedemptor";
+import { OracleMessageStruct } from "dxd-redemptor-oracle";
 
 /**
  * Adds block number to the message.

@@ -1,7 +1,7 @@
-import { BigNumber } from "ethers";
-
-import { ERC20, ERC20__factory } from "../generated/contracts";
+import { BigNumber } from "@ethersproject/bignumber";
+import { Contract } from "@ethersproject/contracts";
 import { ChainId, getProvider } from "../lib/web3";
+import { ERC20_ABI } from "../abis/erc20";
 
 import {
     dxdaoDXDVestingAddress,
@@ -28,13 +28,15 @@ import {
 export async function getDXDCirculatingSupply(
     blockNumber?: Record<string, number>
 ): Promise<BigNumber> {
-    const dxdTokenContract: Record<ChainId, ERC20> = {
-        [ChainId.Ethereum]: ERC20__factory.connect(
+    const dxdTokenContract: Record<ChainId, Contract> = {
+        [ChainId.Ethereum]: new Contract(
             dxdTokenContractAddressList[ChainId.Ethereum],
+            ERC20_ABI,
             getProvider(ChainId.Ethereum)
         ),
-        [ChainId.Gnosis]: ERC20__factory.connect(
+        [ChainId.Gnosis]: new Contract(
             dxdTokenContractAddressList[ChainId.Gnosis],
+            ERC20_ABI,
             getProvider(ChainId.Gnosis)
         ),
     };

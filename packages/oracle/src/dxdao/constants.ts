@@ -1,4 +1,3 @@
-import { getAddress } from "@ethersproject/address";
 import {
     GNO as gcGNO,
     DAI as swaprDAI,
@@ -7,6 +6,7 @@ import {
     WXDAI as swaprWXDAI,
     USDT,
 } from "@swapr/sdk";
+import { getAddress } from "@ethersproject/address";
 
 import { ChainId } from "../lib/web3";
 

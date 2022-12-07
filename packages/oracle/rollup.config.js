@@ -1,5 +1,4 @@
 import { dirname, join } from "path";
-import peerDepsExternal from "rollup-plugin-peer-deps-external";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import { terser } from "rollup-plugin-terser";
@@ -13,9 +12,10 @@ export default [
     {
         input: join(__dirname, "./src/index.ts"),
         plugins: [
-            peerDepsExternal(),
             json(),
-            nodeResolve(),
+            nodeResolve(/* {
+                rootDir: join(process.cwd(), "../.."),
+            } */),
             commonjs(),
             typescript(),
             terser(),
