@@ -1,11 +1,3 @@
-import {
-    GNO as gcGNO,
-    DAI as swaprDAI,
-    USDC as swaprUSDC,
-    WETH as swaprWETH,
-    WXDAI as swaprWXDAI,
-    USDT,
-} from "@swapr/sdk";
 import { getAddress } from "@ethersproject/address";
 
 import { ChainId } from "../lib/web3";
@@ -70,9 +62,9 @@ export const GNO: Readonly<Record<ChainId, TokenAsset>> = {
         decimals: 18,
     },
     [ChainId.Gnosis]: {
-        symbol: gcGNO.symbol || "GNO",
-        decimals: gcGNO.decimals,
-        address: getAddress(gcGNO.address),
+        symbol: "GNO",
+        decimals: 18,
+        address: getAddress("0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb"),
     },
 };
 
@@ -81,14 +73,14 @@ export const GNO: Readonly<Record<ChainId, TokenAsset>> = {
  */
 export const USDC: Readonly<Record<ChainId, TokenAsset>> = {
     [ChainId.Ethereum]: {
-        symbol: swaprUSDC[ChainId.Ethereum].symbol || "USDC",
-        decimals: swaprUSDC[ChainId.Ethereum].decimals,
-        address: getAddress(swaprUSDC[ChainId.Ethereum].address),
+        symbol: "USDC",
+        decimals: 6,
+        address: getAddress("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"),
     },
     [ChainId.Gnosis]: {
-        symbol: swaprUSDC[ChainId.Gnosis].symbol || "USDC",
-        decimals: swaprUSDC[ChainId.Gnosis].decimals,
-        address: getAddress(swaprUSDC[ChainId.Gnosis].address),
+        symbol: "USDC",
+        decimals: 6,
+        address: getAddress("0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83"),
     },
 };
 
@@ -97,14 +89,14 @@ export const USDC: Readonly<Record<ChainId, TokenAsset>> = {
  */
 export const WETH: Readonly<Record<ChainId, TokenAsset>> = {
     [ChainId.Ethereum]: {
-        symbol: swaprWETH[ChainId.Ethereum].symbol || "WETH",
-        decimals: swaprWETH[ChainId.Ethereum].decimals,
-        address: getAddress(swaprWETH[ChainId.Ethereum].address),
+        symbol: "WETH",
+        decimals: 18,
+        address: getAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"),
     },
     [ChainId.Gnosis]: {
-        symbol: swaprWETH[ChainId.Gnosis].symbol || "WETH",
-        decimals: swaprWETH[ChainId.Gnosis].decimals,
-        address: getAddress(swaprWETH[ChainId.Gnosis].address),
+        symbol: "WETH",
+        decimals: 18,
+        address: getAddress("0x6A023CCd1ff6F2045C3309768eAd9E68F978f6e1"),
     },
 };
 
@@ -112,18 +104,18 @@ export const WETH: Readonly<Record<ChainId, TokenAsset>> = {
  * Wrapped XDAI Token (only on Gnosis)
  */
 export const WXDAI: Readonly<TokenAsset> = {
-    symbol: swaprWXDAI[ChainId.Gnosis].symbol || "Wrapped XDAI",
-    decimals: swaprWXDAI[ChainId.Gnosis].decimals,
-    address: getAddress(swaprWXDAI[ChainId.Gnosis].address),
+    symbol: "WXDAI",
+    decimals: 18,
+    address: getAddress("0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"),
 };
 
 /**
  * DAI Token
  */
 export const DAI: Readonly<TokenAsset> = {
-    symbol: swaprDAI[ChainId.Ethereum].symbol || "DAI",
-    decimals: swaprDAI[ChainId.Ethereum].decimals,
-    address: getAddress(swaprDAI[ChainId.Ethereum].address),
+    symbol: "DAI",
+    decimals: 18,
+    address: getAddress("0x6B175474E89094C44Da98b954EedeAC495271d0F"),
 };
 
 /**
@@ -156,9 +148,9 @@ export const navTokenList: Readonly<Record<ChainId, TokenAsset[]>> = {
         USDC[ChainId.Ethereum],
         DAI,
         {
-            symbol: USDT[ChainId.Ethereum].symbol || "USDT",
-            decimals: USDT[ChainId.Ethereum].decimals,
-            address: getAddress(USDT[ChainId.Ethereum].address),
+            symbol: "USDT",
+            decimals: 6,
+            address: getAddress("0x4ECaBa5870353805a9F068101A40E0f32ed605C6"),
         },
         {
             symbol: "LUSD",

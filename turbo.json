@@ -22,11 +22,11 @@
         "NODE_ENV",
         "SERVER_PORT",
         "SIGNER_PRIVATE_KEY",
-        "SERVER_HOST",
         "SENTRY_DSN",
         "MONGO_URI",
         "MONGO_DEBUG",
         "JSON_RPC_PROVIDER_GNOSIS",
-        "JSON_RPC_PROVIDER_ETHEREUM"
+        "JSON_RPC_PROVIDER_ETHEREUM",
+        "REDEMPTOR_ADDRESS"
     ]
 }
