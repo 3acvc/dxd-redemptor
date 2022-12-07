@@ -1,12 +1,7 @@
 import { badRequest } from "@hapi/boom";
-import { captureException } from "@sentry/node";
 import { Wallet } from "@ethersproject/wallet";
 
-import {
-    ChainId,
-    getDXDCirculatingSupply,
-    getDXDRedemptorContract,
-} from "dxd-redemptor-oracle";
+import { ChainId, getDXDCirculatingSupply } from "dxd-redemptor-oracle";
 
 import { IVerifyAndSignOracleAggreagatorMessageRequest } from "./types";
 
@@ -48,15 +43,13 @@ export async function verifyAndSignOracleAggreagatorMessageController(
         // Construst the signer from the private key
         const signer = new Wallet(process.env.SIGNER_PRIVATE_KEY as string);
 
-        const redemptor = getDXDRedemptorContract();
-
         // When the message is correct, sign it and return the signature
         responseBody.data.signature = await signer._signTypedData(
             {
                 name: "DXD redemptor",
                 version: "1",
                 chainId: ChainId.Ethereum,
-                verifyingContract: redemptor.address,
+                verifyingContract: process.env.REDEMPTOR_ADDRESS as string,
             },
             {
                 oracleMessage: [
@@ -72,14 +65,11 @@ export async function verifyAndSignOracleAggreagatorMessageController(
         );
 
         return responseBody;
-    } catch (error) {
+    } catch (error: any) {
         console.error(error);
-        captureException(error);
-
         if (error.isBoom) {
             throw error;
         }
-
         throw badRequest(error);
     }
 }
