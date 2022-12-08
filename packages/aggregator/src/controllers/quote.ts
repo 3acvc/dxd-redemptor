@@ -9,7 +9,11 @@ import {
     DXD,
     Amount,
 } from "dxd-redemptor-oracle";
-import { getVerifiers, verify } from "../utils/verifier";
+import { getVerifiers, verifyQuote } from "../utils/verifier";
+import { quoteToEIP712Hash } from "../utils/signing";
+import { getRedemptor } from "../utils/redemptor";
+
+const redemptor = getRedemptor();
 
 interface QuoteRequest extends Request {
     query: {
@@ -47,23 +51,52 @@ export async function handleQuote(
             rawRedeemedDXD
         );
         const oracleQuote = await quote(block, redeemedToken, redeemedDXD);
+        const oracleQuoteHash = quoteToEIP712Hash(oracleQuote);
 
         const verifiers = await getVerifiers();
-        const signatures = [];
-        for (const verifier of verifiers) {
-            try {
-                signatures.push(
-                    await verify(verifier.endpoint, oracleQuote, block)
-                );
-            } catch (error) {
-                console.error(
-                    `verification failed for signer ${verifier.address} - reason:`,
-                    error
-                );
-            }
-        }
+        const allSignatures = await Promise.all(
+            verifiers.map(async (verifier) => {
+                try {
+                    return await verifyQuote(
+                        verifier.address,
+                        verifier.endpoint,
+                        oracleQuoteHash,
+                        block
+                    );
+                } catch (error) {
+                    console.error(
+                        `verification failed for signer ${verifier.address} - reason:`,
+                        error
+                    );
+                    return null;
+                }
+            })
+        );
 
-        return { quote: oracleQuote, signatures };
+        const validSignatures = allSignatures.reduce(
+            (validSignatures: string[], signature) => {
+                if (!!signature && validSignatures.indexOf(signature) < 0)
+                    validSignatures.push(signature);
+                return validSignatures;
+            },
+            []
+        );
+
+        // converting to number is safe, we're dealing with bps
+        // and small numbers
+        const signersThreshold = (
+            await redemptor.signersThreshold()
+        ).toNumber();
+        const totalRegisteredSigners = (
+            await redemptor.signersAmount()
+        ).toNumber();
+        const minimumSigners = Math.ceil(
+            (totalRegisteredSigners * signersThreshold) / 10_000
+        );
+        // TODO: is bad request appropriate here?
+        if (validSignatures.length < minimumSigners) throw badRequest();
+
+        return { quote: oracleQuote, signatures: validSignatures };
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
         console.error(error);
