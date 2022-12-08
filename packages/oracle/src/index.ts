@@ -24,6 +24,9 @@ import {
 import { getDXDCirculatingSupply } from "./utils/dxd";
 import { getUSDPrice, getUSDValue } from "./utils/pricing";
 
+export { ChainId, PROVIDER } from "./constants";
+export * from "./entities";
+
 export interface Quote {
     redeemedDXD: string;
     circulatingDXDSupply: string;
