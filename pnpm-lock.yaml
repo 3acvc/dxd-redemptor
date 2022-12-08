@@ -20,6 +20,8 @@ importers:
 
   packages/aggregator:
     specifiers:
+      '@ethersproject/abi': ^5.7.0
+      '@ethersproject/address': ^5.7.0
       '@ethersproject/contracts': ^5.7.0
       '@ethersproject/providers': ^5.7.2
       '@ethersproject/solidity': ^5.7.0
@@ -48,6 +50,8 @@ importers:
       tslib: ^2.4.1
       typescript: ^4.7.4
     dependencies:
+      '@ethersproject/abi': 5.7.0
+      '@ethersproject/address': 5.7.0
       '@ethersproject/contracts': 5.7.0
       '@ethersproject/providers': 5.7.2
       '@ethersproject/solidity': 5.7.0
