@@ -22,15 +22,12 @@ error NoSigners();
 uint256 constant MAX_BPS = 10_000;
 uint16 constant MIN_SIGNERS_THRESHOLD = 5000;
 address constant ZERO_ADDRESS = address(0);
-address constant AVATAR_ADDRESS = address(
-    0x519b70055af55A007110B4Ff99b0eA33071c720a
-);
-address constant WETH_ADDRESS = address(
-    0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2
-);
-address constant DXD_ADDRESS = address(
-    0xa1d65E8fB6e87b60FECCBc582F7f97804B725521
-);
+address constant AVATAR_ADDRESS =
+    address(0x519b70055af55A007110B4Ff99b0eA33071c720a);
+address constant WETH_ADDRESS =
+    address(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
+address constant DXD_ADDRESS =
+    address(0xa1d65E8fB6e87b60FECCBc582F7f97804B725521);
 address constant ETH = address(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
 
 bytes32 constant ORACLE_MESSAGE_TYPE_HASH = keccak256(
@@ -122,8 +119,7 @@ contract Redemptor is IRedemptor {
         }
 
         bytes32 _digest = ECDSA.toTypedDataHash(
-            domainSeparator,
-            _oracleMessageHash(_oracleMessage)
+            domainSeparator, _oracleMessageHash(_oracleMessage)
         );
         for (uint256 _i = 0; _i < _signaturesLength; _i++) {
             address _signer = ECDSA.recover(_digest, _signatures[_i]);
@@ -143,9 +139,7 @@ contract Redemptor is IRedemptor {
             _permitS
         );
         IERC20(DXD_ADDRESS).safeTransferFrom(
-            msg.sender,
-            address(this),
-            _oracleMessage.redeemedDXD
+            msg.sender, address(this), _oracleMessage.redeemedDXD
         );
         IDXD(DXD_ADDRESS).burn(_oracleMessage.redeemedDXD);
 
@@ -157,13 +151,11 @@ contract Redemptor is IRedemptor {
             _oracleMessage.redeemedAmount,
             _oracleMessage.collateralUSDValue,
             _signatures
-        );
+            );
 
         if (_oracleMessage.redeemedToken == ETH) {
             IERC20(WETH_ADDRESS).safeTransferFrom(
-                AVATAR_ADDRESS,
-                address(this),
-                _oracleMessage.redeemedAmount
+                AVATAR_ADDRESS, address(this), _oracleMessage.redeemedAmount
             );
             IWETH(WETH_ADDRESS).withdraw(_oracleMessage.redeemedAmount);
             bool _success;
@@ -177,9 +169,7 @@ contract Redemptor is IRedemptor {
             if (!_success) revert ETHTransferFailed();
         } else {
             IERC20(_oracleMessage.redeemedToken).safeTransferFrom(
-                AVATAR_ADDRESS,
-                msg.sender,
-                _oracleMessage.redeemedAmount
+                AVATAR_ADDRESS, msg.sender, _oracleMessage.redeemedAmount
             );
         }
     }
@@ -222,18 +212,17 @@ contract Redemptor is IRedemptor {
         pure
         returns (bytes32)
     {
-        return
-            keccak256(
-                abi.encode(
-                    ORACLE_MESSAGE_TYPE_HASH,
-                    _oracleMessage.redeemedDXD,
-                    _oracleMessage.circulatingDXDSupply,
-                    _oracleMessage.redeemedToken,
-                    _oracleMessage.redeemedTokenUSDPrice,
-                    _oracleMessage.redeemedAmount,
-                    _oracleMessage.collateralUSDValue
-                )
-            );
+        return keccak256(
+            abi.encode(
+                ORACLE_MESSAGE_TYPE_HASH,
+                _oracleMessage.redeemedDXD,
+                _oracleMessage.circulatingDXDSupply,
+                _oracleMessage.redeemedToken,
+                _oracleMessage.redeemedTokenUSDPrice,
+                _oracleMessage.redeemedAmount,
+                _oracleMessage.collateralUSDValue
+            )
+        );
     }
 
     // solhint-disable-next-line no-empty-blocks
