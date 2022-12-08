@@ -1,15 +1,20 @@
 #!/usr/bin/env node
 
 import { execSync } from "child_process";
-import { createRequire } from "module";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Wallet } from "@ethersproject/wallet";
 import { ContractFactory } from "@ethersproject/contracts";
 import ganache from "ganache";
 import ora from "ora";
 import chalk from "chalk";
+import {
+    DERIVATION_PATH,
+    DXDAO_MAINNET_AVATAR,
+    MNEMONIC,
+    PORT,
+    require,
+    __dirname,
+} from "./commons.js";
 
 const [forkUrl] = process.argv.slice(2);
 if (!forkUrl) {
@@ -17,13 +22,6 @@ if (!forkUrl) {
     process.exit(0);
 }
 
-const PORT = 8545;
-const MNEMONIC = "test test test test test test test test test test test junk";
-const DERIVATION_PATH = "m/44'/60'/0'/0/0";
-
-const importMetaUrlPath = fileURLToPath(import.meta.url);
-const __dirname = dirname(importMetaUrlPath);
-const require = createRequire(importMetaUrlPath);
 const spinner = ora();
 
 const clearConsole = () => {
@@ -40,12 +38,11 @@ try {
     spinner.start(`Starting ${chalk.cyan("Ganache")}`);
     const ganacheServer = ganache.server({
         fork: { url: forkUrl },
-        chain: {
-            chainId: 1,
-        },
+        chain: { chainId: 1 },
         wallet: {
             mnemonic: MNEMONIC,
             hdPath: DERIVATION_PATH,
+            unlockedAccounts: [DXDAO_MAINNET_AVATAR],
         },
         logging: {
             quiet: true,
@@ -75,7 +72,7 @@ try {
     const signer = new Wallet(secretKey, provider);
 
     // the deployer is added as one of the signers, and the default threshold is 80%
-    const { abi, bytecode } = require("./out/Redemptor.sol/Redemptor.json");
+    const { abi, bytecode } = require("../out/Redemptor.sol/Redemptor.json");
     const factory = new ContractFactory(abi, bytecode, signer);
     const contract = await factory.deploy(8_000, [signer.address]);
     await contract.deployed();
@@ -89,6 +86,7 @@ try {
     console.log();
     console.log("  Address:", signer.address);
     console.log("  Private key:", signer.privateKey);
+    console.log(`  ${chalk.yellow("Account added as signer")}`);
     console.log();
     console.log(chalk.cyan("RPC endpoints:"));
     console.log();
@@ -98,8 +96,15 @@ try {
     console.log(chalk.cyan("Contract addresses:"));
     console.log();
     console.log("  Redemptor:", contract.address);
+    console.log();
+    console.log(
+        chalk.yellow(
+            "Use the interaction helper to interact with the fork and redemptor contract"
+        )
+    );
 } catch (error) {
     spinner.fail(chalk.red("Could not setup local chain"));
     console.log();
     console.error(error);
+    process.exit(1);
 }
