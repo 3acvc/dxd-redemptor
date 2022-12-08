@@ -1,7 +1,7 @@
 import { LeanDocument } from "mongoose";
 import { VerifierModel, VerifierDocument } from "../models/verifier";
 import { getRedemptor } from "./redemptor";
-import { ChainId, OracleMessageStruct } from "dxd-redemptor-oracle";
+import { ChainId, Quote } from "dxd-redemptor-oracle";
 
 export const getVerifiers = async (): Promise<
     LeanDocument<VerifierDocument>[]
@@ -19,8 +19,8 @@ export const getVerifiers = async (): Promise<
 
 export const verify = async (
     verifierEndpoint: string,
-    quote: OracleMessageStruct,
-    blockNumber: Record<ChainId, number>
+    quote: Quote,
+    block: Record<ChainId, number>
 ): Promise<string> => {
     const controller = new AbortController();
     const timeout = setTimeout(() => {
@@ -33,7 +33,7 @@ export const verify = async (
             method: "POST",
             body: JSON.stringify({
                 quote,
-                blockNumber,
+                block,
             }),
             signal: controller.signal,
         });
