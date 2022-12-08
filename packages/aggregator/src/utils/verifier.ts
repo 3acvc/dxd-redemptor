@@ -1,11 +1,13 @@
 import { LeanDocument } from "mongoose";
 import { VerifierModel, VerifierDocument } from "../models/verifier";
 import { getRedemptor } from "./redemptor";
-import { ChainId, Quote } from "dxd-redemptor-oracle";
+import { ChainId } from "dxd-redemptor-oracle";
+import { verifyMessage } from "@ethersproject/wallet";
 
 export const getVerifiers = async (): Promise<
     LeanDocument<VerifierDocument>[]
 > => {
+    // TODO: use multicall here
     const verifiersFromDb = await VerifierModel.find().lean();
     const redemptor = getRedemptor();
     const verifiers = [];
@@ -17,9 +19,10 @@ export const getVerifiers = async (): Promise<
     return verifiers;
 };
 
-export const verify = async (
+export const verifyQuote = async (
+    verifierAddress: string,
     verifierEndpoint: string,
-    quote: Quote,
+    quoteHash: string,
     block: Record<ChainId, number>
 ): Promise<string> => {
     const controller = new AbortController();
@@ -32,13 +35,17 @@ export const verify = async (
         const response = await fetch(verifierEndpoint, {
             method: "POST",
             body: JSON.stringify({
-                quote,
                 block,
             }),
             signal: controller.signal,
         });
-        if (!response.ok) throw new Error("requiest failed");
+        if (!response.ok) throw new Error("request failed");
         const { signature } = (await response.json()) as { signature: string };
+        const addressFromSignature = verifyMessage(quoteHash, signature);
+        if (addressFromSignature.toLowerCase() !== verifierAddress.toLowerCase())
+            throw new Error(
+                `expected signature from ${verifierAddress}, got one by ${addressFromSignature}`
+            );
         return signature;
     } finally {
         clearTimeout(timeout);
