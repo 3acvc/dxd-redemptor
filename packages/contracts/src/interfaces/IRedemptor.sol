@@ -1,7 +1,14 @@
 // solhint-disable compiler-version
 pragma solidity ^0.8.17;
 
-import {OracleMessage} from "src/Redemptor.sol";
+struct OracleMessage {
+    uint256 redeemedDXD;
+    uint256 circulatingDXDSupply;
+    address redeemedToken;
+    uint256 redeemedTokenUSDPrice;
+    uint256 redeemedAmount;
+    uint256 collateralUSDValue;
+}
 
 /// SPDX-License-Identifier: GPL-3.0-or-later
 /// @title IRedemptor
