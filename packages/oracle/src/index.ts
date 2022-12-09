@@ -1,3 +1,9 @@
+import type { Provider } from "@ethersproject/abstract-provider";
+import type {
+    TypedDataDomain,
+    TypedDataSigner,
+} from "@ethersproject/abstract-signer";
+import type { Wallet } from "ethers";
 import { ChainId, DXDAO_AVATAR } from "./constants";
 import { Amount } from "./entities/amount";
 import { Currency } from "./entities/currency";
@@ -17,6 +23,7 @@ import {
     WETH,
     WXDAI,
 } from "./entities/token";
+import { Quote } from "./types";
 import {
     getNativeCurrencyBalancesAtBlock,
     getTokenBalancesAtBlock,
@@ -24,24 +31,28 @@ import {
 import { getDXDCirculatingSupply } from "./utils/dxd";
 import { getUSDPrice, getUSDValue } from "./utils/pricing";
 
-export { ChainId, PROVIDER } from "./constants";
+export * from "./types";
+export { ChainId } from "./constants";
 export * from "./entities";
 
-export interface Quote {
-    redeemedDXD: string;
-    circulatingDXDSupply: string;
-    redeemedToken: string;
-    redeemedTokenUSDPrice: string;
-    redeemedAmount: string;
-    collateralUSDValue: string;
-}
-
+/**
+ *
+ * @param block - block number for each chain
+ * @param redeemedToken - token to redeem
+ * @param redeemedDxd - amount of DXD to redeem
+ * @param providerList - a list of providers for each chain
+ * @returns
+ */
 export async function quote(
     block: Record<ChainId, number>,
     redeemedToken: Token,
-    redeemedDxd: Amount<Token>
+    redeemedDxd: Amount<Token>,
+    providerList: Record<ChainId, Provider>
 ): Promise<Quote> {
-    const circulatingDXDSupply = await getDXDCirculatingSupply(block);
+    const circulatingDXDSupply = await getDXDCirculatingSupply(
+        block,
+        providerList
+    );
 
     const tokenBalances = await getTokenBalancesAtBlock(
         [
@@ -68,11 +79,13 @@ export async function quote(
             token,
             owner: DXDAO_AVATAR[token.chainId],
         })),
-        block
+        block,
+        providerList
     );
     const nativeCurrencyBalances = await getNativeCurrencyBalancesAtBlock(
         DXDAO_AVATAR,
-        block
+        block,
+        providerList
     );
 
     const navUSDValue = await getUSDValue(
@@ -103,4 +116,37 @@ export async function quote(
             .toRawAmount()
             .toString(),
     };
+}
+
+/**
+ *
+ * @param signer - signer to sign the quote
+ * @param domain - domain to sign the quote. Must include chainId and verifyingContract
+ * @param quote - quote to sign
+ * @returns
+ */
+export function signQuote(
+    signer: Wallet | TypedDataSigner,
+    domain: TypedDataDomain &
+        Required<Pick<TypedDataDomain, "chainId" | "verifyingContract">>,
+    quote: Quote
+): Promise<string> {
+    return signer._signTypedData(
+        {
+            name: "DXD redemptor",
+            version: "1",
+            ...domain,
+        },
+        {
+            oracleMessage: [
+                { name: "redeemedDXD", type: "uint256" },
+                { name: "circulatingDXDSupply", type: "uint256" },
+                { name: "redeemedToken", type: "address" },
+                { name: "redeemedTokenUSDPrice", type: "uint256" },
+                { name: "redeemedAmount", type: "uint256" },
+                { name: "collateralUSDValue", type: "uint256" },
+            ],
+        },
+        quote
+    );
 }
