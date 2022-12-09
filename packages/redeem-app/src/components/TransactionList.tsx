@@ -57,6 +57,8 @@ export function TransactionContainer({
 }
 
 export function TransactionList({ transactions }: TransactionListProps) {
+    if (transactions.length === 0) return null;
+
     return (
         <div>
             <h3>Transactions</h3>
