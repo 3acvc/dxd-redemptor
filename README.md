@@ -17,4 +17,4 @@ Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 
 ### Contributing
 
-Check out the (CONTRIBUTING.md)[./CONTRIBUTING.md] file for instructions on how to contribute.
+Check out the [CONTRIBUTING.md](./CONTRIBUTING.md) file for instructions on how to contribute.

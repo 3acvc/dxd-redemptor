@@ -1,27 +1,3 @@
-# Contributing
-
-## General
-
-We use Turbo to manage the monorepo in an optimal way. The packages included are:
-
-- `contracts`: smart contracts developed with Solidity and Foundry
-- `eslint-config-custom`: `eslint` configurations (includes `eslint-config-prettier`)
-- `tsconfig`: `tsconfig.json`s used throughout the monorepo
-
-### Github Actions
-
-The repository uses GH actions to setup CI to automatically build, test and lint all the packages on
-each push to main or opened pull request.
-
-### Pre-commit hooks
-
-In order to reduce the possibility to make mistakes to the minimum, pre-commit hooks are enabled to
-both run all the available tests (through the same command used in the GH actions) and to lint the
-commit message through `husky` and `@commitlint/config-conventional`. Please have a look at the
-supported formats by checking
-[this](https://github.com/conventional-changelog/commitlint/tree/master/@commitlint/config-conventional)
-out.
-
 ## Contracts
 
 The contracts are developed using Solidity and Foundry, so in order to contribute you need to first
