@@ -45,7 +45,7 @@ export * from "./entities";
  */
 export async function quote(
     block: Record<ChainId, number>,
-    redeemedToken: Token,
+    redeemedToken: Currency,
     redeemedDxd: Amount<Token>,
     providerList: Record<ChainId, Provider>
 ): Promise<Quote> {

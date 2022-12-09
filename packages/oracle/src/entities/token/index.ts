@@ -1,4 +1,3 @@
-import { isAddress, getAddress } from "@ethersproject/address";
 import { Currency } from "../currency";
 import { enforce } from "../../utils/invariant";
 import { ChainId } from "../../constants";
@@ -10,9 +9,7 @@ export class Token extends Currency {
         decimals: number,
         symbol: string
     ) {
-        super(symbol, decimals);
-        enforce(isAddress(address), `${address} is not a valid address.`);
-        this.address = getAddress(address);
+        super(address, symbol, decimals);
     }
 
     public static getNativeWrapper(chainId: ChainId) {

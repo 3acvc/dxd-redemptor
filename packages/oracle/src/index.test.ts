@@ -3,33 +3,55 @@ import { quote } from ".";
 import { ChainId } from "./constants";
 import { Amount } from "./entities/amount";
 import { DXD, WETH } from "./entities/token";
+import { Currency } from "./entities/currency";
 
 describe("quote", () => {
-    test("works correctly", async () => {
-        // redeem 10 dxd for weth
-        const redeemedToken = WETH[ChainId.ETHEREUM];
-        const redeemedDXD = new Amount(DXD[ChainId.ETHEREUM], 10);
-        const provider = {
+    let providerList: Record<ChainId, JsonRpcProvider>;
+    let blockList: Record<ChainId, number>;
+
+    beforeEach(async () => {
+        providerList = {
             [ChainId.ETHEREUM]: new JsonRpcProvider("http://localhost:8545"),
             [ChainId.GNOSIS]: new JsonRpcProvider(
                 "https://rpc.gnosischain.com"
             ),
         };
-
-        const block: Record<ChainId, number> = {
+        blockList = {
             [ChainId.ETHEREUM]:
-                (await provider[ChainId.ETHEREUM].getBlock("latest")).number -
-                10,
+                (await providerList[ChainId.ETHEREUM].getBlock("latest"))
+                    .number - 10,
             [ChainId.GNOSIS]:
-                (await provider[ChainId.GNOSIS].getBlock("latest")).number - 10,
+                (await providerList[ChainId.GNOSIS].getBlock("latest")).number -
+                10,
         };
+    });
 
+    test("works correctly", async () => {
+        // redeem 10 dxd for weth
+        const redeemedToken = WETH[ChainId.ETHEREUM];
+        const redeemedDXD = new Amount(DXD[ChainId.ETHEREUM], 10);
         const oracleQuote = await quote(
-            block,
+            blockList,
             redeemedToken,
             redeemedDXD,
-            provider
+            providerList
         );
         console.log(oracleQuote);
+    });
+
+    test("should work with ETH", async () => {
+        // redeem 10 dxd for weth
+        const redeemedToken = Currency.ETH;
+        const redeemedDXD = new Amount(DXD[ChainId.ETHEREUM], 10);
+        const oracleQuote = await quote(
+            blockList,
+            redeemedToken,
+            redeemedDXD,
+            providerList
+        );
+        expect(oracleQuote).toBeDefined();
+        expect(oracleQuote.redeemedToken).toEqual(
+            "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+        );
     });
 });
