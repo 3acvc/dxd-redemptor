@@ -1,7 +1,6 @@
 import { Request } from "@hapi/hapi";
 import { badRequest } from "@hapi/boom";
 import {
-    PROVIDER,
     ChainId,
     Quote,
     quote,
@@ -12,6 +11,8 @@ import {
 import { getVerifiers, verifyQuote } from "../utils/verifier";
 import { quoteToEIP712Hash } from "../utils/signing";
 import { getRedemptor } from "../utils/redemptor";
+import { JsonRpcProvider, Provider } from "@ethersproject/providers";
+import { getRequiredEnv } from "../utils/env";
 
 const redemptor = getRedemptor();
 
@@ -27,18 +28,30 @@ interface QuoteResponse {
     signatures: string[];
 }
 
+const providerList: Record<ChainId, Provider> = {
+    [ChainId.ETHEREUM]: new JsonRpcProvider(
+        getRequiredEnv("JSON_RPC_PROVIDER_ETHEREUM")
+    ),
+    [ChainId.GNOSIS]: new JsonRpcProvider(
+        getRequiredEnv("JSON_RPC_PROVIDER_GNOSIS")
+    ),
+};
+
 export async function handleQuote(
     request: QuoteRequest
 ): Promise<QuoteResponse> {
     try {
-        const { redeemedDXD: rawRedeemedDXD, redeemedToken: rawRedeemedToken } =
-            request.query;
+        const {
+            redeemedDXD: rawRedeemedDXD,
+            redeemedToken: rawRedeemedToken,
+        } = request.query;
         const block: Record<ChainId, number> = {
             [ChainId.ETHEREUM]:
-                (await PROVIDER[ChainId.ETHEREUM].getBlockNumber()) - 10,
+                (await providerList[ChainId.ETHEREUM].getBlockNumber()) - 10,
             [ChainId.GNOSIS]:
-                (await PROVIDER[ChainId.GNOSIS].getBlockNumber()) - 10,
+                (await providerList[ChainId.GNOSIS].getBlockNumber()) - 10,
         };
+
         const redeemedToken = new Token(
             ChainId.ETHEREUM,
             rawRedeemedToken,
@@ -50,7 +63,12 @@ export async function handleQuote(
             DXD[ChainId.ETHEREUM],
             rawRedeemedDXD
         );
-        const oracleQuote = await quote(block, redeemedToken, redeemedDXD);
+        const oracleQuote = await quote(
+            block,
+            redeemedToken,
+            redeemedDXD,
+            providerList
+        );
         const oracleQuoteHash = quoteToEIP712Hash(oracleQuote);
 
         const verifiers = await getVerifiers();
