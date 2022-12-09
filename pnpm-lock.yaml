@@ -44,6 +44,7 @@ importers:
       joi: ^17.7.0
       mongoose: ^6.5.0
       node-fetch: ^3.3.0
+      nodemon: ^2.0.18
       rimraf: ^3.0.2
       ts-node: ^10.8.2
       tsconfig: workspace:*
@@ -67,6 +68,8 @@ importers:
       joi: 17.7.0
       mongoose: 6.8.0
       node-fetch: 3.3.0
+      nodemon: 2.0.20
+      tslib: 2.4.1
     devDependencies:
       '@types/hapi-auth-bearer-token': 6.1.3
       '@types/hapi__hapi': 20.0.13
@@ -78,7 +81,6 @@ importers:
       rimraf: 3.0.2
       ts-node: 10.9.1_zhirybrk4zoofuxp64necizyzy
       tsconfig: link:../tsconfig
-      tslib: 2.4.1
       typescript: 4.9.3
 
   packages/contracts:
@@ -244,6 +246,7 @@ importers:
     specifiers:
       '@babel/preset-env': ^7.18.6
       '@babel/preset-typescript': ^7.18.6
+      '@ethersproject/abstract-provider': ^5.7.0
       '@ethersproject/address': ^5.7.0
       '@ethersproject/providers': ^5.7.0
       '@ethersproject/wallet': ^5.7.0
@@ -277,7 +280,7 @@ importers:
       chalk: ^4.1.2
       cross-env: ^7.0.3
       dotenv: ^16.0.1
-      dxd-redemptor-oracle: workspace:1.0.0
+      dxd-redemptor-oracle: workspace:*
       eslint-config-custom: workspace:*
       graphql-request: ^5.0.0
       graphql-tag: ^2.12.6
@@ -294,6 +297,7 @@ importers:
       typechain: ^8.1.1
       typescript: ^4.7.4
     dependencies:
+      '@ethersproject/abstract-provider': 5.7.0
       '@ethersproject/address': 5.7.0
       '@ethersproject/providers': 5.7.2
       '@ethersproject/wallet': 5.7.0
@@ -7608,7 +7612,6 @@ packages:
 
   /abbrev/1.1.1:
     resolution: {integrity: sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==}
-    dev: true
 
   /abitype/0.1.8_typescript@4.9.3:
     resolution: {integrity: sha512-2pde0KepTzdfu19ZrzYTYVIWo69+6UbBCY4B1RDiwWgo2XZtFSJhF6C+XThuRXbbZ823J0Rw1Y5cP0NXYVcCdQ==}
@@ -10097,7 +10100,6 @@ packages:
     dependencies:
       ms: 2.1.3
       supports-color: 5.5.0
-    dev: true
 
   /debug/4.3.4:
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
@@ -13204,7 +13206,6 @@ packages:
 
   /ignore-by-default/1.0.1:
     resolution: {integrity: sha512-Ius2VYcGNk7T90CppJqcIkS5ooHUZyIQK+ClZfMfMNFEF9VSE73Fq+906u/CWu92x4gzZMWOwfFYckPObzdEbA==}
-    dev: true
 
   /ignore/4.0.6:
     resolution: {integrity: sha512-cyFDKrqc/YdcWFniJhzI42+AzS+gNwmUzOSFcRCQYwySuBBBy/KjuxWLZ/FHEH6Moq1NizMOBWyTcv8O4OZIMg==}
@@ -16444,14 +16445,12 @@ packages:
       supports-color: 5.5.0
       touch: 3.1.0
       undefsafe: 2.0.5
-    dev: true
 
   /nopt/1.0.10:
     resolution: {integrity: sha512-NWmpvLSqUrgrAC9HCuxEvb+PSloHpqVu+FqcO4eeF2h5qYRhA7ev6KvelyQAKtegUbC6RypJnlEOhd8vloNKYg==}
     hasBin: true
     dependencies:
       abbrev: 1.1.1
-    dev: true
 
   /normalize-package-data/2.5.0:
     resolution: {integrity: sha512-/5CMN3T0R4XTj4DcGaexo+roZSdSFW/0AOOTROrjxzCG1wrWXEsGbRKevjlIL+ZDE4sZlJr5ED4YW0yqmkK+eA==}
@@ -18020,7 +18019,6 @@ packages:
 
   /pstree.remy/1.1.8:
     resolution: {integrity: sha512-77DZwxQmxKnu3aR542U+X8FypNzbfJ+C5XQDk3uWjWxn6151aIMGthWYRXTqT1E5oJvg+ljaa2OJi+VfvCOQ8w==}
-    dev: true
 
   /public-encrypt/4.0.3:
     resolution: {integrity: sha512-zVpa8oKZSz5bTMTFClc1fQOnyyEzpl5ozpi1B5YcvBrdohMjH2rfsBtyXcuNuwjsDIXmBYlF2N5FlJYhR29t8Q==}
@@ -19140,7 +19138,6 @@ packages:
   /semver/7.0.0:
     resolution: {integrity: sha512-+GB6zVA9LWh6zovYQLALHwv5rb2PHGlJi3lfiqIHxR0uuwCgefcOJc59v9fv1w8GbStwxuuqqAjI9NMAOOgq1A==}
     hasBin: true
-    dev: true
 
   /semver/7.3.7:
     resolution: {integrity: sha512-QlYTucUYOews+WeEujDoEGziz4K6c47V/Bd+LjSSYcA94p+DmINdf7ncaUinThfvZyu13lN9OY1XDxt8C0Tw0g==}
@@ -19355,7 +19352,6 @@ packages:
     engines: {node: '>=8.10.0'}
     dependencies:
       semver: 7.0.0
-    dev: true
 
   /sisteransi/1.0.5:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
@@ -20364,7 +20360,6 @@ packages:
     hasBin: true
     dependencies:
       nopt: 1.0.10
-    dev: true
 
   /tough-cookie/2.5.0:
     resolution: {integrity: sha512-nlLsUzgm1kfLXSXfRZMc1KLAugd4hqJHDTvc2hDIwS3mZAfMEuMbc03SujMF+GEcpaX/qboeycw6iO8JwVv2+g==}
@@ -20836,7 +20831,6 @@ packages:
 
   /undefsafe/2.0.5:
     resolution: {integrity: sha512-WxONCrssBM8TSPRqN5EmsjVrsv4A8X12J4ArBiiayv3DyyG3ZlIg6yysuuSYdZsVz3TKcTg2fd//Ujd4CHV1iA==}
-    dev: true
 
   /undici/5.13.0:
     resolution: {integrity: sha512-UDZKtwb2k7KRsK4SdXWG7ErXiL7yTGgLWvk2AXO1JMjgjh404nFo6tWSCM2xMpJwMPx3J8i/vfqEh1zOqvj82Q==}
