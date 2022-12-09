@@ -10,13 +10,14 @@ importers:
       husky: ^8.0.1
       prettier: ^2.8.0
       turbo: ^1.6.3
+    dependencies:
+      turbo: 1.6.3
     devDependencies:
       '@commitlint/cli': 17.3.0
       '@commitlint/config-conventional': 17.3.0
       eslint-config-custom: link:packages/eslint-config-custom
       husky: 8.0.2
       prettier: 2.8.0
-      turbo: 1.6.3
 
   packages/aggregator:
     specifiers:
@@ -88,6 +89,7 @@ importers:
       '@ethersproject/address': ^5.7.0
       '@ethersproject/contracts': ^5.7.0
       '@ethersproject/providers': ^5.7.2
+      '@ethersproject/units': ^5.7.0
       '@ethersproject/wallet': ^5.7.0
       chalk: ^5.1.2
       commander: ^9.4.1
@@ -98,6 +100,7 @@ importers:
       '@ethersproject/address': 5.7.0
       '@ethersproject/contracts': 5.7.0
       '@ethersproject/providers': 5.7.2
+      '@ethersproject/units': 5.7.0
       '@ethersproject/wallet': 5.7.0
       chalk: 5.1.2
       commander: 9.4.1
@@ -143,7 +146,6 @@ importers:
       babel-jest: ^29.3.1
       decimal.js-light: ^2.5.1
       dotenv: ^16.0.1
-      dxd-redemptor-contracts: workspace:*
       ethers: ^5.7.2
       graphql-request: ^5.0.0
       jest: ^27.5.1
@@ -178,7 +180,6 @@ importers:
       abitype: 0.2.5_typescript@4.9.3
       babel-jest: 29.3.1_@babel+core@7.20.5
       dotenv: 16.0.3
-      dxd-redemptor-contracts: link:../contracts
       ethers: 5.7.2
       jest: 27.5.1
       node-fetch: 3.3.0
@@ -20610,7 +20611,7 @@ packages:
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
-    dev: true
+    dev: false
     optional: true
 
   /turbo-darwin-arm64/1.6.3:
@@ -20618,7 +20619,7 @@ packages:
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
-    dev: true
+    dev: false
     optional: true
 
   /turbo-linux-64/1.6.3:
@@ -20626,7 +20627,7 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
-    dev: true
+    dev: false
     optional: true
 
   /turbo-linux-arm64/1.6.3:
@@ -20634,7 +20635,7 @@ packages:
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
-    dev: true
+    dev: false
     optional: true
 
   /turbo-windows-64/1.6.3:
@@ -20642,7 +20643,7 @@ packages:
     cpu: [x64]
     os: [win32]
     requiresBuild: true
-    dev: true
+    dev: false
     optional: true
 
   /turbo-windows-arm64/1.6.3:
@@ -20650,7 +20651,7 @@ packages:
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
-    dev: true
+    dev: false
     optional: true
 
   /turbo/1.6.3:
@@ -20664,7 +20665,7 @@ packages:
       turbo-linux-arm64: 1.6.3
       turbo-windows-64: 1.6.3
       turbo-windows-arm64: 1.6.3
-    dev: true
+    dev: false
 
   /tweetnacl-util/0.15.1:
     resolution: {integrity: sha512-RKJBIj8lySrShN4w6i/BonWp2Z/uxwC3h4y7xsRrpP59ZboCd0GpEVsOnMDYLMmKBpYhb5TgHzZXy7wTfYFBRw==}

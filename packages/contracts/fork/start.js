@@ -3,13 +3,15 @@
 import { execSync } from "child_process";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Wallet } from "@ethersproject/wallet";
-import { ContractFactory } from "@ethersproject/contracts";
+import { Contract, ContractFactory } from "@ethersproject/contracts";
+import { formatEther, formatUnits, parseUnits } from "@ethersproject/units";
 import ganache from "ganache";
 import ora from "ora";
 import chalk from "chalk";
 import {
     DERIVATION_PATH,
     DXDAO_MAINNET_AVATAR,
+    DXD_MAINNET,
     MNEMONIC,
     PORT,
     require,
@@ -72,11 +74,23 @@ try {
     const signer = new Wallet(secretKey, provider);
 
     // the deployer is added as one of the signers, and the default threshold is 80%
-    const { abi, bytecode } = require("../out/Redemptor.sol/Redemptor.json");
-    const factory = new ContractFactory(abi, bytecode, signer);
+    spinner.start(`Dealing ${chalk.cyan("DXD")}`);
+    const {
+        abi: redemptorAbi,
+        bytecode: redemptorCode,
+    } = require("../out/Redemptor.sol/Redemptor.json");
+    const factory = new ContractFactory(redemptorAbi, redemptorCode, signer);
     const contract = await factory.deploy(8_000, [signer.address]);
     await contract.deployed();
-    spinner.succeed(`${chalk.cyan("Redemptor")} deployed`);
+    spinner.succeed(`${chalk.cyan("DXD")} dealt`);
+
+    // send some dxd to the deployer
+    const dxdaoAvatarSigner = await provider.getSigner(DXDAO_MAINNET_AVATAR);
+    const { abi: erc20Abi } = require("../out/ERC20.sol/ERC20.json");
+    const dxd = new Contract(DXD_MAINNET, erc20Abi);
+    await dxd
+        .connect(dxdaoAvatarSigner)
+        .transfer(signer.address, parseUnits("10", 18));
 
     clearConsole();
 
@@ -86,6 +100,11 @@ try {
     console.log();
     console.log("  Address:", signer.address);
     console.log("  Private key:", signer.privateKey);
+    console.log("  ETH balance:", formatEther(await signer.getBalance()));
+    console.log(
+        "  DXD balance:",
+        formatUnits(await dxd.connect(signer).balanceOf(signer.address), 18)
+    );
     console.log(`  ${chalk.yellow("Account added as signer")}`);
     console.log();
     console.log(chalk.cyan("RPC endpoints:"));

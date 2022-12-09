@@ -40,7 +40,6 @@
         "abitype": "^0.2.5",
         "babel-jest": "^29.3.1",
         "dotenv": "^16.0.1",
-        "dxd-redemptor-contracts": "workspace:*",
         "ethers": "^5.7.2",
         "jest": "^27.5.1",
         "node-fetch": "^3.3.0",

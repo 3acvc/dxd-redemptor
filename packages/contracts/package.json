@@ -25,6 +25,7 @@
         "@ethersproject/address": "^5.7.0",
         "@ethersproject/contracts": "^5.7.0",
         "@ethersproject/providers": "^5.7.2",
+        "@ethersproject/units": "^5.7.0",
         "@ethersproject/wallet": "^5.7.0",
         "chalk": "^5.1.2",
         "commander": "^9.4.1",
