@@ -1,3 +1,3 @@
 export { Amount } from "./amount";
 export { Currency } from "./currency";
-export { Token, DXD } from "./token";
+export { Token, DXD, USDC, USDT } from "./token";
