@@ -18,16 +18,38 @@ interface RegistrationRequest extends Request {
     };
 }
 
+/**
+ * Get the registration message
+ * @returns
+ */
+export async function handleGetRegisterationMessage(): Promise<{
+    data: {
+        message: string;
+    };
+}> {
+    return {
+        data: {
+            message: REGISTRATION_MESSAGE,
+        },
+    };
+}
+
 export async function handleRegister(
     request: RegistrationRequest,
     response: ResponseToolkit
 ): Promise<ResponseObject> {
     try {
         const { signature, endpoint } = request.payload;
+
+        // validate the endpoint is a valid URL
+        if (new URL(endpoint).protocol !== "https:") {
+            throw badRequest("endpoint protocol must be https");
+        }
+
         const signer = verifyMessage(REGISTRATION_MESSAGE, signature);
         if (!(await redemptor.isSigner())) throw unauthorized();
         await new VerifierModel({ address: signer, endpoint }).save();
-        return response.response().code(204);
+        return response.response().code(201);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
         console.error(error);

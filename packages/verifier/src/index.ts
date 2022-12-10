@@ -71,6 +71,7 @@ async function main() {
                     }),
                 }),
             },
+            tags: ["api", "verify"],
         },
     });
 
@@ -78,7 +79,7 @@ async function main() {
 
     const swaggerOptions: hapiSwagger.RegisterOptions = {
         info: {
-            title: "DXdao DXD redemptor API Documentation",
+            title: "DXdao DXD redemptor API Documentation: Verifier Node",
         },
         debug: true,
         deReference: true,

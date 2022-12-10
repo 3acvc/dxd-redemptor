@@ -69,9 +69,7 @@ export async function verifyAndSignOracleAggreagatorMessageController(
         // Verify that the message is correct
         if (
             aggregatorQuote.circulatingDXDSupply !==
-                verifierQuote.circulatingDXDSupply ||
-            aggregatorQuote.redeemedAmount !== verifierQuote.redeemedAmount ||
-            aggregatorQuote.redeemedToken !== verifierQuote.redeemedToken
+            verifierQuote.circulatingDXDSupply
         ) {
             throw badRequest("Message is not correct");
         }
@@ -90,11 +88,15 @@ export async function verifyAndSignOracleAggreagatorMessageController(
         );
 
         return responseBody;
-    } catch (error: any) {
+    } catch (error) {
         console.error(error);
+        // eslint-disable-next-line
+        // @ts-ignore
         if (error.isBoom) {
             throw error;
         }
+        // eslint-disable-next-line
+        // @ts-ignore
         throw badRequest(error);
     }
 }

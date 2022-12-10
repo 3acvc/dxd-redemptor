@@ -1,8 +1,9 @@
 import { LeanDocument } from "mongoose";
 import { VerifierModel, VerifierDocument } from "../models/verifier";
 import { getRedemptor } from "./redemptor";
-import { ChainId } from "dxd-redemptor-oracle";
+import { ChainId, Quote } from "dxd-redemptor-oracle";
 import { verifyMessage } from "@ethersproject/wallet";
+import axios from "axios";
 
 export const getVerifiers = async (): Promise<
     LeanDocument<VerifierDocument>[]
@@ -12,7 +13,7 @@ export const getVerifiers = async (): Promise<
     const redemptor = getRedemptor();
     const verifiers = [];
     for (const verifierFromDb of verifiersFromDb) {
-        if (await redemptor.isSigner(verifierFromDb)) {
+        if (await redemptor.isSigner(verifierFromDb.address)) {
             verifiers.push(verifierFromDb);
         }
     }
@@ -22,7 +23,7 @@ export const getVerifiers = async (): Promise<
 export const verifyQuote = async (
     verifierAddress: string,
     verifierEndpoint: string,
-    quoteHash: string,
+    quote: Quote,
     block: Record<ChainId, number>
 ): Promise<string> => {
     const controller = new AbortController();
@@ -31,22 +32,24 @@ export const verifyQuote = async (
     }, 5_000);
 
     try {
-        const { default: fetch } = await import("node-fetch");
-        const response = await fetch(verifierEndpoint, {
-            method: "POST",
-            body: JSON.stringify({
-                block,
-            }),
-            signal: controller.signal,
+        const response = await axios.post(verifierEndpoint, {
+            blockNumber: block,
+            quote,
         });
-        if (!response.ok) throw new Error("request failed");
-        const { signature } = (await response.json()) as { signature: string };
-        const addressFromSignature = verifyMessage(quoteHash, signature);
-        if (addressFromSignature.toLowerCase() !== verifierAddress.toLowerCase())
-            throw new Error(
-                `expected signature from ${verifierAddress}, got one by ${addressFromSignature}`
-            );
-        return signature;
+
+        const responseFrmVerifier = response.data.data;
+        console.log({
+            responseFrmVerifier,
+        });
+
+        return responseFrmVerifier.signature;
+        // const addressFromSignature = verifyMessage(quoteHash, signature);
+        // if (
+        //     addressFromSignature.toLowerCase() !== verifierAddress.toLowerCase()
+        // )
+        //     throw new Error(
+        //         `expected signature from ${verifierAddress}, got one by ${addressFromSignature}`
+        //     );
     } finally {
         clearTimeout(timeout);
     }

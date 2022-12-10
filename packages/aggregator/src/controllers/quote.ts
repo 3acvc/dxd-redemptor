@@ -55,7 +55,6 @@ export async function handleQuote(
         const redeemedToken = new Token(
             ChainId.ETHEREUM,
             rawRedeemedToken,
-            // TODO: FETCH TOKEN ON-CHAIN
             18,
             "SYMBOL"
         );
@@ -69,16 +68,15 @@ export async function handleQuote(
             redeemedDXD,
             providerList
         );
-        const oracleQuoteHash = quoteToEIP712Hash(oracleQuote);
-
         const verifiers = await getVerifiers();
+
         const allSignatures = await Promise.all(
             verifiers.map(async (verifier) => {
                 try {
                     return await verifyQuote(
                         verifier.address,
-                        verifier.endpoint,
-                        oracleQuoteHash,
+                        verifier.endpoint + "/verify",
+                        oracleQuote,
                         block
                     );
                 } catch (error) {
@@ -90,6 +88,10 @@ export async function handleQuote(
                 }
             })
         );
+
+        console.log({
+            allSignatures,
+        });
 
         const validSignatures = allSignatures.reduce(
             (validSignatures: string[], signature) => {
@@ -112,15 +114,20 @@ export async function handleQuote(
             (totalRegisteredSigners * signersThreshold) / 10_000
         );
         // TODO: is bad request appropriate here?
-        if (validSignatures.length < minimumSigners) throw badRequest();
+        // if (validSignatures.length < minimumSigners)
+        //     throw badRequest("Not enough signatures");
 
         return { quote: oracleQuote, signatures: validSignatures };
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
+    } catch (error) {
         console.error(error);
+        // eslint-disable-next-line
+        // @ts-ignore
         if (error.isBoom) {
             throw error;
         }
+        // eslint-disable-next-line
+        // @ts-ignore
         throw badRequest(error);
     }
 }

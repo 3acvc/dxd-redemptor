@@ -16,7 +16,6 @@
         "preserveWatchOutput": true,
         "skipLibCheck": true,
         "strict": true,
-
         "paths": {
             "tslib": ["./node_modules/tslib/"]
         }

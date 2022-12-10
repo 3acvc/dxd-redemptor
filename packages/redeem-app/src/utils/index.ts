@@ -7,12 +7,12 @@
  * @throws If the address is not checksummed
  */
 export function shortenAddress(
-  address?: string,
-  charsBefore = 4,
-  charsAfter = 4,
+    address?: string,
+    charsBefore = 4,
+    charsAfter = 4
 ): string {
-  if (!address) return ''
-  return `${address.substring(0, charsBefore + 2)}...${address.substring(
-    42 - charsAfter,
-  )}`
+    if (!address) return "";
+    return `${address.substring(0, charsBefore + 2)}...${address.substring(
+        42 - charsAfter
+    )}`;
 }

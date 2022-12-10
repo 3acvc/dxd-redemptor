@@ -14,8 +14,12 @@ import * as inert from "@hapi/inert";
 import * as vision from "@hapi/vision";
 import hapiSwagger, { RegisterOptions } from "hapi-swagger";
 import { join } from "path";
-import { handleRegister } from "./controllers/register";
+import {
+    handleGetRegisterationMessage,
+    handleRegister,
+} from "./controllers/register";
 import { handleQuote } from "./controllers/quote";
+import { VerifierModel } from "./models/verifier";
 
 const mongoUri = getRequiredEnv("MONGO_URI");
 const mongoDebug = getEnv("MONGO_DEBUG") === "true";
@@ -73,6 +77,16 @@ const main = async () => {
         },
         {
             method: "GET",
+            path: "/verifiers/message",
+            options: {
+                handler: handleGetRegisterationMessage as HandlerDecorations,
+                description:
+                    "Gets the registration message which must be signed",
+                tags: ["api"],
+            },
+        },
+        {
+            method: "GET",
             path: "/quote",
             options: {
                 handler: handleQuote as HandlerDecorations,
@@ -94,11 +108,30 @@ const main = async () => {
         },
     ]);
 
+    console.log("Reigstering default signer");
+
+    const defaultVerifier = await VerifierModel.findOne({
+        address: "0xD51d4b680Cd89E834413c48fa6EE2c59863B738d",
+    });
+
+    console.log({
+        defaultVerifier,
+    });
+
+    if (!defaultVerifier) {
+        await new VerifierModel({
+            address: "0xD51d4b680Cd89E834413c48fa6EE2c59863B738d",
+            endpoint: "http://localhost:4001",
+        }).save();
+
+        console.log("Default signer registered");
+    }
+
     const swaggerBasePathProd = production ? join("/") : "/";
 
     const swaggerOptions: RegisterOptions = {
         info: {
-            title: "DXdao DXD redemptor API Documentation",
+            title: "DXdao DXD redemptor API Documentation: Aggregator Node",
         },
         debug: true,
         deReference: true,
