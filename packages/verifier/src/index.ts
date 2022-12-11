@@ -57,7 +57,7 @@ async function main() {
             description: "Verify and sign a message from the Oracle Aggregator",
             validate: {
                 payload: Joi.object({
-                    message: Joi.object({
+                    quote: Joi.object({
                         redeemedDXD: Joi.string().required(),
                         circulatingDXDSupply: Joi.string().required(),
                         redeemedToken: Joi.string().required(),
@@ -70,7 +70,12 @@ async function main() {
                         "100": Joi.number().required(),
                     }),
                 }),
+                failAction: (_req, _h, err) => {
+                    console.log(err);
+                    throw err;
+                },
             },
+
             tags: ["api", "verify"],
         },
     });

@@ -1,9 +1,9 @@
 import { LeanDocument } from "mongoose";
 import { VerifierModel, VerifierDocument } from "../models/verifier";
 import { getRedemptor } from "./redemptor";
-import { ChainId, Quote } from "dxd-redemptor-oracle";
-import { verifyMessage } from "@ethersproject/wallet";
+import { ChainId, Quote, quoteToEIP712Hash } from "dxd-redemptor-oracle";
 import axios from "axios";
+import { verifyMessage } from "@ethersproject/wallet";
 
 export const getVerifiers = async (): Promise<
     LeanDocument<VerifierDocument>[]
@@ -37,19 +37,30 @@ export const verifyQuote = async (
             quote,
         });
 
-        const responseFrmVerifier = response.data.data;
+        const verifierSignature = response.data.data.signature;
+
+        const quoteHash = await quoteToEIP712Hash(quote);
+
+        const addressFromSignature = verifyMessage(
+            quoteHash,
+            verifierSignature
+        );
+
         console.log({
-            responseFrmVerifier,
+            verifierAddress,
+            addressFromSignature,
+            verifierSignature,
         });
 
-        return responseFrmVerifier.signature;
-        // const addressFromSignature = verifyMessage(quoteHash, signature);
-        // if (
-        //     addressFromSignature.toLowerCase() !== verifierAddress.toLowerCase()
-        // )
-        //     throw new Error(
-        //         `expected signature from ${verifierAddress}, got one by ${addressFromSignature}`
-        //     );
+        if (
+            addressFromSignature.toLowerCase() !== verifierAddress.toLowerCase()
+        ) {
+            throw new Error(
+                `expected signature from ${verifierAddress}, got one by ${addressFromSignature}`
+            );
+        }
+
+        return verifierSignature;
     } finally {
         clearTimeout(timeout);
     }

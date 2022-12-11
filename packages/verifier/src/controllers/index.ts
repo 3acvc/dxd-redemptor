@@ -1,18 +1,15 @@
-import { Provider } from "@ethersproject/abstract-provider";
 import { badRequest } from "@hapi/boom";
-import { Wallet } from "@ethersproject/wallet";
+import { verifyMessage, Wallet } from "@ethersproject/wallet";
 
 import {
-    Amount,
     ChainId,
-    DXD,
-    quote,
-    Token,
+    getQuote,
     signQuote,
+    quoteToEIP712Hash,
 } from "dxd-redemptor-oracle";
 
 import { IVerifyAndSignOracleAggreagatorMessageRequest } from "./types";
-import { JsonRpcProvider } from "@ethersproject/providers";
+import { JsonRpcProvider, Provider } from "@ethersproject/providers";
 import { getRequiredEnv } from "../utils/env";
 
 const providerList: Record<ChainId, Provider> = {
@@ -28,6 +25,7 @@ const verifyingContract = getRequiredEnv("REDEMPTOR_ADDRESS");
 
 /**
  * Verifies and signs a message from the oracle aggregator
+ * @param req The request object
  */
 export async function verifyAndSignOracleAggreagatorMessageController(
     req: IVerifyAndSignOracleAggreagatorMessageRequest
@@ -38,47 +36,38 @@ export async function verifyAndSignOracleAggreagatorMessageController(
 }> {
     // get all signers from the database and then compare them agaisnt the redemer contract
     try {
-        const { blockNumber, message: aggregatorQuote } = req.payload;
-
-        const responseBody = {
-            data: {
-                signature: "",
-            },
-        };
-
-        const redeemedToken = new Token(
-            ChainId.ETHEREUM,
-            aggregatorQuote.redeemedToken,
-            // TODO: FETCH TOKEN ON-CHAIN
-            18,
-            "SYMBOL"
-        );
-        const redeemedDXD = Amount.fromRawAmount(
-            DXD[ChainId.ETHEREUM],
-            aggregatorQuote.redeemedDXD
-        );
-
+        const { blockNumber, quote: aggregatorQuote } = req.payload;
         // For value,s verify that the message is correct
-        const verifierQuote = await quote(
+        const verifierQuote = await getQuote(
             blockNumber as Record<ChainId, number>,
-            redeemedToken,
-            redeemedDXD,
+            aggregatorQuote.redeemedToken,
+            aggregatorQuote.redeemedDXD,
             providerList
         );
 
         // Verify that the message is correct
-        if (
-            aggregatorQuote.circulatingDXDSupply !==
-            verifierQuote.circulatingDXDSupply
-        ) {
-            throw badRequest("Message is not correct");
+        const aggregatorQuoteHash = quoteToEIP712Hash(aggregatorQuote);
+        const verifierQuoteHash = quoteToEIP712Hash(verifierQuote);
+
+        console.log({
+            aggregatorQuoteHash,
+            verifierQuoteHash,
+        });
+
+        // Verify that the message is correct
+        if (aggregatorQuoteHash !== verifierQuoteHash) {
+            throw badRequest(`Aggregator does not match verifier's quote`);
         }
 
         // Construst the signer from the private key
         const signer = new Wallet(process.env.SIGNER_PRIVATE_KEY as string);
 
+        console.log({
+            signerAddress: signer.address,
+        });
+
         // When the message is correct, sign it and return the signature
-        responseBody.data.signature = await signQuote(
+        const signature = await signQuote(
             signer,
             {
                 verifyingContract,
@@ -87,7 +76,21 @@ export async function verifyAndSignOracleAggreagatorMessageController(
             aggregatorQuote
         );
 
-        return responseBody;
+        //
+        const signerFromSignature = await verifyMessage(
+            verifierQuoteHash,
+            signature
+        );
+
+        console.log({
+            signerFromSignature,
+        });
+
+        return {
+            data: {
+                signature,
+            },
+        };
     } catch (error) {
         console.error(error);
         // eslint-disable-next-line

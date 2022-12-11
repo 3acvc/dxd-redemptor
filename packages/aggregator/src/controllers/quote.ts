@@ -62,7 +62,12 @@ export async function handleQuote(
                         oracleQuote,
                         block
                     );
-                } catch (error) {
+                } catch (error: any) {
+                    console.log(error.response);
+                    // eslint-disable-next-line
+                    // @ts-ignore
+                    error = error?.response ? error?.response : error; // attempt to get the error from the response
+
                     console.error(
                         `verification failed for signer ${verifier.address} - reason:`,
                         error

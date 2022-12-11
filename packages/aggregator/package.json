@@ -7,7 +7,7 @@
         "clean": "rimraf ./dist",
         "test": "echo 'No tests yet, implement them'",
         "build": "pnpm clean && tsc",
-        "dev": "cross-env DEBUG=*,-nodemon:*,-eslint:*,-eslintrc:*,-typescript-eslint:*,-nodemon nodemon -x ts-node src/index.ts",
+        "dev": "cross-env DEBUG=*,-nodemon:*,-eslint:*,-eslintrc:*,-typescript-eslint:*,-nodemon,-follow-redirects nodemon -x ts-node src/index.ts",
         "lint": "prettier --check . !./dist !./.turbo && eslint \"./**!(dist|.turbo)/*+(.tsx|.ts)\"",
         "format": "prettier --write . !./dist !./.turbo && eslint --fix \"./**!(dist|.turbo)/*+(.tsx|.ts)\"",
         "start": "node dist/index.js"
