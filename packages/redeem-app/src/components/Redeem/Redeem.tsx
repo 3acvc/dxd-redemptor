@@ -47,8 +47,9 @@ export function Redeem() {
     const { signTypedDataAsync } = useSignTypedData();
 
     const onGetQuoteHandler = async () => {
+        // Clear previous quote
         getQuoteError && setGetQuoteError(null);
-
+        oracleQuoteResponse && setOracleQuoteResponse(null);
         setIsFetchingQuote(true);
 
         const dxdAmountWei = utils.parseEther(dxdAmount);
@@ -59,11 +60,26 @@ export function Redeem() {
             }
         )
             .then(async (response) => {
-                if (!response.ok) throw new Error("Quote not found");
-
-                const quoteJson = (await response.json()) as IQuoteResponse;
                 console.log(response);
-                setOracleQuoteResponse(quoteJson);
+
+                if (response.ok) {
+                    const quoteJson = (await response.json()) as IQuoteResponse;
+                    setOracleQuoteResponse(quoteJson);
+                } else {
+                    try {
+                        // Try to get the error message from the response
+                        const errorResponse = await response.json();
+                        setGetQuoteError(
+                            new Error(
+                                `Error getting quote: ${errorResponse.message}`
+                            )
+                        );
+                    } catch (error) {
+                        setGetQuoteError(
+                            new Error(`Error getting quote: Unknown error.`)
+                        );
+                    }
+                }
             })
             .catch((error) => {
                 console.log(error);
@@ -243,6 +259,11 @@ export function Redeem() {
                             </>
                         )}
                     </form>
+                    {getQuoteError && (
+                        <div>
+                            <p>{getQuoteError.message}</p>
+                        </div>
+                    )}
                     <WalletConnectButton />
                     <TransactionList transactions={transactionList} />
                 </InnerContainer>
