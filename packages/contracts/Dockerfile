@@ -1,7 +1,7 @@
 
-FROM node:18-alpine AS base
-RUN apk add --no-cache libc6-compat
-RUN apk update
+FROM node:18 AS base
+# install python3 and pip3
+RUN apt-get update && apt-get install -y python
 
 RUN npm i -g turbo
 
@@ -9,9 +9,8 @@ WORKDIR /app
 COPY . .
 RUN turbo prune --scope="dxd-redemptor-contracts" --docker
 
-FROM node:18-alpine AS installer
-RUN apk add --no-cache libc6-compat
-RUN apk update
+FROM node:18 AS installer
+RUN apt-get update && apt-get install -y python
 WORKDIR /app
 COPY --from=base /app/out/json/ /app/out/pnpm-lock.yaml ./
 RUN npm i -g pnpm
