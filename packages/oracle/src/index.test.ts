@@ -1,9 +1,6 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { quote } from ".";
+import { getQuote } from ".";
 import { ChainId } from "./constants";
-import { Amount } from "./entities/amount";
-import { DXD, WETH } from "./entities/token";
-import { Currency } from "./entities/currency";
 
 describe("quote", () => {
     let providerList: Record<ChainId, JsonRpcProvider>;
@@ -27,31 +24,29 @@ describe("quote", () => {
     });
 
     test("works correctly", async () => {
-        // redeem 10 dxd for weth
-        const redeemedToken = WETH[ChainId.ETHEREUM];
-        const redeemedDXD = new Amount(DXD[ChainId.ETHEREUM], 10);
-        const oracleQuote = await quote(
+        const tokenAddr = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+
+        const oracleQuote = await getQuote(
             blockList,
-            redeemedToken,
-            redeemedDXD,
+            tokenAddr,
+            (10 * 10 ** 18).toString(),
             providerList
         );
         console.log(oracleQuote);
+        expect(oracleQuote).toBeDefined();
+        expect(oracleQuote.redeemedToken).toEqual(tokenAddr);
     });
 
     test("should work with ETH", async () => {
-        // redeem 10 dxd for weth
-        const redeemedToken = Currency.ETH;
-        const redeemedDXD = new Amount(DXD[ChainId.ETHEREUM], 10);
-        const oracleQuote = await quote(
+        const tokenAddr = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+
+        const oracleQuote = await getQuote(
             blockList,
-            redeemedToken,
-            redeemedDXD,
+            tokenAddr,
+            (10 * 10 ** 18).toString(),
             providerList
         );
         expect(oracleQuote).toBeDefined();
-        expect(oracleQuote.redeemedToken).toEqual(
-            "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
-        );
+        expect(oracleQuote.redeemedToken).toEqual(tokenAddr);
     });
 });
