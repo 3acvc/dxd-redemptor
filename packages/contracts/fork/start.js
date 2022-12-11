@@ -24,6 +24,8 @@ if (!forkUrl) {
     process.exit(0);
 }
 
+const DOCKER = process.env.DOCKER === "true";
+
 const spinner = ora();
 
 const clearConsole = () => {
@@ -58,12 +60,14 @@ try {
     });
     spinner.succeed(`${chalk.cyan("Ganache")} started`);
 
-    // build contracts
-    spinner.start(`Building ${chalk.cyan("contracts")}`);
-    process.chdir(`${__dirname}/../../`);
-    execSync("forge build");
-    process.chdir(__dirname);
-    spinner.succeed(`${chalk.cyan("Contracts")} built`);
+    // build contracts (if not in docker)
+    if (!DOCKER) {
+        spinner.start(`Building ${chalk.cyan("contracts")}`);
+        process.chdir(`${__dirname}/../../`);
+        execSync("forge build");
+        process.chdir(__dirname);
+        spinner.succeed(`${chalk.cyan("Contracts")} built`);
+    }
 
     // deploy contracts
     spinner.start(`Deploying ${chalk.cyan("redemptor")}`);
@@ -115,12 +119,14 @@ try {
     console.log(chalk.cyan("Contract addresses:"));
     console.log();
     console.log("  Redemptor:", contract.address);
-    console.log();
-    console.log(
-        chalk.yellow(
-            "Use the interaction helper to interact with the fork and redemptor contract"
-        )
-    );
+    if (!DOCKER) {
+        console.log();
+        console.log(
+            chalk.yellow(
+                "Use the interaction helper to interact with the fork and redemptor contract"
+            )
+        );
+    }
 } catch (error) {
     spinner.fail(chalk.red("Could not setup local chain"));
     console.log();

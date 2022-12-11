@@ -25,8 +25,9 @@
         "SENTRY_DSN",
         "MONGO_URI",
         "MONGO_DEBUG",
-        "JSON_RPC_PROVIDER_GNOSIS",
-        "JSON_RPC_PROVIDER_ETHEREUM",
-        "REDEMPTOR_ADDRESS"
+        "GNOSIS_RPC_ENDPOINT",
+        "ETHEREUM_RPC_ENDPOINT",
+        "REDEMPTOR_ADDRESS",
+        "DOCKER"
     ]
 }

@@ -22,10 +22,10 @@ interface QuoteResponse {
 
 const providerList: Record<ChainId, Provider> = {
     [ChainId.ETHEREUM]: new JsonRpcProvider(
-        getRequiredEnv("JSON_RPC_PROVIDER_ETHEREUM")
+        getRequiredEnv("ETHEREUM_RPC_ENDPOINT")
     ),
     [ChainId.GNOSIS]: new JsonRpcProvider(
-        getRequiredEnv("JSON_RPC_PROVIDER_GNOSIS")
+        getRequiredEnv("ETHEREUM_RPC_ENDPOINT")
     ),
 };
 
@@ -62,7 +62,7 @@ export async function handleQuote(
                         oracleQuote,
                         block
                     );
-                } catch (error: any) {
+                } catch (error) {
                     console.log(error.response);
                     // eslint-disable-next-line
                     // @ts-ignore
