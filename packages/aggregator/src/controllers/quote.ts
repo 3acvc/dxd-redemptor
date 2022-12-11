@@ -9,7 +9,6 @@ import {
     Amount,
 } from "dxd-redemptor-oracle";
 import { getVerifiers, verifyQuote } from "../utils/verifier";
-import { quoteToEIP712Hash } from "../utils/signing";
 import { getRedemptor } from "../utils/redemptor";
 import { JsonRpcProvider, Provider } from "@ethersproject/providers";
 import { getRequiredEnv } from "../utils/env";

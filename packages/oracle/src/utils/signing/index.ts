@@ -1,6 +1,6 @@
 import { defaultAbiCoder } from "@ethersproject/abi";
 import { keccak256 } from "@ethersproject/solidity";
-import { Quote } from "dxd-redemptor-oracle";
+import { Quote } from "../../types";
 
 const TYPE_HASH = keccak256(
     ["string"],
@@ -9,7 +9,12 @@ const TYPE_HASH = keccak256(
     ]
 );
 
-export const quoteToEIP712Hash = (quote: Quote): string => {
+/**
+ * Hashes a quote
+ * @param quote the quote to hash
+ * @returns the hash of the quote
+ */
+export function quoteToEIP712Hash(quote: Quote): string {
     return keccak256(
         ["string"],
         [
@@ -35,4 +40,4 @@ export const quoteToEIP712Hash = (quote: Quote): string => {
             ),
         ]
     );
-};
+}

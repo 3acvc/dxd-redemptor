@@ -9,6 +9,7 @@ import { Amount } from "./entities/amount";
 import { Currency } from "./entities/currency";
 import {
     DAI,
+    DXD,
     ENS,
     GNO,
     LUSD,
@@ -30,28 +31,57 @@ import {
 } from "./utils/balances";
 import { getDXDCirculatingSupply } from "./utils/dxd";
 import { getUSDPrice, getUSDValue } from "./utils/pricing";
+export { quoteToEIP712Hash } from "./utils/signing";
 
 export * from "./types";
 export { ChainId } from "./constants";
 export * from "./entities";
 
 /**
+ * Returns the token for a given address
+ * @param currenyAddress - address of the token
+ */
+export function getCurrencyByAddress(currenyAddress: string) {
+    const addressLowercase = currenyAddress.toLowerCase();
+
+    switch (addressLowercase) {
+        case WETH[ChainId.ETHEREUM].address.toLowerCase():
+            return Token.getNativeWrapper(ChainId.ETHEREUM);
+        case USDC[ChainId.ETHEREUM].address.toLowerCase():
+            return USDC[ChainId.ETHEREUM];
+        case DAI.address.toLowerCase():
+            return DAI;
+        case Currency.ETH.address.toLowerCase():
+            return Currency.ETH;
+        default:
+            throw new Error(`Unsupported token address: ${currenyAddress}`);
+    }
+}
+
+/**
  *
  * @param block - block number for each chain
- * @param redeemedToken - token to redeem
- * @param redeemedDxd - amount of DXD to redeem
+ * @param redeemedTokenAddress - token address to redeem DXD for. Valid tokens are ETH, WETH, USDC, DAI
+ * @param redeemedDxdWeiAmount - amount of DXD to redeem in wei
  * @param providerList - a list of providers for each chain
  * @returns
  */
-export async function quote(
+export async function getQuote(
     block: Record<ChainId, number>,
-    redeemedToken: Currency,
-    redeemedDxd: Amount<Token>,
+    redeemedTokenAddress: string,
+    redeemedDxdWeiAmount: string,
     providerList: Record<ChainId, Provider>
 ): Promise<Quote> {
     const circulatingDXDSupply = await getDXDCirculatingSupply(
         block,
         providerList
+    );
+
+    // Reconstruct the redeemed token and DXD amount
+    const redeemedToken = getCurrencyByAddress(redeemedTokenAddress);
+    const redeemedDxd = Amount.fromRawAmount(
+        DXD[ChainId.ETHEREUM],
+        redeemedDxdWeiAmount
     );
 
     const tokenBalances = await getTokenBalancesAtBlock(
@@ -135,7 +165,8 @@ export function signQuote(
         {
             name: "DXD redemptor",
             version: "1",
-            ...domain,
+            chainId: 1,
+            verifyingContract: domain.verifyingContract,
         },
         {
             oracleMessage: [
