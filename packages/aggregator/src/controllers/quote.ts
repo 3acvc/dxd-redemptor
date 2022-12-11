@@ -1,13 +1,6 @@
 import { Request } from "@hapi/hapi";
 import { badRequest } from "@hapi/boom";
-import {
-    ChainId,
-    Quote,
-    quote,
-    Token,
-    DXD,
-    Amount,
-} from "dxd-redemptor-oracle";
+import { ChainId, getQuote, Quote } from "dxd-redemptor-oracle";
 import { getVerifiers, verifyQuote } from "../utils/verifier";
 import { getRedemptor } from "../utils/redemptor";
 import { JsonRpcProvider, Provider } from "@ethersproject/providers";
@@ -41,8 +34,8 @@ export async function handleQuote(
 ): Promise<QuoteResponse> {
     try {
         const {
-            redeemedDXD: rawRedeemedDXD,
-            redeemedToken: rawRedeemedToken,
+            redeemedDXD: rawRedeemedDXDAmount,
+            redeemedToken: rawRedeemedTokenAddress,
         } = request.query;
         const block: Record<ChainId, number> = {
             [ChainId.ETHEREUM]:
@@ -51,22 +44,13 @@ export async function handleQuote(
                 (await providerList[ChainId.GNOSIS].getBlockNumber()) - 10,
         };
 
-        const redeemedToken = new Token(
-            ChainId.ETHEREUM,
-            rawRedeemedToken,
-            18,
-            "SYMBOL"
-        );
-        const redeemedDXD = Amount.fromRawAmount(
-            DXD[ChainId.ETHEREUM],
-            rawRedeemedDXD
-        );
-        const oracleQuote = await quote(
+        const oracleQuote = await getQuote(
             block,
-            redeemedToken,
-            redeemedDXD,
+            rawRedeemedTokenAddress,
+            rawRedeemedDXDAmount,
             providerList
         );
+
         const verifiers = await getVerifiers();
 
         const allSignatures = await Promise.all(
@@ -113,8 +97,8 @@ export async function handleQuote(
             (totalRegisteredSigners * signersThreshold) / 10_000
         );
         // TODO: is bad request appropriate here?
-        // if (validSignatures.length < minimumSigners)
-        //     throw badRequest("Not enough signatures");
+        if (validSignatures.length < minimumSigners)
+            throw badRequest("Not enough signatures");
 
         return { quote: oracleQuote, signatures: validSignatures };
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

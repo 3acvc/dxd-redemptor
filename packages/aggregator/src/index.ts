@@ -108,21 +108,20 @@ const main = async () => {
         },
     ]);
 
-    console.log("Reigstering default signer");
+    if (!production) {
+        const address = "0xD51d4b680Cd89E834413c48fa6EE2c59863B738d";
+        console.log("Reigstering default signer");
 
-    const defaultVerifier = await VerifierModel.findOne({
-        address: "0xD51d4b680Cd89E834413c48fa6EE2c59863B738d",
-    });
-
-    console.log({
-        defaultVerifier,
-    });
-
-    if (!defaultVerifier) {
-        await new VerifierModel({
-            address: "0xD51d4b680Cd89E834413c48fa6EE2c59863B738d",
-            endpoint: "http://localhost:4001",
-        }).save();
+        await VerifierModel.findOneAndUpdate(
+            {
+                address,
+            },
+            {
+                address,
+                endpoint: "http://localhost:4001",
+            },
+            { upsert: true }
+        );
 
         console.log("Default signer registered");
     }
