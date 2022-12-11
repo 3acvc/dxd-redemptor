@@ -62,7 +62,8 @@ export async function handleQuote(
                         oracleQuote,
                         block
                     );
-                } catch (error) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                } catch (error: any) {
                     console.log(error.response);
                     // eslint-disable-next-line
                     // @ts-ignore
@@ -107,7 +108,7 @@ export async function handleQuote(
 
         return { quote: oracleQuote, signatures: validSignatures };
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error) {
+    } catch (error: any) {
         console.error(error);
         // eslint-disable-next-line
         // @ts-ignore
