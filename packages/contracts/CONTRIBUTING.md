@@ -59,6 +59,39 @@ forge script --broadcast --slow --ledger --fork-url $RPC_ENDPOINT --sig 'run(add
 forge script --broadcast --slow --trezor --fork-url $RPC_ENDPOINT --sig 'run(address[])' ./scripts/Deploy.s.sol $INITIAL_SIGNERS
 ```
 
+### Getting an oracle message hash
+
+In order to get an oracle message hash you can go ahead and create a `.env` file exporting the
+following env variables:
+
+```
+export REDEEMED_DXD=10000000000000
+export CIRCULATING_DXD_SUPPLY=10000000000000000
+export REDEEMED_TOKEN=0x0000000000000000000000000000000000000000
+export REDEEMED_TOKEN_USD_PRICE=10000000000000000000000
+export REDEEMED_AMOUNT=10000000000000000000000
+export COLLATERAL_USD_VALUE=10000000000000000
+```
+
+brief explainer of the env variables:
+
+- `REDEEMED_DXD`: the amount of DXD the user wants to redeem.
+- `CIRCULATING_DXD_SUPPLY`: the current circulating amount of DXD.
+- `REDEEMED_TOKEN`: the token the redeemer wants to redeem DXD for.
+- `REDEEMED_TOKEN_USD_PRICE`: the current USD price of `REDEEMED_TOKEN`.
+- `REDEEMED_AMOUNT`: the amount of `REDEEMED_TOKEN` that the user can redeem according to current
+  market conditions.
+- `COLLATERAL_USD_VALUE`: the value of the "collateral" backing the circulating DXD (for example 70%
+  of NAV).
+
+Once you have the file ready you can go ahead and locally load the env variables by executing
+`source .env`. After doing that, you can finally execute the following command to get the hash
+according to the parameters you specified:
+
+```
+forge script --sig 'run((uint256,uint256,address,uint256,uint256,uint256))' ./scripts/GetOracleMessageHash.s.sol "($REDEEMED_DXD,$CIRCULATING_DXD_SUPPLY,$REDEEMED_TOKEN,$REDEEMED_TOKEN_USD_PRICE,$REDEEMED_AMOUNT,$COLLATERAL_USD_VALUE)"
+```
+
 ### Addresses
 
 "Official" deployments and addresses will be tracked in the `.addresses.json` file in the package
