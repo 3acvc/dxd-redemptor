@@ -2,7 +2,7 @@ import { Wallet } from "@ethersproject/wallet";
 import { signQuote, verifyQuoteSignature } from ".";
 import { Quote } from "../types";
 
-describe.only("sign quote", () => {
+describe("sign quote", () => {
     test("should work when recovering after signature", async () => {
         const redemptorAddress = Wallet.createRandom().address;
         const signer = Wallet.createRandom();
