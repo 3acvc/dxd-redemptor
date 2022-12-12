@@ -71,7 +71,7 @@ contract Redemptor is IRedemptor {
                 keccak256("DXD redemptor"),
                 keccak256("1"),
                 uint256(1),
-                address(0)
+                address(this)
             )
         );
         signersThreshold = _signersThreshold;
