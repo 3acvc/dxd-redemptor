@@ -14,10 +14,10 @@ import { getRequiredEnv } from "../utils/env";
 
 const providerList: Record<ChainId, Provider> = {
     [ChainId.ETHEREUM]: new JsonRpcProvider(
-        getRequiredEnv("JSON_RPC_PROVIDER_ETHEREUM")
+        getRequiredEnv("ETHEREUM_RPC_ENDPOINT")
     ),
     [ChainId.GNOSIS]: new JsonRpcProvider(
-        getRequiredEnv("JSON_RPC_PROVIDER_GNOSIS")
+        getRequiredEnv("GNOSIS_RPC_ENDPOINT")
     ),
 };
 

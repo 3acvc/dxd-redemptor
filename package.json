@@ -21,7 +21,7 @@
         "lint": "turbo run lint",
         "lint:commit-message": "commitlint -e",
         "format": "turbo run format",
-        "prepare": "husky install"
+        "husky": "husky install"
     },
     "devDependencies": {
         "@commitlint/cli": "^17.0.3",
