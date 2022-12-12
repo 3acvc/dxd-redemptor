@@ -1,0 +1,46 @@
+version: "3.9"
+services:
+  db:
+    image: mongo:5.0.7
+    container_name: db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: 3ac
+      MONGO_INITDB_ROOT_PASSWORD: 3ac
+    ports:
+      - "27017:27017"
+    profiles:
+      - aggregator
+      - full
+  contracts:
+    container_name: contracts
+    build:
+      context: .
+      dockerfile: ./packages/contracts/Dockerfile
+    ports:
+      - "8545:8545"
+    environment:
+      FORK_RPC_ENDPOINT: $FORK_RPC_ENDPOINT
+    profiles:
+      - contracts
+      - aggregator
+      - full
+  aggregator:
+    container_name: aggregator
+    build:
+      context: .
+      dockerfile: ./packages/aggregator/Dockerfile
+    ports:
+      - "$SERVER_PORT:$SERVER_PORT"
+    depends_on:
+      - "db"
+      - "contracts"
+    environment:
+      MONGO_URI: $MONGO_URI
+      SERVER_HOST: $SERVER_HOST
+      SERVER_PORT: $SERVER_PORT
+      ETHEREUM_RPC_ENDPOINT: $ETHEREUM_RPC_ENDPOINT
+      GNOSIS_RPC_ENDPOINT: $GNOSIS_RPC_ENDPOINT
+      REDEMPTOR_ADDRESS: $REDEMPTOR_ADDRESS
+    profiles:
+      - aggregator
+      - full

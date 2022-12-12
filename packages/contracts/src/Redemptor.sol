@@ -6,7 +6,7 @@ import {IERC20} from "oz/token/ERC20/IERC20.sol";
 import {SafeERC20} from "oz/token/ERC20/utils/SafeERC20.sol";
 import {IDXD} from "src/interfaces/IDXD.sol";
 import {IWETH} from "src/interfaces/IWETH.sol";
-import {IRedemptor} from "src/interfaces/IRedemptor.sol";
+import {IRedemptor, OracleMessage} from "src/interfaces/IRedemptor.sol";
 
 // errors
 error InvalidSigner();
@@ -16,16 +16,7 @@ error SignerNotAdded();
 error SignerAlreadyAdded();
 error Forbidden();
 error ETHTransferFailed();
-
-// types
-struct OracleMessage {
-    uint256 redeemedDXD;
-    uint256 circulatingDXDSupply;
-    address redeemedToken;
-    uint256 redeemedTokenUSDPrice;
-    uint256 redeemedAmount;
-    uint256 collateralUSDValue;
-}
+error NoSigners();
 
 // constants
 uint256 constant MAX_BPS = 10_000;
@@ -207,6 +198,7 @@ contract Redemptor is IRedemptor {
         view
         returns (uint256)
     {
+        if (_totalSigners == 0) revert NoSigners();
         unchecked {
             uint256 _numerator = _totalSigners * signersThreshold; // gas optimization
             uint256 _minimum = _numerator / MAX_BPS;

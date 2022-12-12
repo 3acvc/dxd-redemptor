@@ -21,6 +21,10 @@ jobs:
         with:
           node-version: 18
           cache: "pnpm"
+      - name: Setup Foundry Toolchain
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
       - name: Install dependencies
         run: pnpm i
       - name: Build
