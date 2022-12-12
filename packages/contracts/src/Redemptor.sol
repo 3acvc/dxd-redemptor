@@ -68,10 +68,10 @@ contract Redemptor is IRedemptor {
                 keccak256(
                     "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
                 ),
-                keccak256(bytes("DXD redemptor")),
-                keccak256(bytes("1")),
+                keccak256("DXD redemptor"),
+                keccak256("1"),
                 uint256(1),
-                address(this)
+                address(0)
             )
         );
         signersThreshold = _signersThreshold;
