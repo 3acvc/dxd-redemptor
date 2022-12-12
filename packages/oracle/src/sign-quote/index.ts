@@ -2,6 +2,7 @@ import { defaultAbiCoder } from "@ethersproject/abi";
 import { hexConcat, joinSignature } from "@ethersproject/bytes";
 import { keccak256 } from "@ethersproject/solidity";
 import type { Wallet } from "ethers";
+import { recoverAddress } from "ethers/lib/utils";
 import {
     DOMAIN_SEPARATOR_NAME,
     DOMAIN_SEPARATOR_VERSION,
@@ -60,4 +61,20 @@ export function signQuote(
 ): string {
     const digest = quoteEIP712Digest(quote, redemptorAddress);
     return joinSignature(signer._signingKey().signDigest(digest));
+}
+
+/**
+ * Verifies a quote signatures and returns the signer.
+ * @param quote The original signed quote.
+ * @param redemptorAddress The address of the redemptor contract. This is the `verifyingContract` in the context of the EIP712 domain.
+ * @param signature The signature to verify and to recover the signer from.
+ * @returns The quote's signer.
+ */
+export function verifyQuoteSignature(
+    quote: Quote,
+    redemptorAddress: string,
+    signature: string
+): string {
+    const digest = quoteEIP712Digest(quote, redemptorAddress);
+    return recoverAddress(digest, signature);
 }

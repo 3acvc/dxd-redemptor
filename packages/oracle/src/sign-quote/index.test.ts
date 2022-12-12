@@ -1,6 +1,5 @@
 import { Wallet } from "@ethersproject/wallet";
-import { recoverAddress } from "@ethersproject/transactions";
-import { quoteEIP712Digest, signQuote } from ".";
+import { signQuote, verifyQuoteSignature } from ".";
 import { Quote } from "../types";
 
 describe.only("sign quote", () => {
@@ -15,8 +14,9 @@ describe.only("sign quote", () => {
             redeemedAmount: "10000000000000000000000",
             collateralUSDValue: "10000000000000000",
         };
-        const digest = quoteEIP712Digest(quote, redemptorAddress);
         const signature = signQuote(signer, quote, redemptorAddress);
-        expect(recoverAddress(digest, signature)).toBe(signer.address);
+        expect(verifyQuoteSignature(quote, redemptorAddress, signature)).toBe(
+            signer.address
+        );
     });
 });
