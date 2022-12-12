@@ -24,6 +24,7 @@ interface IRedemptor {
     function redeem(
         OracleMessage calldata _oracleMessage,
         bytes[] calldata _signatures,
+        uint256 _permitNonce,
         uint256 _permitExpiry,
         uint8 _permitV,
         bytes32 _permitR,

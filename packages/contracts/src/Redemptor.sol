@@ -108,6 +108,7 @@ contract Redemptor is IRedemptor {
     function redeem(
         OracleMessage calldata _oracleMessage,
         bytes[] calldata _signatures,
+        uint256 _permitNonce,
         uint256 _permitExpiry,
         uint8 _permitV,
         bytes32 _permitR,
@@ -130,8 +131,7 @@ contract Redemptor is IRedemptor {
         IDXD(DXD_ADDRESS).permit(
             msg.sender,
             address(this),
-            // TODO: investigate this nonce param, is it ok if it's constant 1?
-            1,
+            _permitNonce,
             _permitExpiry,
             true,
             _permitV,
