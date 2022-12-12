@@ -25,7 +25,7 @@ const providerList: Record<ChainId, Provider> = {
         getRequiredEnv("ETHEREUM_RPC_ENDPOINT")
     ),
     [ChainId.GNOSIS]: new JsonRpcProvider(
-        getRequiredEnv("ETHEREUM_RPC_ENDPOINT")
+        getRequiredEnv("GNOSIS_RPC_ENDPOINT")
     ),
 };
 
