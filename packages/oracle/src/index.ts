@@ -31,6 +31,8 @@ export { quoteToEIP712Hash } from "./utils/signing";
 export * from "./types";
 export { ChainId } from "./constants";
 export * from "./entities";
+export { hashQuote } from "./hash-quote";
+export { signQuote, verifyQuoteSignature } from "./sign-quote";
 
 /**
  * Returns the token for a given address
