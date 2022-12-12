@@ -91,10 +91,9 @@ export const getUSDValue = async (
         })
         .join("\n")}\n }`;
 
-    const response =
-        await UNISWAP_V3_SUBGRAPH_CLIENT.request<UniswapV3SubgraphResponse>(
-            query
-        );
+    const response = await UNISWAP_V3_SUBGRAPH_CLIENT.request<
+        UniswapV3SubgraphResponse
+    >(query);
 
     const priceOfPriceableToken: {
         [priceableTokenSymbol: string]: Amount<Token>;
@@ -147,10 +146,17 @@ export const getUSDPrice = async (
     const mainnetUsdc = USDC[ChainId.ETHEREUM];
 
     const priceableTokenSymbol = priceableToken.symbol;
+
+    // USDC is always 1 USDC
+    if (priceableToken.equals(mainnetUsdc)) {
+        return new Amount(Currency.USD, 1);
+    }
+
     const [token0, token1] = mainnetUsdc.sort(priceableToken);
-    const response =
-        await UNISWAP_V3_SUBGRAPH_CLIENT.request<UniswapV3SubgraphResponse>(
-            gql`query { ${priceableTokenSymbol}: pools(
+    const response = await UNISWAP_V3_SUBGRAPH_CLIENT.request<
+        UniswapV3SubgraphResponse
+    >(
+        gql`query { ${priceableTokenSymbol}: pools(
                 where: { token0: "${token0.address.toLowerCase()}", token1: "${token1.address.toLowerCase()}" }
                 block: { number: ${block} }
                 orderBy: liquidity
@@ -161,7 +167,7 @@ export const getUSDPrice = async (
                     token0.equals(mainnetUsdc) ? "token0Price" : "token1Price"
                 }
             }}`
-        );
+    );
 
     const wrappedPrices = response[priceableTokenSymbol];
     enforce(
