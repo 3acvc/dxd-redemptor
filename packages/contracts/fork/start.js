@@ -15,6 +15,9 @@ import {
     MNEMONIC,
     PORT,
     require,
+    USDC_MAINNET,
+    USDT_MAINNET,
+    WETH_MAINNET,
     __dirname,
 } from "./commons.js";
 
@@ -96,6 +99,20 @@ try {
         .connect(dxdaoAvatarSigner)
         .transfer(signer.address, parseUnits("10", 18));
 
+    // approve WETH, USDC, USDT, DAI, and DXD for the redemptor
+    for await (const tokenAddress of [
+        WETH_MAINNET,
+        USDC_MAINNET,
+        USDT_MAINNET,
+    ]) {
+        await new Contract(tokenAddress, erc20Abi)
+            .connect(signer)
+            .approve(
+                contract.address,
+                parseUnits("10000", tokenAddress === WETH_MAINNET ? 18 : 6)
+            )
+            .then((tx) => tx.wait());
+    }
     clearConsole();
 
     console.log(chalk.green("Local fork successfully set up!"));
