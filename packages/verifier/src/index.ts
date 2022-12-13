@@ -64,6 +64,7 @@ async function main() {
                         redeemedTokenUSDPrice: Joi.string().required(),
                         redeemedAmount: Joi.string().required(),
                         collateralUSDValue: Joi.string().required(),
+                        deadline: Joi.string().required(),
                     }),
                     blockNumber: Joi.object().keys({
                         "1": Joi.number().required(),

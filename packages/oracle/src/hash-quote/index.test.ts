@@ -9,12 +9,13 @@ import { hashQuote } from ".";
 // export REDEEMED_TOKEN_USD_PRICE=10000000000000000000000
 // export REDEEMED_AMOUNT=10000000000000000000000
 // export COLLATERAL_USD_VALUE=10000000000000000
+// export DEADLINE=20000000
 // ```
 //
 // detailed instructions in the `CONTRIBUTING.md` file
 
 const EXPECTED_HASH =
-    "0x36ec084e57ad076f1290bff1d1836d25c26bc68dfb541cc6dad92290baa63959";
+    "0x3314674b14d6dbfa6c24f923bfc3c729751a18af0ab67fccbab4a6d30dfd4306";
 
 describe("hash quote", () => {
     test("should work with a precomputed hash", async () => {
@@ -26,6 +27,7 @@ describe("hash quote", () => {
                 redeemedTokenUSDPrice: "10000000000000000000000",
                 redeemedAmount: "10000000000000000000000",
                 collateralUSDValue: "10000000000000000",
+                deadline: "20000000",
             })
         ).toBe(EXPECTED_HASH);
     });

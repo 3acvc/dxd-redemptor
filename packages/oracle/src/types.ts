@@ -5,4 +5,5 @@ export interface Quote {
     redeemedTokenUSDPrice: string;
     redeemedAmount: string;
     collateralUSDValue: string;
+    deadline: string;
 }

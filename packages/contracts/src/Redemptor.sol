@@ -17,6 +17,7 @@ error SignerAlreadyAdded();
 error Forbidden();
 error ETHTransferFailed();
 error NoSigners();
+error ExpiredQuote();
 
 // constants
 uint256 constant MAX_BPS = 10_000;
@@ -31,7 +32,7 @@ address constant DXD_ADDRESS =
 address constant ETH = address(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
 
 bytes32 constant ORACLE_MESSAGE_TYPE_HASH = keccak256(
-    "OracleMessage(uint256 redeemedDXD,uint256 circulatingDXDSupply,address redeemedToken,uint256 redeemedTokenUSDPrice,uint256 redeemedAmount,uint256 collateralUSDValue)"
+    "OracleMessage(uint256 redeemedDXD,uint256 circulatingDXDSupply,address redeemedToken,uint256 redeemedTokenUSDPrice,uint256 redeemedAmount,uint256 collateralUSDValue,uint256 deadline)"
 );
 
 /// SPDX-License-Identifier: GPL-3.0-or-later
@@ -117,6 +118,10 @@ contract Redemptor is IRedemptor {
         uint256 _signaturesLength = _signatures.length;
         if (_signaturesLength < _minimumSigners(signersAmount)) {
             revert NotEnoughSignatures();
+        }
+
+        if (_oracleMessage.deadline < block.number) {
+            revert ExpiredQuote();
         }
 
         bytes32 _digest = ECDSA.toTypedDataHash(
@@ -207,22 +212,22 @@ contract Redemptor is IRedemptor {
         }
     }
 
-    function _oracleMessageHash(OracleMessage calldata _oracleMessage)
-        internal
-        pure
-        returns (bytes32)
-    {
-        return keccak256(
-            abi.encode(
-                ORACLE_MESSAGE_TYPE_HASH,
-                _oracleMessage.redeemedDXD,
-                _oracleMessage.circulatingDXDSupply,
-                _oracleMessage.redeemedToken,
-                _oracleMessage.redeemedTokenUSDPrice,
-                _oracleMessage.redeemedAmount,
-                _oracleMessage.collateralUSDValue
-            )
-        );
+    function _oracleMessageHash(
+        OracleMessage calldata _oracleMessage
+    ) internal pure returns (bytes32) {
+        return
+            keccak256(
+                abi.encode(
+                    ORACLE_MESSAGE_TYPE_HASH,
+                    _oracleMessage.redeemedDXD,
+                    _oracleMessage.circulatingDXDSupply,
+                    _oracleMessage.redeemedToken,
+                    _oracleMessage.redeemedTokenUSDPrice,
+                    _oracleMessage.redeemedAmount,
+                    _oracleMessage.collateralUSDValue,
+                    _oracleMessage.deadline
+                )
+            );
     }
 
     // solhint-disable-next-line no-empty-blocks

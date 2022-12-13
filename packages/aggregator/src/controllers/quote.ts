@@ -44,7 +44,7 @@ export async function handleQuote(
                 (await providerList[ChainId.GNOSIS].getBlockNumber()) - 10,
         };
 
-        const oracleQuote = await getQuote(
+        const aggregatorQuote = await getQuote(
             block,
             rawRedeemedTokenAddress,
             rawRedeemedDXDAmount,
@@ -59,7 +59,7 @@ export async function handleQuote(
                     return await verifyQuote(
                         verifier.address,
                         verifier.endpoint + "/verify",
-                        oracleQuote,
+                        aggregatorQuote,
                         block
                     );
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -106,7 +106,7 @@ export async function handleQuote(
         if (validSignatures.length < minimumSigners)
             throw badRequest("Not enough signatures");
 
-        return { quote: oracleQuote, signatures: validSignatures };
+        return { quote: aggregatorQuote, signatures: validSignatures };
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
         console.error(error);

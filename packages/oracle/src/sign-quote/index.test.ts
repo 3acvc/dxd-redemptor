@@ -13,6 +13,7 @@ describe("sign quote", () => {
             redeemedTokenUSDPrice: "10000000000000000000000",
             redeemedAmount: "10000000000000000000000",
             collateralUSDValue: "10000000000000000",
+            deadline: "200000000",
         };
         const signature = signQuote(signer, quote, redemptorAddress);
         expect(verifyQuoteSignature(quote, redemptorAddress, signature)).toBe(

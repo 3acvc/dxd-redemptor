@@ -8,6 +8,7 @@ struct OracleMessage {
     uint256 redeemedTokenUSDPrice;
     uint256 redeemedAmount;
     uint256 collateralUSDValue;
+    uint256 deadline;
 }
 
 /// SPDX-License-Identifier: GPL-3.0-or-later

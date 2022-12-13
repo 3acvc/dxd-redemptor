@@ -37,7 +37,7 @@ export const DXDAO_AVATAR_DXD_VESTING_ADDRESS =
 export const ORACLE_MESSAGE_TYPE_HASH = keccak256(
     ["string"],
     [
-        "OracleMessage(uint256 redeemedDXD,uint256 circulatingDXDSupply,address redeemedToken,uint256 redeemedTokenUSDPrice,uint256 redeemedAmount,uint256 collateralUSDValue)",
+        "OracleMessage(uint256 redeemedDXD,uint256 circulatingDXDSupply,address redeemedToken,uint256 redeemedTokenUSDPrice,uint256 redeemedAmount,uint256 collateralUSDValue,uint256 deadline)",
     ]
 );
 
