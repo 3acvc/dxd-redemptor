@@ -39,7 +39,7 @@ export function Redeem() {
     const [oracleQuoteResponse, setOracleQuoteResponse] =
         useState<IQuoteResponse | null>(null);
     const [isFetchingQuote, setIsFetchingQuote] = useState(false);
-    const [dxdAmount, setDXDAmount] = useState("");
+    const [dxdAmount, setDXDAmount] = useState("0");
     const [redeemToken, setRedeemToken] = useState<typeof tokenOptions[0]>(
         tokenOptions[0]
     );
@@ -50,6 +50,7 @@ export function Redeem() {
         // Clear previous quote
         getQuoteError && setGetQuoteError(null);
         oracleQuoteResponse && setOracleQuoteResponse(null);
+        if (dxdAmount.trim() === "") return;
         setIsFetchingQuote(true);
 
         const dxdAmountWei = utils.parseEther(dxdAmount);
@@ -207,12 +208,13 @@ export function Redeem() {
                                 type="number"
                                 value={dxdAmount}
                                 disabled={isFetchingQuote}
+                                pattern="^-?[0-9]\d*\.?\d*$"
                                 onChange={(e) => {
-                                    const dxdValInt = parseInt(e.target.value);
-                                    const value = Math.abs(dxdValInt);
-                                    setDXDAmount(
-                                        value.toString().replace("e", "")
+                                    const value = e.target.value.replace(
+                                        /-|e/gi,
+                                        ""
                                     );
+                                    setDXDAmount(value);
                                 }}
                             />
                         </FormGroup>
@@ -245,7 +247,11 @@ export function Redeem() {
                             <button
                                 type="button"
                                 onClick={onGetQuoteHandler}
-                                disabled={isFetchingQuote}
+                                disabled={
+                                    isFetchingQuote ||
+                                    dxdAmount.trim() === "" ||
+                                    dxdAmount === "0"
+                                }
                                 title="Get a quote for your DXD"
                             >
                                 Get Quote
