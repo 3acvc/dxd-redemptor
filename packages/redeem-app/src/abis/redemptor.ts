@@ -229,6 +229,11 @@ export const REDEMPTOR_ABI = [
             },
             {
                 internalType: "uint256",
+                name: "_permitNonce",
+                type: "uint256",
+            },
+            {
+                internalType: "uint256",
                 name: "_permitExpiry",
                 type: "uint256",
             },

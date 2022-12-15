@@ -111,18 +111,21 @@ export function Redeem() {
             const signer = provider.data;
             const holder = await signer.getAddress();
             const now = Math.floor(Date.now() / 1000) + 60 * 60 * 24; // 1 day
-            const expiry = BigNumber.from(now.toString());
-            const spender = contract.address;
+            const permitExpiry = BigNumber.from(now.toString());
+            const permitSpender = contract.address;
             const allowed = true;
-            const nonce = await tokenContract.nonces(holder);
-            const name = await tokenContract.name();
-            const version = await tokenContract.version();
+
+            const [permitNonce, permitName, permitVersion] = await Promise.all([
+                await tokenContract.nonces(holder),
+                await tokenContract.name(),
+                await tokenContract.version(),
+            ]);
 
             const permitSignature = utils.splitSignature(
                 await signTypedDataAsync({
                     domain: {
-                        name,
-                        version,
+                        name: permitName,
+                        version: permitVersion,
                         chainId: 1,
                         verifyingContract: tokenContract.address as any,
                     },
@@ -152,22 +155,29 @@ export function Redeem() {
                     },
                     value: {
                         holder: holder as any,
-                        spender: spender as any,
-                        nonce,
-                        expiry,
+                        spender: permitSpender as any,
+                        nonce: permitNonce,
+                        expiry: permitExpiry,
                         allowed,
                     },
                 })
             );
 
-            const redeemTx = await contract.redeem(
+            const unsignedRedeemTx = await contract.populateTransaction.redeem(
                 oracleQuoteResponse.quote,
                 oracleQuoteResponse.signatures,
-                expiry,
+                permitNonce,
+                permitExpiry,
                 permitSignature.v,
                 permitSignature.r,
                 permitSignature.s
             );
+
+            console.log({
+                unsignedRedeemTx,
+            });
+
+            const redeemTx = await signer.sendTransaction(unsignedRedeemTx);
 
             setTransactionList((prev) => {
                 // unique tx

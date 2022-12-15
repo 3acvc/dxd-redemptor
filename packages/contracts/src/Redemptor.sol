@@ -68,8 +68,8 @@ contract Redemptor is IRedemptor {
                 keccak256(
                     "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
                 ),
-                keccak256(bytes("DXD redemptor")),
-                keccak256(bytes("1")),
+                keccak256("DXD redemptor"),
+                keccak256("1"),
                 uint256(1),
                 address(this)
             )
@@ -108,6 +108,7 @@ contract Redemptor is IRedemptor {
     function redeem(
         OracleMessage calldata _oracleMessage,
         bytes[] calldata _signatures,
+        uint256 _permitNonce,
         uint256 _permitExpiry,
         uint8 _permitV,
         bytes32 _permitR,
@@ -130,8 +131,7 @@ contract Redemptor is IRedemptor {
         IDXD(DXD_ADDRESS).permit(
             msg.sender,
             address(this),
-            // TODO: investigate this nonce param, is it ok if it's constant 1?
-            1,
+            _permitNonce,
             _permitExpiry,
             true,
             _permitV,

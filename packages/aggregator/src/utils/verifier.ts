@@ -1,9 +1,8 @@
 import { LeanDocument } from "mongoose";
 import { VerifierModel, VerifierDocument } from "../models/verifier";
 import { getRedemptor } from "./redemptor";
-import { ChainId, Quote, quoteToEIP712Hash } from "dxd-redemptor-oracle";
+import { ChainId, Quote, verifyQuoteSignature } from "dxd-redemptor-oracle";
 import axios from "axios";
-import { verifyMessage } from "@ethersproject/wallet";
 
 export const getVerifiers = async (): Promise<
     LeanDocument<VerifierDocument>[]
@@ -39,18 +38,11 @@ export const verifyQuote = async (
 
         const verifierSignature = response.data.data.signature;
 
-        const quoteHash = await quoteToEIP712Hash(quote);
-
-        const addressFromSignature = verifyMessage(
-            quoteHash,
+        const addressFromSignature = verifyQuoteSignature(
+            quote,
+            getRedemptor().address,
             verifierSignature
         );
-
-        console.log({
-            verifierAddress,
-            addressFromSignature,
-            verifierSignature,
-        });
 
         if (
             addressFromSignature.toLowerCase() !== verifierAddress.toLowerCase()

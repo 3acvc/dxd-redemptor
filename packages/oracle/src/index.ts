@@ -1,9 +1,4 @@
 import type { Provider } from "@ethersproject/abstract-provider";
-import type {
-    TypedDataDomain,
-    TypedDataSigner,
-} from "@ethersproject/abstract-signer";
-import type { Wallet } from "ethers";
 import { ChainId, DXDAO_AVATAR } from "./constants";
 import { Amount } from "./entities/amount";
 import { Currency } from "./entities/currency";
@@ -36,6 +31,8 @@ export { quoteToEIP712Hash } from "./utils/signing";
 export * from "./types";
 export { ChainId } from "./constants";
 export * from "./entities";
+export { hashQuote } from "./hash-quote";
+export { signQuote, verifyQuoteSignature } from "./sign-quote";
 
 /**
  * Returns the token for a given address
@@ -146,38 +143,4 @@ export async function getQuote(
             .toRawAmount()
             .toString(),
     };
-}
-
-/**
- *
- * @param signer - signer to sign the quote
- * @param domain - domain to sign the quote. Must include chainId and verifyingContract
- * @param quote - quote to sign
- * @returns
- */
-export function signQuote(
-    signer: Wallet | TypedDataSigner,
-    domain: TypedDataDomain &
-        Required<Pick<TypedDataDomain, "chainId" | "verifyingContract">>,
-    quote: Quote
-): Promise<string> {
-    return signer._signTypedData(
-        {
-            name: "DXD redemptor",
-            version: "1",
-            chainId: 1,
-            verifyingContract: domain.verifyingContract,
-        },
-        {
-            oracleMessage: [
-                { name: "redeemedDXD", type: "uint256" },
-                { name: "circulatingDXDSupply", type: "uint256" },
-                { name: "redeemedToken", type: "address" },
-                { name: "redeemedTokenUSDPrice", type: "uint256" },
-                { name: "redeemedAmount", type: "uint256" },
-                { name: "collateralUSDValue", type: "uint256" },
-            ],
-        },
-        quote
-    );
 }

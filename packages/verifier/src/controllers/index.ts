@@ -1,5 +1,5 @@
 import { badRequest } from "@hapi/boom";
-import { verifyMessage, Wallet } from "@ethersproject/wallet";
+import { Wallet } from "@ethersproject/wallet";
 
 import {
     ChainId,
@@ -62,29 +62,12 @@ export async function verifyAndSignOracleAggreagatorMessageController(
         // Construst the signer from the private key
         const signer = new Wallet(process.env.SIGNER_PRIVATE_KEY as string);
 
-        console.log({
-            signerAddress: signer.address,
-        });
-
         // When the message is correct, sign it and return the signature
         const signature = await signQuote(
             signer,
-            {
-                verifyingContract,
-                chainId: ChainId.ETHEREUM,
-            },
-            aggregatorQuote
+            aggregatorQuote,
+            verifyingContract
         );
-
-        //
-        const signerFromSignature = await verifyMessage(
-            verifierQuoteHash,
-            signature
-        );
-
-        console.log({
-            signerFromSignature,
-        });
 
         return {
             data: {

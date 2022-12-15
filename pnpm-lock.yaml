@@ -136,10 +136,13 @@ importers:
       '@ethersproject/abstract-signer': ^5.7.0
       '@ethersproject/address': ^5.7.0
       '@ethersproject/bignumber': ^5.7.0
+      '@ethersproject/bytes': ^5.7.0
       '@ethersproject/contracts': ^5.7.0
       '@ethersproject/providers': ^5.7.2
       '@ethersproject/solidity': ^5.7.0
+      '@ethersproject/transactions': ^5.7.0
       '@ethersproject/units': ^5.7.0
+      '@ethersproject/wallet': ^5.7.0
       '@jest/globals': ^29.3.1
       '@typechain/ethers-v5': ^10.1.1
       '@types/jest': ^27.4.1
@@ -165,9 +168,11 @@ importers:
       '@ethersproject/abstract-signer': 5.7.0
       '@ethersproject/address': 5.7.0
       '@ethersproject/bignumber': 5.7.0
+      '@ethersproject/bytes': 5.7.0
       '@ethersproject/contracts': 5.7.0
       '@ethersproject/providers': 5.7.2
       '@ethersproject/solidity': 5.7.0
+      '@ethersproject/transactions': 5.7.0
       '@ethersproject/units': 5.7.0
       decimal.js-light: 2.5.1
       graphql-request: 5.0.0_graphql@16.6.0
@@ -176,6 +181,7 @@ importers:
       '@babel/core': 7.20.5
       '@babel/preset-env': 7.20.2_@babel+core@7.20.5
       '@babel/preset-typescript': 7.18.6_@babel+core@7.20.5
+      '@ethersproject/wallet': 5.7.0
       '@jest/globals': 29.3.1
       '@typechain/ethers-v5': 10.1.1_smufkffb6t7im2kajasb2dheve
       '@types/jest': 27.5.2
