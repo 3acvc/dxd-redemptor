@@ -115,13 +115,13 @@ contract Redemptor is IRedemptor {
         bytes32 _permitR,
         bytes32 _permitS
     ) external override {
+        if (_oracleMessage.deadline < block.number) {
+            revert ExpiredQuote();
+        }
+
         uint256 _signaturesLength = _signatures.length;
         if (_signaturesLength < _minimumSigners(signersAmount)) {
             revert NotEnoughSignatures();
-        }
-
-        if (_oracleMessage.deadline < block.number) {
-            revert ExpiredQuote();
         }
 
         bytes32 _digest = ECDSA.toTypedDataHash(
