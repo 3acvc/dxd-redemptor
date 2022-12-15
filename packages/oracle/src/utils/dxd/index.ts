@@ -56,18 +56,12 @@ export async function getDXDCirculatingSupply(
         "totalSupply",
         mainnetResults[0]
     )[0];
-    const mainnetAvatarBalance: BigNumber = ERC20_INTERFACE.decodeFunctionResult(
-        "balanceOf",
-        mainnetResults[1]
-    )[0];
-    const mainnetDXDContractBalance: BigNumber = ERC20_INTERFACE.decodeFunctionResult(
-        "balanceOf",
-        mainnetResults[2]
-    )[0];
-    const mainnetVestingContractBalance: BigNumber = ERC20_INTERFACE.decodeFunctionResult(
-        "balanceOf",
-        mainnetResults[3]
-    )[0];
+    const mainnetAvatarBalance: BigNumber =
+        ERC20_INTERFACE.decodeFunctionResult("balanceOf", mainnetResults[1])[0];
+    const mainnetDXDContractBalance: BigNumber =
+        ERC20_INTERFACE.decodeFunctionResult("balanceOf", mainnetResults[2])[0];
+    const mainnetVestingContractBalance: BigNumber =
+        ERC20_INTERFACE.decodeFunctionResult("balanceOf", mainnetResults[3])[0];
 
     const [, gnosisResults] = await multicallContract[
         ChainId.GNOSIS
@@ -90,10 +84,8 @@ export async function getDXDCirculatingSupply(
         "balanceOf",
         gnosisResults[0]
     )[0];
-    const gnosisDXDContractBalance: BigNumber = ERC20_INTERFACE.decodeFunctionResult(
-        "balanceOf",
-        gnosisResults[1]
-    )[0];
+    const gnosisDXDContractBalance: BigNumber =
+        ERC20_INTERFACE.decodeFunctionResult("balanceOf", gnosisResults[1])[0];
 
     return Amount.fromRawAmount(
         DXD[ChainId.ETHEREUM],

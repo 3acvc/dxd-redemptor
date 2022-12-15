@@ -212,22 +212,23 @@ contract Redemptor is IRedemptor {
         }
     }
 
-    function _oracleMessageHash(
-        OracleMessage calldata _oracleMessage
-    ) internal pure returns (bytes32) {
-        return
-            keccak256(
-                abi.encode(
-                    ORACLE_MESSAGE_TYPE_HASH,
-                    _oracleMessage.redeemedDXD,
-                    _oracleMessage.circulatingDXDSupply,
-                    _oracleMessage.redeemedToken,
-                    _oracleMessage.redeemedTokenUSDPrice,
-                    _oracleMessage.redeemedAmount,
-                    _oracleMessage.collateralUSDValue,
-                    _oracleMessage.deadline
-                )
-            );
+    function _oracleMessageHash(OracleMessage calldata _oracleMessage)
+        internal
+        pure
+        returns (bytes32)
+    {
+        return keccak256(
+            abi.encode(
+                ORACLE_MESSAGE_TYPE_HASH,
+                _oracleMessage.redeemedDXD,
+                _oracleMessage.circulatingDXDSupply,
+                _oracleMessage.redeemedToken,
+                _oracleMessage.redeemedTokenUSDPrice,
+                _oracleMessage.redeemedAmount,
+                _oracleMessage.collateralUSDValue,
+                _oracleMessage.deadline
+            )
+        );
     }
 
     // solhint-disable-next-line no-empty-blocks

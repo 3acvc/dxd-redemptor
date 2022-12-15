@@ -52,7 +52,8 @@ async function main() {
     server.route({
         method: "POST",
         path: "/verify",
-        handler: verifyAndSignOracleAggreagatorMessageController as HandlerDecorations,
+        handler:
+            verifyAndSignOracleAggreagatorMessageController as HandlerDecorations,
         options: {
             description: "Verify and sign a message from the Oracle Aggregator",
             validate: {

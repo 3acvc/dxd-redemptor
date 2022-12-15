@@ -58,8 +58,7 @@ const main = async () => {
             options: {
                 handler: handleRegister as HandlerDecorations,
                 description: "Registers a signer",
-                notes:
-                    "Registers a signer whitelisted on the redemptions contract",
+                notes: "Registers a signer whitelisted on the redemptions contract",
                 tags: ["api"],
                 validate: {
                     payload: Joi.object({
@@ -91,8 +90,7 @@ const main = async () => {
             options: {
                 handler: handleQuote as HandlerDecorations,
                 description: "Gets a redemption quote",
-                notes:
-                    "Computes and returns a signed and verified quote for a redemption",
+                notes: "Computes and returns a signed and verified quote for a redemption",
                 tags: ["api"],
                 validate: {
                     query: Joi.object({
