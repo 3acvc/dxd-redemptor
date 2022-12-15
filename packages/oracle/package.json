@@ -30,7 +30,8 @@
         "@ethersproject/units": "^5.7.0",
         "decimal.js-light": "^2.5.1",
         "graphql-request": "^5.0.0",
-        "memoizee": "^0.4.15"
+        "memoizee": "^0.4.15",
+        "mongoose": "^6.5.0"
     },
     "devDependencies": {
         "@babel/core": "^7.20.5",

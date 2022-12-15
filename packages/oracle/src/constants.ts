@@ -24,11 +24,28 @@ export const UNISWAP_V3_SUBGRAPH_CLIENT = new GraphQLClient(
     "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3"
 );
 
+export const SWAPR_SUBGRAPH_CLIENT: Readonly<Record<ChainId, GraphQLClient>> = {
+    [ChainId.ETHEREUM]: new GraphQLClient(
+        "https://api.thegraph.com/subgraphs/name/dxgraphs/swapr-mainnet-v2"
+    ),
+    [ChainId.GNOSIS]: new GraphQLClient(
+        "https://api.thegraph.com/subgraphs/name/dxgraphs/swapr-xdai-v2"
+    ),
+};
+
 export const ERC20_INTERFACE = new Interface(ERC20_ABI);
 
 export const DXDAO_AVATAR: Readonly<Record<ChainId, string>> = {
     [ChainId.ETHEREUM]: "0x519b70055af55A007110B4Ff99b0eA33071c720a",
     [ChainId.GNOSIS]: "0xe716ec63c5673b3a4732d22909b38d779fa47c3f",
+};
+
+/**
+ * DXswap relayer addresses. Same for all networks.
+ */
+export const DXSWAP_RELAYER: Readonly<Record<ChainId, string>> = {
+    [ChainId.ETHEREUM]: "0xc088e949b9643d5c47a188084579b8d19b1b1112",
+    [ChainId.GNOSIS]: "0x3921d59090810C1d52807cD8ca1Ea2289E1F89e6",
 };
 
 export const DXDAO_AVATAR_DXD_VESTING_ADDRESS =

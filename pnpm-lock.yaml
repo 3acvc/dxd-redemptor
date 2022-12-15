@@ -126,6 +126,83 @@ importers:
       '@typescript-eslint/parser': 5.45.1_77fvizpdb3y4icyeo2mf4eo7em
       typescript: 4.9.3
 
+  packages/indexer:
+    specifiers:
+      '@babel/core': ^7.20.5
+      '@babel/preset-env': ^7.18.6
+      '@babel/preset-typescript': ^7.18.6
+      '@ethersproject/abi': ^5.7.0
+      '@ethersproject/abstract-provider': ^5.7.0
+      '@ethersproject/abstract-signer': ^5.7.0
+      '@ethersproject/address': ^5.7.0
+      '@ethersproject/bignumber': ^5.7.0
+      '@ethersproject/bytes': ^5.7.0
+      '@ethersproject/contracts': ^5.7.0
+      '@ethersproject/providers': ^5.7.2
+      '@ethersproject/solidity': ^5.7.0
+      '@ethersproject/transactions': ^5.7.0
+      '@ethersproject/units': ^5.7.0
+      '@ethersproject/wallet': ^5.7.0
+      '@jest/globals': ^29.3.1
+      '@typechain/ethers-v5': ^10.1.1
+      '@types/jest': ^27.4.1
+      '@types/memoizee': ^0.4.8
+      '@types/mongoose': ^5.11.97
+      abitype: ^0.2.5
+      babel-jest: ^29.3.1
+      decimal.js-light: ^2.5.1
+      dotenv: ^16.0.1
+      ethers: ^5.7.2
+      graphql-request: ^5.0.0
+      jest: ^27.5.1
+      memoizee: ^0.4.15
+      mongoose: ^6.5.0
+      node-fetch: ^3.3.0
+      rimraf: ^3.0.2
+      ts-jest: ^27.1.4
+      tsconfig: workspace:*
+      tslib: ^2.4.1
+      typechain: ^8.1.1
+      typescript: ^4.7.4
+    dependencies:
+      '@ethersproject/abi': 5.7.0
+      '@ethersproject/abstract-provider': 5.7.0
+      '@ethersproject/abstract-signer': 5.7.0
+      '@ethersproject/address': 5.7.0
+      '@ethersproject/bignumber': 5.7.0
+      '@ethersproject/bytes': 5.7.0
+      '@ethersproject/contracts': 5.7.0
+      '@ethersproject/providers': 5.7.2
+      '@ethersproject/solidity': 5.7.0
+      '@ethersproject/transactions': 5.7.0
+      '@ethersproject/units': 5.7.0
+      '@types/mongoose': 5.11.97
+      decimal.js-light: 2.5.1
+      graphql-request: 5.0.0_graphql@16.6.0
+      memoizee: 0.4.15
+      mongoose: 6.8.0
+    devDependencies:
+      '@babel/core': 7.20.5
+      '@babel/preset-env': 7.20.2_@babel+core@7.20.5
+      '@babel/preset-typescript': 7.18.6_@babel+core@7.20.5
+      '@ethersproject/wallet': 5.7.0
+      '@jest/globals': 29.3.1
+      '@typechain/ethers-v5': 10.1.1_smufkffb6t7im2kajasb2dheve
+      '@types/jest': 27.5.2
+      '@types/memoizee': 0.4.8
+      abitype: 0.2.5_typescript@4.9.3
+      babel-jest: 29.3.1_@babel+core@7.20.5
+      dotenv: 16.0.3
+      ethers: 5.7.2
+      jest: 27.5.1
+      node-fetch: 3.3.0
+      rimraf: 3.0.2
+      ts-jest: 27.1.5_6psbhgkgraqna4hd536rdcslkm
+      tsconfig: link:../tsconfig
+      tslib: 2.4.1
+      typechain: 8.1.1_typescript@4.9.3
+      typescript: 4.9.3
+
   packages/oracle:
     specifiers:
       '@babel/core': ^7.20.5
@@ -155,6 +232,7 @@ importers:
       graphql-request: ^5.0.0
       jest: ^27.5.1
       memoizee: ^0.4.15
+      mongoose: ^6.5.0
       node-fetch: ^3.3.0
       rimraf: ^3.0.2
       ts-jest: ^27.1.4
@@ -177,6 +255,7 @@ importers:
       decimal.js-light: 2.5.1
       graphql-request: 5.0.0_graphql@16.6.0
       memoizee: 0.4.15
+      mongoose: 6.8.0
     devDependencies:
       '@babel/core': 7.20.5
       '@babel/preset-env': 7.20.2_@babel+core@7.20.5
@@ -6489,7 +6568,6 @@ packages:
     transitivePeerDependencies:
       - aws-crt
       - supports-color
-    dev: true
 
   /@types/ms/0.7.31:
     resolution: {integrity: sha512-iiUgKzV9AuaEkZqkOLDIvlQiL6ltuZd9tGcW3gwpnX8JbuiuhFlEGmmFXEXkN50Cvq7Os88IY2v0dkDqXYWVgA==}
