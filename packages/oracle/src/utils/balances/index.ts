@@ -47,7 +47,7 @@ export const getTokenBalancesAtBlock = async (
     for (const [rawChainId, requestsInChain] of Object.entries(
         requestsByChain
     )) {
-        const chainId = (rawChainId as unknown) as ChainId;
+        const chainId = rawChainId as unknown as ChainId;
         const blockTag = block[chainId];
         enforce(!!blockTag, `no block tag specified for chain id ${chainId}`);
         const [, resultsInChain] = await multicallContract[
@@ -85,7 +85,7 @@ export const getNativeCurrencyBalancesAtBlock = async (
 ): Promise<Amount<Currency>[]> => {
     const results: Amount<Currency>[] = [];
     for (const [rawChainId, provider] of Object.entries(providerList)) {
-        const chainId = (rawChainId as unknown) as ChainId;
+        const chainId = rawChainId as unknown as ChainId;
         const blockTag = block[chainId];
         enforce(!!blockTag, `no block tag specified for chain id ${chainId}`);
         const resultInChain = await provider.getBalance(

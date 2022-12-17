@@ -61,13 +61,15 @@ export function getCurrencyByAddress(currenyAddress: string) {
  * @param redeemedTokenAddress - token address to redeem DXD for. Valid tokens are ETH, WETH, USDC, DAI
  * @param redeemedDxdWeiAmount - amount of DXD to redeem in wei
  * @param providerList - a list of providers for each chain
+ * @param deadline - deadline for the quote
  * @returns
  */
 export async function getQuote(
     block: Record<ChainId, number>,
     redeemedTokenAddress: string,
     redeemedDxdWeiAmount: string,
-    providerList: Record<ChainId, Provider>
+    providerList: Record<ChainId, Provider>,
+    deadline?: number
 ): Promise<Quote> {
     const circulatingDXDSupply = await getDXDCirculatingSupply(
         block,
@@ -133,6 +135,11 @@ export async function getQuote(
     );
     const redeemedAmount = redeemedUSD.dividedBy(redeemedTokenUSDPrice);
 
+    // TODO: add a way to set the deadline
+    deadline =
+        deadline ||
+        (await providerList[ChainId.ETHEREUM].getBlock("pending")).number + 15; // 15 blocks (or ~180 seconds) from now
+
     return {
         redeemedDXD: redeemedDxd.toRawAmount().toString(),
         circulatingDXDSupply: circulatingDXDSupply.toRawAmount().toString(),
@@ -142,5 +149,6 @@ export async function getQuote(
         redeemedAmount: new Amount(redeemedToken, redeemedAmount)
             .toRawAmount()
             .toString(),
+        deadline: deadline.toString(),
     };
 }

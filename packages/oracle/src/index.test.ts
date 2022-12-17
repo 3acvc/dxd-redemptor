@@ -49,4 +49,40 @@ describe("quote", () => {
         expect(oracleQuote).toBeDefined();
         expect(oracleQuote.redeemedToken).toEqual(tokenAddr);
     });
+
+    test("Quote deadline should be in the future", async () => {
+        const currentBlockNumber = await providerList[
+            ChainId.ETHEREUM
+        ].getBlockNumber();
+
+        const tokenAddr = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+        const oracleQuote = await getQuote(
+            blockList,
+            tokenAddr,
+            (10 * 10 ** 18).toString(),
+            providerList
+        );
+        expect(oracleQuote).toBeDefined();
+        expect(parseInt(oracleQuote.deadline)).toBeGreaterThan(
+            currentBlockNumber
+        );
+    });
+
+    test("Quote deadline can be overriden", async () => {
+        const expectedBlockNumber =
+            (await providerList[ChainId.ETHEREUM].getBlockNumber()) + 100;
+
+        const tokenAddr = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+        const oracleQuote = await getQuote(
+            blockList,
+            tokenAddr,
+            (10 * 10 ** 18).toString(),
+            providerList,
+            expectedBlockNumber
+        );
+        expect(oracleQuote).toBeDefined();
+        expect(parseInt(oracleQuote.deadline)).toBeGreaterThan(
+            expectedBlockNumber
+        );
+    });
 });

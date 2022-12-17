@@ -22,6 +22,7 @@ export function hashQuote(quote: Quote): string {
                     "uint256",
                     "uint256",
                     "uint256",
+                    "uint256",
                 ],
                 [
                     ORACLE_MESSAGE_TYPE_HASH,
@@ -31,6 +32,7 @@ export function hashQuote(quote: Quote): string {
                     quote.redeemedTokenUSDPrice,
                     quote.redeemedAmount,
                     quote.collateralUSDValue,
+                    quote.deadline,
                 ]
             ),
         ]

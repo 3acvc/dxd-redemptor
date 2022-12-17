@@ -71,6 +71,7 @@ export REDEEMED_TOKEN=0x0000000000000000000000000000000000000000
 export REDEEMED_TOKEN_USD_PRICE=10000000000000000000000
 export REDEEMED_AMOUNT=10000000000000000000000
 export COLLATERAL_USD_VALUE=10000000000000000
+export DEADLINE=20000000
 ```
 
 brief explainer of the env variables:
@@ -83,13 +84,14 @@ brief explainer of the env variables:
   market conditions.
 - `COLLATERAL_USD_VALUE`: the value of the "collateral" backing the circulating DXD (for example 70%
   of NAV).
+- `DEADLINE`: the deadline block for the oracle message to be valid.
 
 Once you have the file ready you can go ahead and locally load the env variables by executing
 `source .env`. After doing that, you can finally execute the following command to get the hash
 according to the parameters you specified:
 
 ```
-forge script --sig 'run((uint256,uint256,address,uint256,uint256,uint256))' ./scripts/GetOracleMessageHash.s.sol "($REDEEMED_DXD,$CIRCULATING_DXD_SUPPLY,$REDEEMED_TOKEN,$REDEEMED_TOKEN_USD_PRICE,$REDEEMED_AMOUNT,$COLLATERAL_USD_VALUE)"
+forge script --sig 'run((uint256,uint256,address,uint256,uint256,uint256,uint256))' ./scripts/GetOracleMessageHash.s.sol "($REDEEMED_DXD,$CIRCULATING_DXD_SUPPLY,$REDEEMED_TOKEN,$REDEEMED_TOKEN_USD_PRICE,$REDEEMED_AMOUNT,$COLLATERAL_USD_VALUE,$DEADLINE)"
 ```
 
 ### Addresses

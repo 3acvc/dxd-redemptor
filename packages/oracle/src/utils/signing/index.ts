@@ -1,13 +1,7 @@
 import { defaultAbiCoder } from "@ethersproject/abi";
 import { keccak256 } from "@ethersproject/solidity";
+import { ORACLE_MESSAGE_TYPE_HASH } from "../../constants";
 import { Quote } from "../../types";
-
-const TYPE_HASH = keccak256(
-    ["string"],
-    [
-        "OracleMessage(uint256 redeemedDXD,uint256 circulatingDXDSupply,address redeemedToken,uint256 redeemedTokenUSDPrice,uint256 redeemedAmount,uint256 collateralUSDValue)",
-    ]
-);
 
 /**
  * Hashes a quote
@@ -27,15 +21,17 @@ export function quoteToEIP712Hash(quote: Quote): string {
                     "uint256",
                     "uint256",
                     "uint256",
+                    "uint256",
                 ],
                 [
-                    TYPE_HASH,
+                    ORACLE_MESSAGE_TYPE_HASH,
                     quote.redeemedDXD,
                     quote.circulatingDXDSupply,
                     quote.redeemedToken,
                     quote.redeemedTokenUSDPrice,
                     quote.redeemedAmount,
                     quote.collateralUSDValue,
+                    quote.deadline,
                 ]
             ),
         ]

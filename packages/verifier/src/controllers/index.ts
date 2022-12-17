@@ -42,7 +42,8 @@ export async function verifyAndSignOracleAggreagatorMessageController(
             blockNumber as Record<ChainId, number>,
             aggregatorQuote.redeemedToken,
             aggregatorQuote.redeemedDXD,
-            providerList
+            providerList,
+            parseInt(aggregatorQuote.deadline)
         );
 
         // Verify that the message is correct
