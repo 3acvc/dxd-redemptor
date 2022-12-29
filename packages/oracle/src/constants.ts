@@ -68,3 +68,10 @@ export const EIP712_DOMAIN_TYPE_HASH = keccak256(
 export const DOMAIN_SEPARATOR_NAME = keccak256(["string"], ["DXD redemptor"]);
 
 export const DOMAIN_SEPARATOR_VERSION = keccak256(["string"], ["1"]);
+
+// TODO: this is from the EIP, but check if all the contracts we're interested in
+// actually adhere to this
+export const ERC20_TRANSFER_SIGHASH = keccak256(
+    ["string"],
+    ["Transfer(address,address,uint256)"]
+);

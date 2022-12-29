@@ -1,5 +1,5 @@
 import { Provider } from "@ethersproject/abstract-provider";
-import { Contract } from "ethers";
+import { Contract } from "@ethersproject/contracts";
 import { ChainId, MULTICALL_ADDRESS } from "../../constants";
 import { MULTICALL_ABI } from "../../abis/multicall";
 

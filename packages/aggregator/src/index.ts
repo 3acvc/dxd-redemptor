@@ -21,18 +21,14 @@ import {
 import { handleQuote } from "./controllers/quote";
 import { VerifierModel } from "./models/verifier";
 
-import {
-    IndexerService,
-    NAVSnapshotModel,
-    ChainId,
-} from "dxd-redemptor-oracle";
-import { JsonRpcProvider } from "@ethersproject/providers";
+import { startIndexing, ChainId } from "dxd-redemptor-oracle";
+import { WebSocketProvider } from "@ethersproject/providers";
 
 const mongoUri = getRequiredEnv("MONGO_URI");
 const mongoDebug = getEnv("MONGO_DEBUG") === "true";
 const serverPort = getRequiredEnv("SERVER_PORT");
-const ethereumRpcEndpoint = getRequiredEnv("ETHEREUM_RPC_ENDPOINT");
-const gnosisRpcEndpoint = getRequiredEnv("GNOSIS_RPC_ENDPOINT");
+const wsEthereumRpcEndpoint = getRequiredEnv("WS_ETHEREUM_RPC_ENDPOINT");
+const wsGnosisRpcEndpoint = getRequiredEnv("WS_GNOSIS_RPC_ENDPOINT");
 
 // TODO: add rate limiting
 const main = async () => {
@@ -43,19 +39,10 @@ const main = async () => {
     await Mongoose.connect(mongoUri, {});
     Mongoose.set("debug", mongoDebug);
 
-    const indexerServiceList: Record<ChainId, IndexerService> = {
-        [ChainId.ETHEREUM]: new IndexerService({
-            provider: new JsonRpcProvider(ethereumRpcEndpoint),
-            snapshotModel: NAVSnapshotModel,
-        }),
-        [ChainId.GNOSIS]: new IndexerService({
-            provider: new JsonRpcProvider(gnosisRpcEndpoint),
-            snapshotModel: NAVSnapshotModel,
-        }),
-    };
-
-    await indexerServiceList[ChainId.ETHEREUM].start();
-    await indexerServiceList[ChainId.GNOSIS].start();
+    await startIndexing({
+        [ChainId.ETHEREUM]: new WebSocketProvider(wsEthereumRpcEndpoint),
+        [ChainId.GNOSIS]: new WebSocketProvider(wsGnosisRpcEndpoint),
+    });
 
     const server = new Server({
         host: "localhost",

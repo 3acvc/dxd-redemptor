@@ -33,8 +33,7 @@ export { ChainId } from "./constants";
 export * from "./entities";
 export { hashQuote } from "./hash-quote";
 export { signQuote, verifyQuoteSignature } from "./sign-quote";
-export { IndexerService, saveSnapshot } from "./indexer/IndexerService";
-export * from "./indexer/models/NAVSnapshot.model";
+export { startIndexing } from "./indexer";
 
 /**
  * Returns the token for a given address

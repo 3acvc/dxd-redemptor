@@ -176,3 +176,24 @@ export const ENS = new Token(
     18,
     "ENS"
 );
+
+export const NAV_TOKEN_LIST = [
+    // ethereum
+    WETH[ChainId.ETHEREUM],
+    STETH,
+    RETH,
+    SETH2,
+    RETH2,
+    USDC[ChainId.ETHEREUM],
+    DAI,
+    USDT,
+    LUSD,
+    SUSD,
+    GNO[ChainId.ETHEREUM],
+    ENS,
+    // gnosis
+    WXDAI,
+    WETH[ChainId.GNOSIS],
+    USDC[ChainId.GNOSIS],
+    GNO[ChainId.GNOSIS],
+];
