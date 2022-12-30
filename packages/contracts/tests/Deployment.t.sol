@@ -20,7 +20,7 @@ contract Deployment is BaseTestFixture {
         );
         assertEq(_redemptorHarness.owner(), _owner);
     }
-    
+
     function testSucceedsWithoutInitialSigners() external {
         address[] memory _initialSigners = new address[](0);
         RedemptorHarness _redemptorHarness = new RedemptorHarness(

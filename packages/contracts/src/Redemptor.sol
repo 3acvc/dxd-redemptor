@@ -64,7 +64,11 @@ contract Redemptor is Owned, IRedemptor {
         bytes[] signatures
     );
 
-    constructor(address _owner, uint256 _signersThreshold, address[] memory _initialSigners) Owned(_owner) {
+    constructor(
+        address _owner,
+        uint256 _signersThreshold,
+        address[] memory _initialSigners
+    ) Owned(_owner) {
         _addSigners(_initialSigners);
         _validateSignersThreshold(_signersThreshold);
         // TODO: this can be computed offchain to save gas
@@ -109,7 +113,7 @@ contract Redemptor is Owned, IRedemptor {
         signersThreshold = _signersThreshold;
         emit SetSignersThreshold(_signersThreshold);
     }
-    
+
     function togglePause() external override {
         if (msg.sender != owner) revert Forbidden();
         bool _toggledValue = !paused;
@@ -126,7 +130,7 @@ contract Redemptor is Owned, IRedemptor {
         bytes32 _permitR,
         bytes32 _permitS
     ) external override {
-        if(paused) {
+        if (paused) {
             revert Paused();
         }
 
