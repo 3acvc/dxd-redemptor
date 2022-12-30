@@ -2,6 +2,7 @@
 pragma solidity ^0.8.17;
 
 import {ECDSA} from "oz/utils/cryptography/ECDSA.sol";
+import {Ownable} from "oz/access/Ownable.sol";
 import {IERC20} from "oz/token/ERC20/IERC20.sol";
 import {SafeERC20} from "oz/token/ERC20/utils/SafeERC20.sol";
 import {IDXD} from "src/interfaces/IDXD.sol";
@@ -10,6 +11,7 @@ import {IRedemptor, OracleMessage} from "src/interfaces/IRedemptor.sol";
 
 // errors
 error InvalidSigner();
+error Paused();
 error NotEnoughSignatures();
 error InvalidSignersThreshold();
 error SignerNotAdded();
@@ -39,14 +41,16 @@ bytes32 constant ORACLE_MESSAGE_TYPE_HASH = keccak256(
 /// @title Redemptor
 /// @dev A contract that carries out DXD redemptions depending on external price feeds.
 /// @author Federico Luzzi - <federico.luzzi@protonmail.com>
-contract Redemptor is IRedemptor {
+contract Redemptor is Ownable, IRedemptor {
     using SafeERC20 for IERC20;
 
     bytes32 public immutable domainSeparator;
+    bool paused;
     uint256 public signersThreshold;
     uint256 public signersAmount;
     mapping(address => bool) public isSigner;
 
+    event TogglePause(bool paused);
     event AddSigners(address[] addedSigners);
     event RemoveSigners(address[] removedSigners);
     event SetSignersThreshold(uint256 signersThreshold);
@@ -60,7 +64,7 @@ contract Redemptor is IRedemptor {
         bytes[] signatures
     );
 
-    constructor(uint256 _signersThreshold, address[] memory _initialSigners) {
+    constructor(address _owner, uint256 _signersThreshold, address[] memory _initialSigners) {
         _addSigners(_initialSigners);
         _validateSignersThreshold(_signersThreshold);
         // TODO: this can be computed offchain to save gas
@@ -76,16 +80,17 @@ contract Redemptor is IRedemptor {
             )
         );
         signersThreshold = _signersThreshold;
+        _transferOwnership(_owner);
     }
 
     function addSigners(address[] memory _signers) external override {
-        if (msg.sender != AVATAR_ADDRESS) revert Forbidden();
+        if (msg.sender != owner()) revert Forbidden();
         _addSigners(_signers);
         emit AddSigners(_signers);
     }
 
     function removeSigners(address[] memory _signers) external override {
-        if (msg.sender != AVATAR_ADDRESS) revert Forbidden();
+        if (msg.sender != owner()) revert Forbidden();
         uint16 _signersLength = uint16(_signers.length);
         for (uint256 _i = 0; _i < _signersLength; _i++) {
             address _signer = _signers[_i];
@@ -100,10 +105,17 @@ contract Redemptor is IRedemptor {
     }
 
     function setSignersThreshold(uint16 _signersThreshold) external override {
-        if (msg.sender != AVATAR_ADDRESS) revert Forbidden();
+        if (msg.sender != owner()) revert Forbidden();
         _validateSignersThreshold(_signersThreshold);
         signersThreshold = _signersThreshold;
         emit SetSignersThreshold(_signersThreshold);
+    }
+    
+    function togglePause() external override {
+        if (msg.sender != owner()) revert Forbidden();
+        bool _toggledValue = !paused;
+        paused = _toggledValue;
+        emit TogglePause(_toggledValue);
     }
 
     function redeem(
@@ -115,6 +127,10 @@ contract Redemptor is IRedemptor {
         bytes32 _permitR,
         bytes32 _permitS
     ) external override {
+        if(paused) {
+            revert Paused();
+        }
+
         if (_oracleMessage.deadline < block.number) {
             revert ExpiredQuote();
         }
