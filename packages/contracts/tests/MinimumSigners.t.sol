@@ -10,14 +10,14 @@ import {AVATAR_ADDRESS} from "src/Redemptor.sol";
 /// @author Federico Luzzi - <federico.luzzi@protonmail.com>
 contract MinimumSigners is BaseTestFixture {
     function testNoRounding() external {
-        vm.prank(AVATAR_ADDRESS);
+        vm.prank(redemptorHarness.owner());
         redemptorHarness.setSignersThreshold(5_000);
         assertEq(redemptorHarness.exposedMinimumSigners(10), 5);
         assertEq(redemptorHarness.exposedMinimumSigners(4), 2);
     }
 
     function testRoundingUp() external {
-        vm.prank(AVATAR_ADDRESS);
+        vm.prank(redemptorHarness.owner());
         redemptorHarness.setSignersThreshold(5_000);
         assertEq(redemptorHarness.exposedMinimumSigners(1), 1);
         assertEq(redemptorHarness.exposedMinimumSigners(3), 2);

@@ -28,7 +28,7 @@ abstract contract BaseTestFixture is Test {
         }
         address[] memory _initialSigners = new address[](0);
         redemptorHarness =
-            new RedemptorHarness(MIN_SIGNERS_THRESHOLD, _initialSigners);
+        new RedemptorHarness(address(1234), MIN_SIGNERS_THRESHOLD, _initialSigners);
     }
 
     function _handleFork() private returns (bool) {

@@ -22,6 +22,8 @@ interface IRedemptor {
 
     function setSignersThreshold(uint16 _signersThreshold) external;
 
+    function togglePause() external;
+
     function redeem(
         OracleMessage calldata _oracleMessage,
         bytes[] calldata _signatures,

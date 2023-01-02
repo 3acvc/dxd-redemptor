@@ -8,9 +8,11 @@ import {Redemptor} from "src/Redemptor.sol";
 /// @dev A harness contract to expose internal functions of the redemptor, making them testable.
 /// @author Federico Luzzi - <federico.luzzi@protonmail.com>
 contract RedemptorHarness is Redemptor {
-    constructor(uint256 _signersThreshold, address[] memory _signers)
-        Redemptor(_signersThreshold, _signers)
-    {}
+    constructor(
+        address _owner,
+        uint256 _signersThreshold,
+        address[] memory _signers
+    ) Redemptor(_owner, _signersThreshold, _signers) {}
 
     function exposedMinimumSigners(uint256 _totalSigners)
         external

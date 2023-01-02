@@ -10,24 +10,37 @@ import {RedemptorHarness} from "tests/harnesses/RedemptorHarness.sol";
 /// @dev Tests the deployment of the contract.
 /// @author Federico Luzzi - <federico.luzzi@protonmail.com>
 contract Deployment is BaseTestFixture {
-    function testSucceedsWithoutInitialSigners() external {
+    function testSucceedsOwnerSet() external {
         address[] memory _initialSigners = new address[](0);
-        RedemptorHarness redemptorHarness = new RedemptorHarness(
+        address _owner = address(2);
+        RedemptorHarness _redemptorHarness = new RedemptorHarness(
+            _owner,
             MIN_SIGNERS_THRESHOLD,
             _initialSigners
         );
-        assertEq(redemptorHarness.signersAmount(), 0);
+        assertEq(_redemptorHarness.owner(), _owner);
+    }
+
+    function testSucceedsWithoutInitialSigners() external {
+        address[] memory _initialSigners = new address[](0);
+        RedemptorHarness _redemptorHarness = new RedemptorHarness(
+            address(2),
+            MIN_SIGNERS_THRESHOLD,
+            _initialSigners
+        );
+        assertEq(_redemptorHarness.signersAmount(), 0);
     }
 
     function testSucceedsWithInitialSigners() external {
         address _signer = address(1234);
         address[] memory _initialSigners = new address[](1);
         _initialSigners[0] = _signer;
-        RedemptorHarness redemptorHarness = new RedemptorHarness(
+        RedemptorHarness _redemptorHarness = new RedemptorHarness(
+            address(2),
             MIN_SIGNERS_THRESHOLD,
             _initialSigners
         );
-        assertTrue(redemptorHarness.isSigner(_signer));
-        assertEq(redemptorHarness.signersAmount(), 1);
+        assertTrue(_redemptorHarness.isSigner(_signer));
+        assertEq(_redemptorHarness.signersAmount(), 1);
     }
 }
