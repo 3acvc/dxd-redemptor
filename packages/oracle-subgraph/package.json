@@ -5,7 +5,7 @@
     "scripts": {
         "auth": "graph auth https://api.thegraph.com/deploy/",
         "codegen": "graph codegen",
-        "build": "graph build",
+        "build": "npm run prepare:gnosis && graph build",
         "prepare:gnosis": "ts-node bin/build-subgraph.ts xdai && npm run codegen",
         "prepare:mainnet": "ts-node bin/build-subgraph.ts mainnet && npm run codegen",
         "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ 3acvc/oracle-subgraph",
