@@ -5,6 +5,7 @@ type SubgraphStatus @entity {
     "SubgraphStatus"
     id: ID!
     isInitialized: Boolean!
+    lastSnapshotBlock: BigInt!
 }
 
 #
@@ -14,18 +15,17 @@ type DXDCirculatingSupplySnapshot @entity {
     " Block number in which the snapshot was taken "
     id: ID!
     " Supply of DXD tokens "
-    totalSupply: BigInt!
+    totalSupply: BigDecimal!
     "circulatingSupply = totalSupply - lockedSupply"
-    circulatingSupply: BigInt!
+    circulatingSupply: BigDecimal!
 }
 
 #
 # Provides information about an ERC20 token
 #
 type Token @entity {
-    id: ID!
     " Token address "
-    address: Bytes!
+    id: ID!
     " Number of decimals the token uses "
     decimals: Int!
     " Human-readable name of the token "
@@ -42,89 +42,46 @@ interface TokenEvent {
     token: Token!
     amount: BigDecimal!
     sender: Bytes!
-
     block: BigInt!
     timestamp: BigInt!
     transaction: Bytes!
 }
 
-type BurnEvent implements TokenEvent @entity {
+#
+# Token events
+#
+type TokenBalance @entity {
     id: ID!
-
-    " Token address "
     token: Token!
-
-    " Quantity of tokens burned "
+    " Account address "
+    address: Bytes!
     amount: BigDecimal!
-
-    " Transaction sender address "
-    sender: Bytes!
-
-    " Address of burner account "
-    burner: Bytes!
-
-    " Block number "
-    block: BigInt!
-
-    " Event timestamp "
-    timestamp: BigInt!
-
-    " Transaction hash "
-    transaction: Bytes!
+    snapshot: TreasuryBalancesSnapshot!
 }
 
-type MintEvent implements TokenEvent @entity {
+type TreasuryBalancesSnapshot @entity {
     id: ID!
-
-    " Token address "
-    token: Token!
-
-    " Quantity of tokens minted "
-    amount: BigDecimal!
-
-    " Transaction sender address "
-    sender: Bytes!
-
-    " Address of minter account "
-    minter: Bytes!
-
-    " Address of destination account "
-    destination: Bytes!
-
-    " Block number "
-    block: BigInt!
-
-    " Event timestamp "
-    timestamp: BigInt!
-
-    " Transaction hash "
-    transaction: Bytes!
+    blockNumber: BigInt!
+    " Token balances in this snapshot "
+    balances: [TokenBalance!]! @derivedFrom(field: "snapshot")
 }
 
 type TransferEvent implements TokenEvent @entity {
     id: ID!
-
     " Token address "
     token: Token!
-
     " Quantity of tokens transferred "
     amount: BigDecimal!
-
     " Transaction sender address "
     sender: Bytes!
-
     " Address of source account "
     source: Bytes!
-
     " Address of destination account "
     destination: Bytes!
-
     " Block number "
     block: BigInt!
-
     " Event timestamp "
     timestamp: BigInt!
-
     " Transaction hash "
     transaction: Bytes!
 }

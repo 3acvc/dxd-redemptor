@@ -29,11 +29,44 @@ async function main() {
     if (!network || !["mainnet", "xdai"].includes(network)) {
         throw new Error("Invalid network. Must be one of: mainnet, xdai");
     }
+
+    let dxdTokenAdresss = "0xa1d65e8fb6e87b60feccbc582f7f97804b725521";
+    let startBlock = 16341493; // this block emits a NewCallProposal event from DAOstack scheme
+
     // fetch recent block number
-  const startBlock = await getBlockNumber(network);
+    // const startBlock = await getBlockNumber(network);
+    let source = {
+        address: "0xb3ec6089556cca49549be01ff446cf40fa81c84d",
+        startBlock, // this block emits a NewCallProposal event from DAOstack scheme
+        abi: "ENSScheme",
+    };
+    let eventHandlers = [
+        {
+            event:
+                "NewCallProposal(indexed address,indexed bytes32,bytes,uint256,string)",
+            handler: "handleInitSubgraph",
+        },
+    ];
+
+    if (network === "xdai") {
+        startBlock = 25836452;
+        dxdTokenAdresss = "0xb90d6bec20993be5d72a5ab353343f7a0281f158";
+        source = {
+            address: "0xa80ea8941f1772792beb99648ba4ff8dc1d4c849",
+            abi: "DXdaoNAV",
+            startBlock,
+        };
+        eventHandlers = [
+            {
+                event: "NavInitialized()",
+                handler: "handleInitSubgraph",
+            },
+        ];
+    }
 
     const subgraph = {
         specVersion: "0.0.4",
+        features: ["nonFatalErrors"],
         schema: {
             file: "./schema.graphql",
         },
@@ -42,11 +75,7 @@ async function main() {
                 name: "Token",
                 kind: "ethereum/contract",
                 network,
-                source: {
-                    address: "0xa1d65E8fB6e87b60FECCBc582F7f97804B725521", // so we build the subgraph
-                    startBlock,
-                    abi: "ERC20",
-                },
+                source,
                 mapping: {
                     kind: "ethereum/events",
                     apiVersion: "0.0.6",
@@ -55,13 +84,51 @@ async function main() {
                     entities: ["Token"],
                     abis: [
                         {
+                            name: "ENSScheme",
+                            file: "./abis/ENSScheme.json",
+                        },
+                        {
+                            name: "ERC20",
+                            file: "./abis/ERC20.json",
+                        },
+                        {
+                            name: "Multicall3",
+                            file: "./abis/Multicall3.json",
+                        },
+                        {
+                            name: "DXdaoNAV",
+                            file: "./abis/DXdaoNAV.json",
+                        },
+                    ],
+                    eventHandlers,
+                },
+            },
+            {
+                name: "DXDToken",
+                kind: "ethereum/contract",
+                network,
+                source: {
+                    address: dxdTokenAdresss,
+                    startBlock: startBlock + 10,
+                    abi: "ERC20",
+                },
+                mapping: {
+                    kind: "ethereum/events",
+                    apiVersion: "0.0.6",
+                    language: "wasm/assemblyscript",
+                    file: "./src/mappings/token.ts",
+                    entities: ["TransferEvent"],
+                    abis: [
+                        {
                             name: "ERC20",
                             file: "./abis/ERC20.json",
                         },
                     ],
-                    blockHandlers: [
+                    eventHandlers: [
                         {
-                            handler: "initSubgraph",
+                            event:
+                                "Transfer(indexed address,indexed address,uint256)",
+                            handler: "handleDXDTrasnfer",
                         },
                     ],
                 },
@@ -86,6 +153,10 @@ async function main() {
                             name: "ERC20",
                             file: "./abis/ERC20.json",
                         },
+                        {
+                            name: "Multicall3",
+                            file: "./abis/Multicall3.json",
+                        }
                     ],
                     eventHandlers: [
                         {
