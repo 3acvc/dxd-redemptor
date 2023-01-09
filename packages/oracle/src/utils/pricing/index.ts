@@ -1,3 +1,4 @@
+import { Provider } from "@ethersproject/abstract-provider";
 import Decimal from "decimal.js-light";
 import { gql } from "graphql-request";
 import { ChainId, UNISWAP_V3_SUBGRAPH_CLIENT } from "../../constants";
@@ -8,14 +9,13 @@ import {
     DAI,
     DXD,
     GNO,
-    RETH2,
-    SETH2,
     Token,
     USDC,
     WETH,
     WXDAI,
 } from "../../entities/token";
 import { enforce } from "../invariant";
+import { getTokenUSDCPriceViaOracle } from "./uniswap";
 
 const getPriceableToken = (currency: Currency): Token => {
     if (currency instanceof Token) return handleToken(currency as Token);
@@ -24,13 +24,8 @@ const getPriceableToken = (currency: Currency): Token => {
 
 const handleToken = (token: Token): Token => {
     switch (token.chainId) {
-        case ChainId.ETHEREUM: {
-            // Map StakeWise tokens to WETH token (because Uniswap v3
-            // does not have a direct sETH2-USDC or rETH2-USDC pool)
-            if (token.equals(SETH2) || token.equals(RETH2))
-                return WETH[ChainId.ETHEREUM];
-            else return token;
-        }
+        case ChainId.ETHEREUM:
+            return token;
         case ChainId.GNOSIS: {
             if (token.equals(USDC[ChainId.GNOSIS]))
                 return USDC[ChainId.ETHEREUM];
@@ -138,6 +133,69 @@ export const getUSDValue = async (
 
     return new Amount(Currency.USD, rawUSDValue);
 };
+
+/**
+ * Returns a TWAP of the USD value of the given currency amounts.
+ * @param currencyAmounts The currency amounts to get the USD value of.
+ * @param mainnetProvider The mainnet provider to use.
+ * @param mainnetBlock The mainnet block to use.
+ * @param twapPeriod time period for TWAP calculation
+ * @returns
+ */
+export async function getUSDValueTWAP(
+    currencyAmounts: (Amount<Currency> | Amount<Token>)[],
+    mainnetProvider: Provider,
+    mainnetBlock: number,
+    twapPeriod?: number
+): Promise<Amount<Currency>> {
+    const priceableTokens = currencyAmounts.reduce(
+        (priceableTokens: Token[], amount) => {
+            const priceableToken = getPriceableToken(amount.currency);
+            if (priceableTokens.indexOf(priceableToken) < 0)
+                priceableTokens.push(priceableToken);
+            return priceableTokens;
+        },
+        []
+    );
+
+    const tokenPriceList = await getTokenUSDCPriceViaOracle(
+        priceableTokens,
+        mainnetProvider,
+        mainnetBlock,
+        twapPeriod
+    );
+    const mainnetUsdc = USDC[ChainId.ETHEREUM];
+    const rawUSDValue = currencyAmounts.reduce(
+        (usdValue: Decimal, currencyAmount) => {
+            const priceableToken = getPriceableToken(currencyAmount.currency);
+
+            if (
+                priceableToken.equals(mainnetUsdc) ||
+                priceableToken.equals(USDC[ChainId.GNOSIS])
+            ) {
+                return usdValue.plus(currencyAmount.times(1));
+            }
+
+            const _tokenPrice = tokenPriceList.find((tokenPrice) =>
+                tokenPrice.token.equals(priceableToken as Token)
+            );
+
+            enforce(
+                !!_tokenPrice,
+                `no price of priceable token ${currencyAmount.currency.address} in tokenPriceList`
+            );
+
+            const price = new Amount(
+                mainnetUsdc,
+                _tokenPrice?.usdcPrice.div(10 ** 12).toString() as string // 12 decimals
+            );
+            return usdValue.plus(currencyAmount.times(price));
+        },
+        new Decimal(0)
+    );
+
+    return new Amount(Currency.USD, rawUSDValue);
+}
 
 export const getUSDPrice = async (
     currency: Currency,

@@ -25,7 +25,7 @@ import {
     getTokenBalancesAtBlock,
 } from "./utils/balances";
 import { getDXDCirculatingSupply } from "./utils/dxd";
-import { getUSDPrice, getUSDValue } from "./utils/pricing";
+import { getUSDPrice, getUSDValueTWAP } from "./utils/pricing";
 export { quoteToEIP712Hash } from "./utils/signing";
 
 export * from "./types";
@@ -117,8 +117,9 @@ export async function getQuote(
         providerList
     );
 
-    const navUSDValue = await getUSDValue(
+    const navUSDValue = await getUSDValueTWAP(
         [...tokenBalances, ...nativeCurrencyBalances],
+        providerList[ChainId.ETHEREUM],
         block[ChainId.ETHEREUM]
     );
     // TODO: apply whatever discount is appropriate

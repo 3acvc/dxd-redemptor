@@ -14,7 +14,8 @@
         "format": "prettier --write . !./dist !./.turbo && eslint --fix \"./**!(dist|.turbo)/*+(.tsx|.ts)\"",
         "clean": "rimraf ./dist",
         "build": "pnpm clean && tsc",
-        "test": "jest"
+        "test": "jest",
+        "dev": "nodemon -x ts-node src/index.ts"
     },
     "dependencies": {
         "@ethersproject/abi": "^5.7.0",
@@ -28,6 +29,8 @@
         "@ethersproject/solidity": "^5.7.0",
         "@ethersproject/transactions": "^5.7.0",
         "@ethersproject/units": "^5.7.0",
+        "@ethersproject/wallet": "^5.7.0",
+        "@mean-finance/uniswap-v3-oracle": "^1.0.0",
         "decimal.js-light": "^2.5.1",
         "graphql-request": "^5.0.0",
         "memoizee": "^0.4.15"
@@ -47,8 +50,10 @@
         "ethers": "^5.7.2",
         "jest": "^27.5.1",
         "node-fetch": "^3.3.0",
+        "nodemon": "^2.0.18",
         "rimraf": "^3.0.2",
         "ts-jest": "^27.1.4",
+        "ts-node": "^10.8.2",
         "tsconfig": "workspace:*",
         "tslib": "^2.4.1",
         "typechain": "^8.1.1",
