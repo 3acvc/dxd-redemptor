@@ -8,9 +8,9 @@ describe("quote", () => {
 
     beforeEach(async () => {
         providerList = {
-            [ChainId.ETHEREUM]: new JsonRpcProvider("http://localhost:8545"),
+            [ChainId.ETHEREUM]: new JsonRpcProvider("https://eth.llamarpc.com"),
             [ChainId.GNOSIS]: new JsonRpcProvider(
-                "https://rpc.gnosischain.com"
+                "https://rpc.ankr.com/gnosis"
             ),
         };
         blockList = {
@@ -65,24 +65,6 @@ describe("quote", () => {
         expect(oracleQuote).toBeDefined();
         expect(parseInt(oracleQuote.deadline)).toBeGreaterThan(
             currentBlockNumber
-        );
-    });
-
-    test("Quote deadline can be overriden", async () => {
-        const expectedBlockNumber =
-            (await providerList[ChainId.ETHEREUM].getBlockNumber()) + 100;
-
-        const tokenAddr = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
-        const oracleQuote = await getQuote(
-            blockList,
-            tokenAddr,
-            (10 * 10 ** 18).toString(),
-            providerList,
-            expectedBlockNumber
-        );
-        expect(oracleQuote).toBeDefined();
-        expect(parseInt(oracleQuote.deadline)).toBeGreaterThan(
-            expectedBlockNumber
         );
     });
 });

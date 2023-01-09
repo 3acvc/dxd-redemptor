@@ -8,7 +8,6 @@ import { ChainId } from "../../constants";
 import { parseEther, parseUnits } from "@ethersproject/units";
 import { getMulticallContractForProvider } from "../contracts";
 import { STATIC_ORACLE_ABI } from "../../abis/staticOracle";
-import { enforce } from "../invariant";
 
 const STATIC_ORACLE_ADDRESS = "0xB210CE856631EeEB767eFa666EC7C1C57738d438";
 const TWAP_PERIOD = 1000;
