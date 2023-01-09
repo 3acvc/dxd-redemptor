@@ -21,7 +21,7 @@ interface TokenPrice {
     /**
      * Price of token against USDC (scaled to 18 decimals)
      */
-    usdcPrice: BigNumber;
+    usdPrice: BigNumber;
 }
 
 /**
@@ -143,7 +143,7 @@ export async function getTokenUSDCPriceViaOracle(
         if (token.equals(WETH[ChainId.ETHEREUM])) {
             tokenPriceList.push({
                 token,
-                usdcPrice: wethUSDCPrice,
+                usdPrice: wethUSDCPrice,
                 wethPrice: parseEther("1"), // 1 WETH = 1 WETH 😤
             });
         }
@@ -171,7 +171,7 @@ export async function getTokenUSDCPriceViaOracle(
             tokenPriceList.push({
                 token,
                 wethPrice: tokenWETHPrice,
-                usdcPrice: tokenUSDCPrice,
+                usdPrice: tokenUSDCPrice,
             });
         }
         //  Token exists in TOKEN/WETH price list
@@ -185,7 +185,7 @@ export async function getTokenUSDCPriceViaOracle(
             tokenPriceList.push({
                 token,
                 wethPrice: tokenWETHPrice,
-                usdcPrice: tokenUSDCPrice,
+                usdPrice: tokenUSDCPrice,
             });
         }
     }

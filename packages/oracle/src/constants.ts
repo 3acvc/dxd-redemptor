@@ -51,3 +51,5 @@ export const EIP712_DOMAIN_TYPE_HASH = keccak256(
 export const DOMAIN_SEPARATOR_NAME = keccak256(["string"], ["DXD redemptor"]);
 
 export const DOMAIN_SEPARATOR_VERSION = keccak256(["string"], ["1"]);
+
+export const QUOTE_BLOCK_DEADLINE = 15;
