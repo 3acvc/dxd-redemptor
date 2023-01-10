@@ -1,8 +1,8 @@
 import { defaultAbiCoder } from "@ethersproject/abi";
 import { hexConcat, joinSignature } from "@ethersproject/bytes";
 import { keccak256 } from "@ethersproject/solidity";
-import type { Wallet } from "ethers";
-import { recoverAddress } from "ethers/lib/utils";
+import type { Wallet } from "@ethersproject/wallet";
+import { recoverAddress } from "@ethersproject/transactions";
 import {
     DOMAIN_SEPARATOR_NAME,
     DOMAIN_SEPARATOR_VERSION,

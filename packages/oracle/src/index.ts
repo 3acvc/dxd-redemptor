@@ -1,5 +1,6 @@
 import type { Provider } from "@ethersproject/abstract-provider";
-import { ChainId, DXDAO_AVATAR } from "./constants";
+import { formatUnits } from "@ethersproject/units";
+import { ChainId, DXDAO_AVATAR, QUOTE_BLOCK_DEADLINE } from "./constants";
 import { Amount } from "./entities/amount";
 import { Currency } from "./entities/currency";
 import {
@@ -25,7 +26,8 @@ import {
     getTokenBalancesAtBlock,
 } from "./utils/balances";
 import { getDXDCirculatingSupply } from "./utils/dxd";
-import { getUSDPrice, getUSDValue } from "./utils/pricing";
+import { enforce } from "./utils/invariant";
+import { getPriceableToken, getUSDValueTWAP } from "./utils/pricing";
 export { quoteToEIP712Hash } from "./utils/signing";
 
 export * from "./types";
@@ -117,8 +119,9 @@ export async function getQuote(
         providerList
     );
 
-    const navUSDValue = await getUSDValue(
+    const [navUSDValue, tokenPriceList] = await getUSDValueTWAP(
         [...tokenBalances, ...nativeCurrencyBalances],
+        providerList[ChainId.ETHEREUM],
         block[ChainId.ETHEREUM]
     );
     // TODO: apply whatever discount is appropriate
@@ -129,16 +132,27 @@ export async function getQuote(
     const dxdTokenPrice = discountedNAVUSDValue.dividedBy(circulatingDXDSupply);
     const redeemedUSD = redeemedDxd.times(dxdTokenPrice);
 
-    const redeemedTokenUSDPrice = await getUSDPrice(
-        redeemedToken,
-        block[ChainId.ETHEREUM]
+    // From the TWAP price list, find the price of redeem token
+    const _redeemedTokenPrice = tokenPriceList.find((tokenPrice) =>
+        tokenPrice.token.equals(getPriceableToken(redeemedToken))
+    );
+
+    enforce(
+        !!_redeemedTokenPrice,
+        "redeemed token not found in TWAP price list"
+    );
+
+    const redeemedTokenUSDPrice = new Amount(
+        Currency.USD,
+        formatUnits(_redeemedTokenPrice.usdPrice, Currency.USD.decimals)
     );
     const redeemedAmount = redeemedUSD.dividedBy(redeemedTokenUSDPrice);
 
     // TODO: add a way to set the deadline
     deadline =
         deadline ||
-        (await providerList[ChainId.ETHEREUM].getBlock("pending")).number + 15; // 15 blocks (or ~180 seconds) from now
+        (await providerList[ChainId.ETHEREUM].getBlock("pending")).number +
+            QUOTE_BLOCK_DEADLINE;
 
     return {
         redeemedDXD: redeemedDxd.toRawAmount().toString(),

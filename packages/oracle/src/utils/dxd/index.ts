@@ -5,7 +5,7 @@ import {
     DXDAO_AVATAR_DXD_VESTING_ADDRESS,
     ERC20_INTERFACE,
 } from "../../constants";
-import { BigNumber } from "ethers";
+import { BigNumber } from "@ethersproject/bignumber";
 import { Amount } from "../../entities/amount";
 import { Currency } from "../../entities/currency";
 import { Provider } from "@ethersproject/abstract-provider";

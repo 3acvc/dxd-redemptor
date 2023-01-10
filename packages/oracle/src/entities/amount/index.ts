@@ -1,6 +1,6 @@
 import { Token } from "../token";
 import { Currency } from "../currency";
-import { BigNumberish } from "ethers";
+import { BigNumberish } from "@ethersproject/bignumber";
 import Decimal, { Numeric } from "decimal.js-light";
 import { formatUnits, parseUnits } from "@ethersproject/units";
 

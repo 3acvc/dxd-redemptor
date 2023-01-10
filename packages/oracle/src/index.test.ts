@@ -8,9 +8,9 @@ describe("quote", () => {
 
     beforeEach(async () => {
         providerList = {
-            [ChainId.ETHEREUM]: new JsonRpcProvider("http://localhost:8545"),
+            [ChainId.ETHEREUM]: new JsonRpcProvider("https://eth.llamarpc.com"),
             [ChainId.GNOSIS]: new JsonRpcProvider(
-                "https://rpc.gnosischain.com"
+                "https://rpc.ankr.com/gnosis"
             ),
         };
         blockList = {
@@ -81,8 +81,6 @@ describe("quote", () => {
             expectedBlockNumber
         );
         expect(oracleQuote).toBeDefined();
-        expect(parseInt(oracleQuote.deadline)).toBeGreaterThan(
-            expectedBlockNumber
-        );
+        expect(parseInt(oracleQuote.deadline)).toEqual(expectedBlockNumber);
     });
 });
