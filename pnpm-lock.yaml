@@ -145,7 +145,6 @@ importers:
       '@ethersproject/wallet': ^5.7.0
       '@jest/globals': ^29.3.1
       '@mean-finance/uniswap-v3-oracle': ^1.0.0
-      '@typechain/ethers-v5': ^10.1.1
       '@types/jest': ^27.4.1
       '@types/memoizee': ^0.4.8
       '@types/node': ^18.11.18
@@ -193,13 +192,12 @@ importers:
       abitype: 0.2.5_typescript@4.9.3
       babel-jest: 29.3.1_@babel+core@7.20.5
       dotenv: 16.0.3
-      ethers: 5.7.2
       jest: 27.5.1_ts-node@10.9.1
       node-fetch: 3.3.0
       nodemon: 2.0.20
       rimraf: 3.0.2
       ts-jest: 27.1.5_6psbhgkgraqna4hd536rdcslkm
-      ts-node: 10.9.1_zhirybrk4zoofuxp64necizyzy
+      ts-node: 10.9.1_76bvzwqatfihmnr5dx42jk5azq
       tsconfig: link:../tsconfig
       tslib: 2.4.1
       typechain: 8.1.1_typescript@4.9.3
@@ -8439,7 +8437,7 @@ packages:
   /axios/0.21.4_debug@4.3.1:
     resolution: {integrity: sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==}
     dependencies:
-      follow-redirects: 1.15.2
+      follow-redirects: 1.15.2_debug@4.3.1
     transitivePeerDependencies:
       - debug
     dev: true
@@ -12546,6 +12544,18 @@ packages:
       debug:
         optional: true
 
+  /follow-redirects/1.15.2_debug@4.3.1:
+    resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+    dependencies:
+      debug: 4.3.1
+    dev: true
+
   /follow-redirects/1.15.2_debug@4.3.4:
     resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
     engines: {node: '>=4.0'}
@@ -14752,7 +14762,7 @@ packages:
       pretty-format: 27.5.1
       slash: 3.0.0
       strip-json-comments: 3.1.1
-      ts-node: 10.9.1_zhirybrk4zoofuxp64necizyzy
+      ts-node: 10.9.1_76bvzwqatfihmnr5dx42jk5azq
     transitivePeerDependencies:
       - bufferutil
       - canvas
