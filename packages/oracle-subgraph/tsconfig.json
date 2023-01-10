@@ -1,5 +1,4 @@
 {
-    "extends": "tsconfig/oracle.json",
     "exclude": ["node_modules", "dist", "./src/**/*.test.ts"],
     "include": ["./src/**/*.ts"],
     "compilerOptions": {
