@@ -57,3 +57,6 @@ out
 /packages/contracts/abis
 dist
 generated
+
+# subgraph
+subgraph.yaml

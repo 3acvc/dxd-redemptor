@@ -27,6 +27,8 @@ jobs:
           version: nightly
       - name: Install dependencies
         run: pnpm i
+      - name: Prepare subgraph packages
+        run: cd packages/oracle-subgraph && pnpm run prepare:mainnet
       - name: Build
         run: pnpm build
       - name: Lint

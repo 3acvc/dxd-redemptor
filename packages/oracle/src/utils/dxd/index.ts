@@ -1,4 +1,4 @@
-import { DXD } from "../../entities/token";
+import { DXD, Token } from "../../entities/token";
 import {
     ChainId,
     DXDAO_AVATAR,
@@ -7,14 +7,13 @@ import {
 } from "../../constants";
 import { BigNumber } from "@ethersproject/bignumber";
 import { Amount } from "../../entities/amount";
-import { Currency } from "../../entities/currency";
 import { Provider } from "@ethersproject/abstract-provider";
 import { getMulticallContract } from "../contracts";
 
 export async function getDXDCirculatingSupply(
     block: Record<ChainId, number>,
     providerList: Record<ChainId, Provider>
-): Promise<Amount<Currency>> {
+): Promise<Amount<Token>> {
     const mainnetDXD = DXD[ChainId.ETHEREUM];
     const mainnetAvatar = DXDAO_AVATAR[ChainId.ETHEREUM];
 
