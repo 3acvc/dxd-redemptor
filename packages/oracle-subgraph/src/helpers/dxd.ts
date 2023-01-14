@@ -1,19 +1,22 @@
-import { BigInt, dataSource } from "@graphprotocol/graph-ts";
+import { BigInt } from "@graphprotocol/graph-ts";
 import { ERC20 as ERC20Contract } from "../../generated/Token/ERC20";
-import { DXD, DXdao, DXDAO_AVATAR_DXD_VESTING_ADDRESS, MAINNET } from "../mappings/constants";
-
+import {
+    DXD,
+    DXdaoAvatar,
+    DXdaoSafes,
+    DXDAO_AVATAR_DXD_VESTING_ADDRESS,
+} from "../mappings/constants";
+import { getTokenBalancesForAddressList } from "./balances";
 
 class DXDTotalAndCirculatingSupply {
     totalSupply: BigInt;
-  circulatingSupply: BigInt;
+    circulatingSupply: BigInt;
 
-  constructor(totalSupply: BigInt, circulatingSupply: BigInt) {
-    this.totalSupply = totalSupply;
-    this.circulatingSupply = circulatingSupply;
-  }
-
+    constructor(totalSupply: BigInt, circulatingSupply: BigInt) {
+        this.totalSupply = totalSupply;
+        this.circulatingSupply = circulatingSupply;
+    }
 }
-
 
 /**
  * Get the total and circulating supply of DXD
@@ -21,24 +24,30 @@ class DXDTotalAndCirculatingSupply {
  * @returns
  */
 export function getDXDTotalAndCirculatingSupply(): DXDTotalAndCirculatingSupply {
-    let dxdContract = ERC20Contract.bind(DXD.getAddress());
-    let totalSupply = dxdContract.totalSupply();
-    let avatarBalance = dxdContract.balanceOf(DXdao.avatarAddress());
-    let dxdContractBalance = dxdContract.balanceOf(dxdContract._address);
+    const dxdContract = ERC20Contract.bind(DXD.address());
+    const totalSupply = dxdContract.totalSupply();
 
-    // Mainet vesting contract
-    let mainnetVestingContractBalance = BigInt.fromI32(0);
-    if (dataSource.network() === MAINNET) {
-        mainnetVestingContractBalance = dxdContract.balanceOf(
-            DXDAO_AVATAR_DXD_VESTING_ADDRESS
+    const dxdBalancesInSafes = getTokenBalancesForAddressList(
+        [DXD.address()],
+        DXdaoSafes.addressList().concat([
+            DXdaoAvatar.address(),
+            DXDAO_AVATAR_DXD_VESTING_ADDRESS,
+            dxdContract._address,
+        ])
+    );
+
+    let avatar_dxdVesting_safes_dxdContract_Balance = BigInt.fromI32(0);
+
+    for (let i = 0; i < dxdBalancesInSafes.length; i++) {
+        avatar_dxdVesting_safes_dxdContract_Balance = avatar_dxdVesting_safes_dxdContract_Balance.plus(
+            dxdBalancesInSafes[i].balance
         );
     }
 
-    // circulating supply = total supply - avatar balance - DXD contract balance - vesting contract balance
-    let circulatingSupply = totalSupply
-        .minus(avatarBalance)
-        .minus(dxdContractBalance)
-        .minus(mainnetVestingContractBalance);
+    // circulating supply = total supply - avatar balance - DXD contract balance - vesting contract balance - safes
+    const circulatingSupply = totalSupply.minus(
+        avatar_dxdVesting_safes_dxdContract_Balance
+    );
 
     return new DXDTotalAndCirculatingSupply(totalSupply, circulatingSupply);
 }

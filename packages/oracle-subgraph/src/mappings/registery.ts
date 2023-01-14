@@ -3,30 +3,18 @@ import {
     DXDCirculatingSupplySnapshot,
     SubgraphStatus,
     Token,
-    TreasuryBalancesSnapshot,
-    TokenBalance,
 } from "../../generated/schema";
 import { ERC20 as ERC20Contract } from "../../generated/Token/ERC20";
 import { NewCallProposal } from "../../generated/Token/ENSScheme";
 import { NAVToken as NAVTokenTemplate } from "../../generated/templates";
 import {
-    getNativeTokenBalanceForAddress,
-    getTokenBalancesForAddress,
-} from "../helpers/balances";
-import {
     DXD,
-    DXdao,
+    DXdaoNavTokens,
     MAINNET,
     NATIVE_TOKEN_ADDRESS,
-    SwaprRelayer,
 } from "./constants";
 import { getDXDTotalAndCirculatingSupply } from "../helpers/dxd";
-import { saveTreasuryBalanceSnapshot } from "./snapshot";
-
-// Dummy
-export function handleNoopTransfer(): void {
-    // Do nothing
-}
+import { takeTreasuryBalanceSnapshot } from "./snapshot";
 
 // This handler is called by block handlers
 export function initSubgraph(blockNumber: BigInt): void {
@@ -44,19 +32,22 @@ export function initSubgraph(blockNumber: BigInt): void {
     subgraphStatus.isInitialized = true;
     subgraphStatus.lastSnapshotBlock = blockNumber;
     subgraphStatus.save();
-
+    // Create NAV token entities in postgres
     createNativeTokenEntity();
-    createOrReturnTokenEntity(DXD.getAddress());
-    for (let i = 0; i < DXdao.navTokenAddressList().length; i++) {
-        createOrReturnTokenEntity(DXdao.navTokenAddressList()[i]);
+    createOrReturnTokenEntity(DXD.address());
+
+    const navTokenList = DXdaoNavTokens.addressList();
+
+    for (let i = 0; i < navTokenList.length; i++) {
+        createOrReturnTokenEntity(navTokenList[i]);
     }
     initializeDXDCirculatingSupplySnapshot(blockNumber);
     initializeTreasuryBalancesSnapshot(blockNumber);
 
     // Create token trackers for DXD and NAV tokens
     // NAVTokenTemplate.create(DXD.getAddress());
-    for (let i = 0; i < DXdao.navTokenAddressList().length; i++) {
-        NAVTokenTemplate.create(DXdao.navTokenAddressList()[i] as Address);
+    for (let i = 0; i < navTokenList.length; i++) {
+        NAVTokenTemplate.create(navTokenList[i]);
     }
 }
 
@@ -114,5 +105,5 @@ export function initializeDXDCirculatingSupplySnapshot(
 }
 
 export function initializeTreasuryBalancesSnapshot(blockNumber: BigInt): void {
-    saveTreasuryBalanceSnapshot(blockNumber);
+    takeTreasuryBalanceSnapshot(blockNumber);
 }

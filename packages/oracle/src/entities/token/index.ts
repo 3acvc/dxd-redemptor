@@ -91,6 +91,21 @@ export const WETH: Readonly<Record<ChainId, Token>> = {
     ),
 };
 
+export const SWPR: Readonly<Record<ChainId, Token>> = {
+    [ChainId.ETHEREUM]: new Token(
+        ChainId.ETHEREUM,
+        "0x6cacdb97e3fc8136805a9e7c342d866ab77d0957",
+        18,
+        "SWPR"
+    ),
+    [ChainId.GNOSIS]: new Token(
+        ChainId.GNOSIS,
+        "0x532801ed6f82fffd2dab70a19fc2d7b2772c4f4b",
+        18,
+        "SWPR"
+    ),
+};
+
 export const WXDAI = new Token(
     ChainId.GNOSIS,
     "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d",
@@ -191,9 +206,11 @@ export const NAV_TOKEN_LIST = [
     SUSD,
     GNO[ChainId.ETHEREUM],
     ENS,
+    SWPR[ChainId.ETHEREUM],
     // gnosis
     WXDAI,
     WETH[ChainId.GNOSIS],
     USDC[ChainId.GNOSIS],
     GNO[ChainId.GNOSIS],
+    SWPR[ChainId.GNOSIS]
 ];
