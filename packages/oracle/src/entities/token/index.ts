@@ -212,5 +212,5 @@ export const NAV_TOKEN_LIST = [
     WETH[ChainId.GNOSIS],
     USDC[ChainId.GNOSIS],
     GNO[ChainId.GNOSIS],
-    SWPR[ChainId.GNOSIS]
+    SWPR[ChainId.GNOSIS],
 ];
