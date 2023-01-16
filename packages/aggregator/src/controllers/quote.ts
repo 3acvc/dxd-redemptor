@@ -29,6 +29,11 @@ const providerList: Record<ChainId, Provider> = {
     ),
 };
 
+const subgraphEndpointList: Record<ChainId, string> = {
+    [ChainId.ETHEREUM]: getRequiredEnv("ETHEREUM_ORACLE_GRAPHQL_ENDPOINT"),
+    [ChainId.GNOSIS]: getRequiredEnv("GNOSIS_ORACLE_GRAPHQL_ENDPOINT"),
+};
+
 export async function handleQuote(
     request: QuoteRequest
 ): Promise<QuoteResponse> {
@@ -44,12 +49,13 @@ export async function handleQuote(
                 (await providerList[ChainId.GNOSIS].getBlockNumber()) - 10,
         };
 
-        const aggregatorQuote = await getQuote(
+        const aggregatorQuote = await getQuote({
             block,
-            rawRedeemedTokenAddress,
-            rawRedeemedDXDAmount,
-            providerList
-        );
+            redeemedTokenAddress: rawRedeemedTokenAddress,
+            redeemedDxdWeiAmount: rawRedeemedDXDAmount,
+            providerList,
+            subgraphEndpointList,
+        });
 
         const verifiers = await getVerifiers();
 
@@ -108,7 +114,7 @@ export async function handleQuote(
 
         return { quote: aggregatorQuote, signatures: validSignatures };
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
+    } catch (error) {
         console.error(error);
         // eslint-disable-next-line
         // @ts-ignore

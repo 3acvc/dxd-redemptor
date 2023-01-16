@@ -1,33 +1,12 @@
-import type { Provider } from "@ethersproject/abstract-provider";
 import { formatUnits } from "@ethersproject/units";
-import { ChainId, DXDAO_AVATAR, QUOTE_BLOCK_DEADLINE } from "./constants";
+import { ChainId, QUOTE_BLOCK_DEADLINE } from "./constants";
 import { Amount } from "./entities/amount";
 import { Currency } from "./entities/currency";
-import {
-    DAI,
-    DXD,
-    ENS,
-    GNO,
-    LUSD,
-    RETH,
-    RETH2,
-    SETH2,
-    STETH,
-    SUSD,
-    Token,
-    USDC,
-    USDT,
-    WETH,
-    WXDAI,
-} from "./entities/token";
-import { Quote } from "./types";
-import {
-    getNativeCurrencyBalancesAtBlock,
-    getTokenBalancesAtBlock,
-} from "./utils/balances";
-import { getDXDCirculatingSupply } from "./utils/dxd";
+import { DAI, DXD, Token, USDC, WETH } from "./entities/token";
+import { GetQuoteParams, Quote } from "./types";
 import { enforce } from "./utils/invariant";
 import { getPriceableToken, getUSDValueTWAP } from "./utils/pricing";
+import { getTokenBalancesSnapshotAtBlock } from "./utils/subgraph";
 export { quoteToEIP712Hash } from "./utils/signing";
 
 export * from "./types";
@@ -58,26 +37,23 @@ export function getCurrencyByAddress(currenyAddress: string) {
 }
 
 /**
- *
+ * Returns a quote for the given parameters
  * @param block - block number for each chain
  * @param redeemedTokenAddress - token address to redeem DXD for. Valid tokens are ETH, WETH, USDC, DAI
  * @param redeemedDxdWeiAmount - amount of DXD to redeem in wei
  * @param providerList - a list of providers for each chain
+ * @param subgraphEndpointList - a list of subgraph endpoints for each chain
  * @param deadline - deadline for the quote
  * @returns
  */
-export async function getQuote(
-    block: Record<ChainId, number>,
-    redeemedTokenAddress: string,
-    redeemedDxdWeiAmount: string,
-    providerList: Record<ChainId, Provider>,
-    deadline?: number
-): Promise<Quote> {
-    const circulatingDXDSupply = await getDXDCirculatingSupply(
-        block,
-        providerList
-    );
-
+export async function getQuote({
+    block,
+    redeemedTokenAddress,
+    redeemedDxdWeiAmount,
+    providerList,
+    subgraphEndpointList,
+    deadline,
+}: GetQuoteParams): Promise<Quote> {
     // Reconstruct the redeemed token and DXD amount
     const redeemedToken = getCurrencyByAddress(redeemedTokenAddress);
     const redeemedDxd = Amount.fromRawAmount(
@@ -85,42 +61,11 @@ export async function getQuote(
         redeemedDxdWeiAmount
     );
 
-    const tokenBalances = await getTokenBalancesAtBlock(
-        [
-            // ethereum
-            WETH[ChainId.ETHEREUM],
-            STETH,
-            RETH,
-            SETH2,
-            RETH2,
-            USDC[ChainId.ETHEREUM],
-            DAI,
-            USDT,
-            LUSD,
-            SUSD,
-            GNO[ChainId.ETHEREUM],
-            ENS,
-
-            // gnosis
-            WXDAI,
-            WETH[ChainId.GNOSIS],
-            USDC[ChainId.GNOSIS],
-            GNO[ChainId.GNOSIS],
-        ].map((token) => ({
-            token,
-            owner: DXDAO_AVATAR[token.chainId],
-        })),
-        block,
-        providerList
-    );
-    const nativeCurrencyBalances = await getNativeCurrencyBalancesAtBlock(
-        DXDAO_AVATAR,
-        block,
-        providerList
-    );
+    const { circulatingDXDSupply, tokenBalances } =
+        await getTokenBalancesSnapshotAtBlock(block, subgraphEndpointList);
 
     const [navUSDValue, tokenPriceList] = await getUSDValueTWAP(
-        [...tokenBalances, ...nativeCurrencyBalances],
+        tokenBalances,
         providerList[ChainId.ETHEREUM],
         block[ChainId.ETHEREUM]
     );

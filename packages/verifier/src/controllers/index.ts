@@ -21,6 +21,11 @@ const providerList: Record<ChainId, Provider> = {
     ),
 };
 
+const subgraphEndpointList: Record<ChainId, string> = {
+    [ChainId.ETHEREUM]: getRequiredEnv("ETHEREUM_ORACLE_GRAPHQL_ENDPOINT"),
+    [ChainId.GNOSIS]: getRequiredEnv("GNOSIS_ORACLE_GRAPHQL_ENDPOINT"),
+};
+
 const verifyingContract = getRequiredEnv("REDEMPTOR_ADDRESS");
 
 /**
@@ -38,22 +43,18 @@ export async function verifyAndSignOracleAggreagatorMessageController(
     try {
         const { blockNumber, quote: aggregatorQuote } = req.payload;
         // For value,s verify that the message is correct
-        const verifierQuote = await getQuote(
-            blockNumber as Record<ChainId, number>,
-            aggregatorQuote.redeemedToken,
-            aggregatorQuote.redeemedDXD,
+        const verifierQuote = await getQuote({
+            block: blockNumber as Record<ChainId, number>,
+            redeemedTokenAddress: aggregatorQuote.redeemedToken,
+            redeemedDxdWeiAmount: aggregatorQuote.redeemedDXD,
             providerList,
-            parseInt(aggregatorQuote.deadline)
-        );
+            subgraphEndpointList,
+            deadline: parseInt(aggregatorQuote.deadline),
+        });
 
         // Verify that the message is correct
         const aggregatorQuoteHash = quoteToEIP712Hash(aggregatorQuote);
         const verifierQuoteHash = quoteToEIP712Hash(verifierQuote);
-
-        console.log({
-            aggregatorQuoteHash,
-            verifierQuoteHash,
-        });
 
         // Verify that the message is correct
         if (aggregatorQuoteHash !== verifierQuoteHash) {

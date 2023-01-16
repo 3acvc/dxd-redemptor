@@ -1,0 +1,9 @@
+[
+    { "inputs": [], "stateMutability": "nonpayable", "type": "constructor" },
+    {
+        "anonymous": false,
+        "inputs": [],
+        "name": "NavInitialized",
+        "type": "event"
+    }
+]
