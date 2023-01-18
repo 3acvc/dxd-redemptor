@@ -150,6 +150,36 @@ export const DXD: Record<ChainId, Token> = {
     ),
 };
 
+export const WBTC: Record<ChainId, Token> = {
+    [ChainId.ETHEREUM]: new Token(
+        ChainId.ETHEREUM,
+        "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+        8,
+        "WBTC"
+    ),
+    [ChainId.GNOSIS]: new Token(
+        ChainId.GNOSIS,
+        "0x8e5bbbb09ed1ebde8674cda39a0c169401db4252",
+        8,
+        "WBTC"
+    ),
+};
+
+export const DPI: Record<ChainId, Token> = {
+    [ChainId.ETHEREUM]: new Token(
+        ChainId.ETHEREUM,
+        "0x1494ca1f11d487c2bbe4543e90080aeba4ba3c2b",
+        18,
+        "DPI"
+    ),
+    [ChainId.GNOSIS]: new Token(
+        ChainId.GNOSIS,
+        "0xd3d47d5578e55c880505dc40648f7f9307c3e7a8",
+        18,
+        "DPI"
+    ),
+};
+
 export const STETH = new Token(
     ChainId.ETHEREUM,
     "0xae7ab96520de3a18e5e111b5eaab095312d7fe84",

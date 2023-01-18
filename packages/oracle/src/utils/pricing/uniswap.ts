@@ -42,7 +42,7 @@ async function getPriceAgainstWETH(
     const multicallContract = getMulticallContractForProvider(provider);
     const staticOralceInterface = Contract.getInterface(
         STATIC_ORACLE_ABI
-    ) as StaticOracle["interface"];
+    ) as unknown as StaticOracle["interface"];
 
     const calls = tokenList.map((token) => ({
         target: STATIC_ORACLE_ADDRESS,
@@ -109,7 +109,7 @@ export async function getTokenUSDCPriceViaOracle(
         STATIC_ORACLE_ADDRESS,
         STATIC_ORACLE_ABI,
         provider
-    ) as StaticOracle;
+    ) as unknown as StaticOracle;
 
     // get the pool address of WETH against USDC
     const [_wethPriceTWAPBN] =
