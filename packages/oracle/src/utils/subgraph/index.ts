@@ -160,10 +160,6 @@ export async function getTokenBalancesSnapshotAtBlock(
             balance.token.chainId
         }-${token.address.toLowerCase()}`;
 
-        if (tokenId === "1-0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee") {
-            console.log(balance);
-        }
-
         let amount = BigNumber.from(balance.amount);
 
         if (acc[tokenId]) {

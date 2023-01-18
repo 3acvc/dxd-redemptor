@@ -94,8 +94,6 @@ export async function getUSDValueTWAP(
         twapPeriod
     );
 
-    console.log(tokenPriceList);
-
     const mainnetUsdc = USDC[ChainId.ETHEREUM];
     const rawUSDValue = currencyAmounts.reduce(
         (usdValue: Decimal, currencyAmount) => {
