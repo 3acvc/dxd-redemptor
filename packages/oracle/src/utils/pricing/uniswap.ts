@@ -3,7 +3,7 @@ import { Contract } from "@ethersproject/contracts";
 import { BigNumber } from "@ethersproject/bignumber";
 import type { StaticOracle } from "@mean-finance/uniswap-v3-oracle/typechained/";
 import type { Token } from "../../entities";
-import { RETH2, SETH2, USDC, WETH } from "../../entities/token";
+import { RETH2, SETH2, SWPR, USDC, WETH } from "../../entities/token";
 import { ChainId } from "../../constants";
 import { parseEther, parseUnits } from "@ethersproject/units";
 import { getMulticallContractForProvider } from "../contracts";
@@ -11,6 +11,10 @@ import { STATIC_ORACLE_ABI } from "../../abis/staticOracle";
 
 const STATIC_ORACLE_ADDRESS = "0xB210CE856631EeEB767eFa666EC7C1C57738d438";
 const TWAP_PERIOD = 1000;
+
+async function getSWPRUSDCPrice(): Promise<BigNumber> {
+    return parseUnits("0.02237756", SWPR[ChainId.ETHEREUM].decimals); // @todo: get this from oracle
+}
 
 interface TokenPrice {
     token: Token;
@@ -42,7 +46,7 @@ async function getPriceAgainstWETH(
     const multicallContract = getMulticallContractForProvider(provider);
     const staticOralceInterface = Contract.getInterface(
         STATIC_ORACLE_ABI
-    ) as StaticOracle["interface"];
+    ) as unknown as StaticOracle["interface"];
 
     const calls = tokenList.map((token) => ({
         target: STATIC_ORACLE_ADDRESS,
@@ -95,12 +99,14 @@ export async function getTokenUSDCPriceViaOracle(
     block: number,
     twapPeriod = TWAP_PERIOD
 ): Promise<TokenPrice[]> {
-    const hasNonEthereumToken =
-        tokenList.find((token) => token.chainId !== ChainId.ETHEREUM) !==
-        undefined;
+    const hasNonEthereumToken = tokenList.find(
+        (token) => token.chainId !== ChainId.ETHEREUM
+    );
 
     if (hasNonEthereumToken) {
-        throw new Error("Only Ethereum tokens are supported");
+        throw new Error(
+            `Only Ethereum tokens are supported. ${hasNonEthereumToken.address} is not supported.`
+        );
     }
 
     const tokenPriceList: TokenPrice[] = [];
@@ -109,7 +115,7 @@ export async function getTokenUSDCPriceViaOracle(
         STATIC_ORACLE_ADDRESS,
         STATIC_ORACLE_ABI,
         provider
-    ) as StaticOracle;
+    ) as unknown as StaticOracle;
 
     // get the pool address of WETH against USDC
     const [_wethPriceTWAPBN] =
@@ -172,6 +178,17 @@ export async function getTokenUSDCPriceViaOracle(
                 token,
                 wethPrice: tokenWETHPrice,
                 usdPrice: tokenUSDCPrice,
+            });
+        } else if (token.equals(SWPR[ChainId.ETHEREUM])) {
+            const swprUSDCPrice = await getSWPRUSDCPrice();
+            const swprWETHPrice = swprUSDCPrice
+                .mul(parseEther("1"))
+                .div(wethUSDCPrice);
+
+            tokenPriceList.push({
+                token,
+                usdPrice: swprUSDCPrice,
+                wethPrice: swprWETHPrice,
             });
         }
         //  Token exists in TOKEN/WETH price list

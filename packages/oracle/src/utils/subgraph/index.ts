@@ -1,9 +1,11 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { GraphQLClient, gql } from "graphql-request";
 import { DXD, NAV_TOKEN_LIST, Token } from "../../entities/token";
-import { Amount } from "../../entities";
-import { ChainId } from "../../constants";
+import { Amount, Currency } from "../../entities";
+import { ChainId, NATIVE_TOKEN_ADDRESS } from "../../constants";
 import { enforce } from "../invariant";
+
+import { NAV_ASSETS } from "../../nav";
 
 export interface TreasuryBalancesSnapshotsTokenBalance {
     address: string;
@@ -73,12 +75,20 @@ const addChainIdToToken = (
         },
     }));
 
-const findToken = (tokenAddress: string, chainId: ChainId) =>
-    NAV_TOKEN_LIST.find(
+function findToken(tokenAddress: string, chainId: ChainId) {
+    tokenAddress = tokenAddress.toLowerCase();
+
+    // Handle native tokens
+    if (tokenAddress === NATIVE_TOKEN_ADDRESS.toLowerCase()) {
+        return Token.getNative(chainId);
+    }
+
+    return NAV_TOKEN_LIST.find(
         (token) =>
-            token.address.toLowerCase() === tokenAddress.toLowerCase() &&
+            token.address.toLowerCase() === tokenAddress &&
             token.chainId === chainId
     );
+}
 
 /**
  * Get token balances snapshot at block from subgraph
@@ -92,7 +102,7 @@ export async function getTokenBalancesSnapshotAtBlock(
 ): Promise<{
     dxdTotalSupply: Amount<Token>;
     circulatingDXDSupply: Amount<Token>;
-    tokenBalances: Amount<Token>[];
+    tokenBalances: Amount<Token | Currency>[];
 }> {
     const responseList = {} as Record<ChainId, NAVSnapshotResponse>;
 
@@ -146,22 +156,36 @@ export async function getTokenBalancesSnapshotAtBlock(
         const token = findToken(balance.token.adress, balance.token.chainId);
         if (!token) return acc;
 
-        const tokenId = `${token.chainId}-${token.address.toLowerCase()}`;
+        const tokenId = `${
+            balance.token.chainId
+        }-${token.address.toLowerCase()}`;
+
         let amount = BigNumber.from(balance.amount);
 
-        if (tokenBalances[tokenId]) {
-            console.log({
-                tokenId,
-                amount: tokenBalances[tokenId].toRawAmount(),
-            });
-
-            amount = amount.add(tokenBalances[tokenId].toRawAmount());
+        if (acc[tokenId]) {
+            amount = amount.add(acc[tokenId].toRawAmount());
         }
 
         acc[tokenId] = Amount.fromRawAmount(token, amount);
 
         return acc;
-    }, {} as Record<string, Amount<Token>>);
+    }, {} as Record<string, Amount<Token | Currency>>);
+
+    // Append NAV assets from custom list
+    NAV_ASSETS.forEach((amount) => {
+        const tokenId = `${
+            amount.currency.chainId
+        }-${amount.currency.address.toLowerCase()}`;
+
+        if (tokenBalances[tokenId]) {
+            tokenBalances[tokenId] = new Amount(
+                amount.currency,
+                tokenBalances[tokenId].add(amount)
+            );
+        } else {
+            tokenBalances[tokenId] = amount;
+        }
+    });
 
     return {
         dxdTotalSupply,
