@@ -8,10 +8,13 @@ import { Currency } from "../../entities/currency";
 import {
     currencyEquals,
     DAI,
+    DPI,
     DXD,
     GNO,
+    SWPR,
     Token,
     USDC,
+    WBTC,
     WETH,
     WXDAI,
 } from "../../entities/token";
@@ -35,6 +38,11 @@ const handleToken = (token: Token): Token => {
             if (token.equals(WETH[ChainId.GNOSIS]))
                 return WETH[ChainId.ETHEREUM];
             if (token.equals(GNO[ChainId.GNOSIS])) return GNO[ChainId.ETHEREUM];
+            if (token.equals(DPI[ChainId.GNOSIS])) return DPI[ChainId.ETHEREUM];
+            if (token.equals(WBTC[ChainId.GNOSIS]))
+                return WBTC[ChainId.ETHEREUM];
+            if (token.equals(SWPR[ChainId.GNOSIS]))
+                return SWPR[ChainId.ETHEREUM];
             else return token;
         }
     }
@@ -71,8 +79,9 @@ export async function getUSDValueTWAP(
     const priceableTokens = currencyAmounts.reduce(
         (priceableTokens: Token[], amount) => {
             const priceableToken = getPriceableToken(amount.currency);
-            if (priceableTokens.indexOf(priceableToken) < 0)
+            if (priceableTokens.indexOf(priceableToken) < 0) {
                 priceableTokens.push(priceableToken);
+            }
             return priceableTokens;
         },
         []
@@ -84,6 +93,9 @@ export async function getUSDValueTWAP(
         mainnetBlock,
         twapPeriod
     );
+
+    console.log(tokenPriceList);
+
     const mainnetUsdc = USDC[ChainId.ETHEREUM];
     const rawUSDValue = currencyAmounts.reduce(
         (usdValue: Decimal, currencyAmount) => {
