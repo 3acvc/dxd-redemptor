@@ -33,6 +33,8 @@ async function main() {
     let dxdTokenAdresss = "0xa1d65e8fb6e87b60feccbc582f7f97804b725521";
     let startBlock = 16341493; // this block emits a NewCallProposal event from DAOstack scheme
 
+    startBlock = await getBlockNumber(network);
+
     // fetch recent block number
     // const startBlock = await getBlockNumber(network);
     let source = {
@@ -47,9 +49,14 @@ async function main() {
             handler: "handleInitSubgraph",
         },
     ];
+    const blockHandlers = [
+        {
+            handler: "handleBlock",
+        },
+    ];
 
     if (network === "xdai") {
-        startBlock = 25836452;
+        // startBlock = 25836452;
         dxdTokenAdresss = "0xb90d6bec20993be5d72a5ab353343f7a0281f158";
         source = {
             address: "0xa80ea8941f1772792beb99648ba4ff8dc1d4c849",
@@ -100,7 +107,7 @@ async function main() {
                             file: "./abis/DXdaoNAV.json",
                         },
                     ],
-                    eventHandlers,
+                    blockHandlers,
                 },
             },
             {

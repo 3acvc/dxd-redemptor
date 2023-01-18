@@ -45,6 +45,7 @@ export function handleDXDTrasnfer(event: Transfer): void {
     }
     updateDXDCirculatingSupplySnapshot(blockNumber, supplyChange);
     updateSubgraphStatus(blockNumber);
+
     return;
 }
 
