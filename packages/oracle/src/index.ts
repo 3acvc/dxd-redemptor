@@ -14,6 +14,7 @@ export { ChainId } from "./constants";
 export * from "./entities";
 export { hashQuote } from "./hash-quote";
 export { signQuote, verifyQuoteSignature } from "./sign-quote";
+export { getTokenBalancesSnapshotAtBlock } from "./utils/subgraph";
 
 /**
  * Returns the token for a given address

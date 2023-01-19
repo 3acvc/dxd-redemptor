@@ -103,6 +103,7 @@ export async function getTokenBalancesSnapshotAtBlock(
     dxdTotalSupply: Amount<Token>;
     circulatingDXDSupply: Amount<Token>;
     tokenBalances: Amount<Token | Currency>[];
+    rawTokenBalances: TreasuryBalancesSnapshotsTokenBalance[];
 }> {
     const responseList = {} as Record<ChainId, NAVSnapshotResponse>;
 
@@ -139,7 +140,7 @@ export async function getTokenBalancesSnapshotAtBlock(
     );
 
     // Treasury balances are from Ethereum chain
-    const treasuryBalances = [
+    const rawTokenBalances = [
         ...addChainIdToToken(
             responseList[ChainId.ETHEREUM].treasuryBalancesSnapshots[0]
                 .balances,
@@ -152,7 +153,7 @@ export async function getTokenBalancesSnapshotAtBlock(
     ];
 
     // Aggregate token balances from all NAV addresses
-    const tokenBalances = treasuryBalances.reduce((acc, balance) => {
+    const tokenBalances = rawTokenBalances.reduce((acc, balance) => {
         const token = findToken(balance.token.adress, balance.token.chainId);
         if (!token) return acc;
 
@@ -191,5 +192,6 @@ export async function getTokenBalancesSnapshotAtBlock(
         dxdTotalSupply,
         circulatingDXDSupply,
         tokenBalances: Object.values(tokenBalances),
+        rawTokenBalances,
     };
 }
