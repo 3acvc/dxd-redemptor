@@ -26,6 +26,23 @@ body,
   width: 100%;
 }
 
+table {
+  display: block;
+  width: 100%;
+  overflow: auto;
+  word-break: keep-all;
+  white-space: nowrap;
+  table-layout: fixed;
+
+  border-collapse: collapse;
+}
+
+table th,
+table td {
+  padding: 0.5rem 1rem;
+  border: 1px solid #000;
+}
+
 input,
 select {
   padding: 4px 8px;
