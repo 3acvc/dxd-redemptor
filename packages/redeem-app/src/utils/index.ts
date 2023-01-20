@@ -1,3 +1,6 @@
+import { ChainId, Currency, Token } from "dxd-redemptor-oracle";
+import { NATIVE_TOKEN_ADDRESS } from "../constants";
+
 /**
  * Shorten the checksummed version of the input address to have 0x + 4 characters at start and end
  * @param address The input address
@@ -15,4 +18,19 @@ export function shortenAddress(
     return `${address.substring(0, charsBefore + 2)}...${address.substring(
         42 - charsAfter
     )}`;
+}
+
+
+export function getCurrencyChainId(currency: Currency) {
+    const isNativeCurreny =
+        currency.address.toLowerCase() === NATIVE_TOKEN_ADDRESS;
+
+    let tokenChainId =
+        currency instanceof Token ? currency.chainId : ChainId.ETHEREUM;
+    if (isNativeCurreny) {
+        tokenChainId =
+            currency.symbol === "ETH" ? ChainId.ETHEREUM : ChainId.GNOSIS;
+    }
+
+    return tokenChainId;
 }

@@ -11,7 +11,7 @@ export interface TreasuryBalancesSnapshotsTokenBalance {
     address: string;
     amount: string;
     token: {
-        adress: string;
+        address: string;
         symbol: string;
         decimals: number;
     };
@@ -53,7 +53,7 @@ function buildSubgraphQuery(block: number): string {
         address
         amount
         token {
-            adress: id
+            address: id
             symbol
             decimals
           }
@@ -104,20 +104,21 @@ export async function getTokenBalancesSnapshotAtBlock(
     circulatingDXDSupply: Amount<Token>;
     tokenBalances: Amount<Token | Currency>[];
     rawTokenBalances: TreasuryBalancesSnapshotsTokenBalance[];
+    tokenList: Currency[];
 }> {
     const responseList = {} as Record<ChainId, NAVSnapshotResponse>;
+    const tokenList = {} as Record<string, Currency>;
 
     for (const [rawChainId, subgraphEndpoint] of Object.entries(
         subgraphEndpointList
     )) {
-        const chainId = rawChainId as unknown as ChainId;
+        const chainId = (rawChainId as unknown) as ChainId;
         const blockTag = block[chainId];
         enforce(!!blockTag, `no block tag specified for chain id ${chainId}`);
         const graphqlClient = new GraphQLClient(subgraphEndpoint);
-        responseList[chainId] =
-            await graphqlClient.request<NAVSnapshotResponse>(
-                buildSubgraphQuery(blockTag)
-            );
+        responseList[chainId] = await graphqlClient.request<
+            NAVSnapshotResponse
+        >(buildSubgraphQuery(blockTag));
     }
 
     // Total supply is from Ethereum chain
@@ -154,12 +155,17 @@ export async function getTokenBalancesSnapshotAtBlock(
 
     // Aggregate token balances from all NAV addresses
     const tokenBalances = rawTokenBalances.reduce((acc, balance) => {
-        const token = findToken(balance.token.adress, balance.token.chainId);
+        const token = findToken(balance.token.address, balance.token.chainId);
         if (!token) return acc;
 
         const tokenId = `${
             balance.token.chainId
         }-${token.address.toLowerCase()}`;
+
+        // Add token to token list
+        if (!tokenList[tokenId]) {
+            tokenList[tokenId] = token;
+        }
 
         let amount = BigNumber.from(balance.amount);
 
@@ -193,5 +199,6 @@ export async function getTokenBalancesSnapshotAtBlock(
         circulatingDXDSupply,
         tokenBalances: Object.values(tokenBalances),
         rawTokenBalances,
+        tokenList: Object.values(tokenList)
     };
 }
