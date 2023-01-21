@@ -1,43 +1,93 @@
-import { JsonRpcProvider } from "@ethersproject/providers";
 import {
     Amount,
     ChainId,
     DXD,
     getTokenBalancesSnapshotAtBlock,
     Token,
+    NAV_TOKEN_LIST,
+    Currency,
 } from "dxd-redemptor-oracle";
 import { BigNumber } from "ethers";
-import { useEffect, useState } from "react";
-import { Container } from "../components/Container";
-import { NAVTableSectionContainer } from "../components/NAVTableSectionContainer";
+import { useEffect, useRef, useState } from "react";
+import styled from "styled-components";
 import {
-    HeaderLayout,
+    fetchNAVInformationAtBlock,
+    getGnosisChainBlockByTimestamp,
+    providerList,
+} from "../api";
+import { Container } from "../components/Container";
+import { Footer } from "../components/Footer";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { NumberInput } from "../components/form/NumberInput";
+import {
+    LiquidityPosition,
+    NAVTableSectionContainer,
+    TokenPrice,
+} from "../components/NAVTableSectionContainer";
+import {
     Metric,
     MetricInnerLayout,
+    MetricListContainer,
 } from "../components/NAVTableSectionContainer/styled";
 import { SUBGRAPH_BLOCK_BUFFER } from "../constants";
+import { getCurrencyChainId } from "../utils";
 
 type SnapshotParams = Awaited<
     ReturnType<typeof getTokenBalancesSnapshotAtBlock>
 >;
 
-const providerList = {
-    [ChainId.ETHEREUM]: new JsonRpcProvider(
-        "https://eth-mainnet.g.alchemy.com/v2/EY3WaGaUwnSMBGBXwVzUiAssjPL_zQeM" // @todo move to env
-    ),
-    [ChainId.GNOSIS]: new JsonRpcProvider("https://rpc.gnosischain.com"),
-};
+const LoadingContainer = styled.div`
+    min-height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
 
-const subgraphEndpointList = {
-    [ChainId.ETHEREUM]:
-        "https://api.thegraph.com/subgraphs/name/adamazad/dxdao-dxd-redemption-ethereum",
-    [ChainId.GNOSIS]:
-        "https://api.thegraph.com/subgraphs/name/adamazad/dxdao-dxd-redemption-gnosis",
-};
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const Form = styled.form`
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    > div[data-role="buttons"] {
+        display: flex;
+        gap: 8px;
+        flex: 1;
+    }
+`;
+
+const PageLink = styled.a`
+    color: #000;
+    text-decoration: underline;
+
+    :visited {
+        color: #000;
+        text-decoration: underline;
+    }
+`;
 
 const currencyFormatter = new Intl.NumberFormat();
 
+const tokenList = [
+    Currency.getNative(ChainId.ETHEREUM),
+    Currency.getNative(ChainId.GNOSIS),
+    ...NAV_TOKEN_LIST,
+].sort((a, b) => {
+    const aChainId = getCurrencyChainId(a);
+    const bChainId = getCurrencyChainId(b);
+
+    return aChainId - bChainId;
+});
+
 export function NAVMetricsPage() {
+    const ethBlockNumberFromSearch = new URLSearchParams(
+        window.location.search
+    ).get("block");
+    const fetchInterval = useRef<NodeJS.Timeout>();
+    const [block, setBlock] = useState({} as Record<ChainId, number>);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [customEthereumBlock, setCustomEthereumBlock] = useState<
+        number | null
+    >(ethBlockNumberFromSearch ? parseInt(ethBlockNumberFromSearch) : null);
     const [circulatingDXDSupply, setCirculatingDXDSupply] = useState<
         Amount<Token>
     >(Amount.fromRawAmount<Token>(DXD[ChainId.ETHEREUM], BigNumber.from("0")));
@@ -47,57 +97,97 @@ export function NAVMetricsPage() {
     const [rawTokenBalances, setRawTokenBalances] = useState<
         SnapshotParams["rawTokenBalances"]
     >([]);
-    const [tokenList, setTokenList] = useState(
-        {} as SnapshotParams["tokenList"]
-    );
 
-    const fetchAndUpdateBalances = async () => {
-        try {
-            const block = {
-                [ChainId.ETHEREUM]:
-                    (await providerList[ChainId.ETHEREUM].getBlockNumber()) -
-                    SUBGRAPH_BLOCK_BUFFER,
-                [ChainId.GNOSIS]:
-                    (await providerList[ChainId.GNOSIS].getBlockNumber()) -
-                    SUBGRAPH_BLOCK_BUFFER,
-            };
+    const [navUSD, setNavUSD] = useState(0);
+    const [tokenPrices, setTokenPrices] = useState<TokenPrice[]>([]);
 
-            const {
-                circulatingDXDSupply,
-                dxdTotalSupply,
-                rawTokenBalances,
-                tokenList,
-            } = await getTokenBalancesSnapshotAtBlock(
-                block,
-                subgraphEndpointList
+    const [loadingPrices, setLoadingPrices] = useState(true);
+
+    const [principalList, setPrincipalList] = useState<LiquidityPosition[]>([]);
+    const updateBlock = async (ethereumBlock?: number) => {
+        let ethBlockNumber = await providerList[
+            ChainId.ETHEREUM
+        ].getBlockNumber();
+        let gnosisBlockNumber = await providerList[
+            ChainId.GNOSIS
+        ].getBlockNumber();
+
+        if (ethereumBlock !== undefined && ethereumBlock !== 0) {
+            const ethBlockTag = await providerList[ChainId.ETHEREUM].getBlock(
+                ethereumBlock
             );
-
-            setCirculatingDXDSupply(circulatingDXDSupply);
-            setDXDTotalSupply(dxdTotalSupply);
-            setRawTokenBalances(rawTokenBalances);
-            setTokenList(tokenList);
-        } catch (error) {
-            console.log(`Failed to fetch balances: ${error}`);
+            ethBlockNumber = ethBlockTag.number;
+            gnosisBlockNumber = await getGnosisChainBlockByTimestamp(
+                ethBlockTag.timestamp
+            );
         }
+
+        const block = {
+            [ChainId.ETHEREUM]: ethBlockNumber - SUBGRAPH_BLOCK_BUFFER,
+            [ChainId.GNOSIS]: gnosisBlockNumber - SUBGRAPH_BLOCK_BUFFER,
+        };
+        setBlock(block);
     };
 
     useEffect(() => {
-        let interval: NodeJS.Timeout;
+        if (customEthereumBlock !== null && customEthereumBlock !== 0) {
+            updateBlock(customEthereumBlock);
+            clearInterval(fetchInterval.current);
+            return;
+        }
 
-        fetchAndUpdateBalances().then(() => {
-            interval = setInterval(fetchAndUpdateBalances, 30000);
+        updateBlock().then(() => {
+            fetchInterval.current = setInterval(updateBlock, 30000);
         });
 
         return () => {
-            clearInterval(interval);
+            clearInterval(fetchInterval.current);
         };
-    }, []);
+    }, [customEthereumBlock]);
 
-    console.log("rawTokenBalances", rawTokenBalances);
+    useEffect(() => {
+        if (
+            block[ChainId.ETHEREUM] === undefined &&
+            block[ChainId.GNOSIS] === undefined
+        ) {
+            return;
+        }
+
+        fetchNAVInformationAtBlock(block)
+            .then(
+                async ({
+                    circulatingDXDSupply,
+                    dxdTotalSupply,
+                    rawTokenBalances,
+                    principalList,
+                    tokenPrices,
+                }) => {
+                    setCirculatingDXDSupply(circulatingDXDSupply);
+                    setDXDTotalSupply(dxdTotalSupply);
+                    setRawTokenBalances(rawTokenBalances);
+                    setPrincipalList(principalList);
+                    setTokenPrices(tokenPrices);
+                    setLoadingPrices(false);
+                }
+            )
+            .catch((error) => {
+                console.error(`Failed to fetch balances: ${error}`);
+            });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [block[ChainId.ETHEREUM], block[ChainId.GNOSIS]]);
+
+    const linkToPage = () => {
+        if (block[ChainId.ETHEREUM] !== undefined) {
+            const url = new URL(window.location.href);
+            url.hash = "";
+            url.searchParams.set("block", block[ChainId.ETHEREUM]?.toString());
+            return url.toString();
+        }
+    };
 
     return (
         <Container>
-            <HeaderLayout>
+            <MetricListContainer>
                 <Metric>
                     <MetricInnerLayout>
                         <h2>DXD Total Supply</h2>
@@ -107,7 +197,9 @@ export function NAVMetricsPage() {
                             )}{" "}
                             DXD
                         </p>
-                        <p>Total DXD supply (`DXD.totalySupply`) on Ethereum</p>
+                        <p>
+                            From <code>DXD.totalySupply()</code> on Ethereum
+                        </p>
                     </MetricInnerLayout>
                 </Metric>
                 <Metric>
@@ -125,11 +217,65 @@ export function NAVMetricsPage() {
                         </p>
                     </MetricInnerLayout>
                 </Metric>
-            </HeaderLayout>
-            <NAVTableSectionContainer
-                rawTokenBalances={rawTokenBalances}
-                tokenList={tokenList}
-            />
+                <Metric>
+                    <MetricInnerLayout>
+                        <h2>DXdao NAV Value</h2>
+                        <p>${currencyFormatter.format(navUSD)}</p>
+                        <p>
+                            <strong>
+                                DXD price backed by 70% NAV: $
+                                {currencyFormatter.format(
+                                    (navUSD * 0.7) /
+                                        parseFloat(
+                                            circulatingDXDSupply.toFixed()
+                                        )
+                                )}
+                            </strong>
+                        </p>
+                    </MetricInnerLayout>
+                </Metric>
+                <Metric>
+                    <MetricInnerLayout>
+                        <h2>Block</h2>
+                        <p>
+                            {block[ChainId.ETHEREUM]
+                                ? block[ChainId.ETHEREUM]
+                                : "Loading..."}
+                        </p>
+                        {/* <Form>
+                            <label>Custom Block</label>
+                            <NumberInput
+                                min={0}
+                                value={customEthereumBlock || ""}
+                                onChange={(value) => {
+                                    setCustomEthereumBlock(
+                                        parseInt(value) || 0
+                                    );
+                                }}
+                            />
+                        </Form> */}
+                        {linkToPage() !== undefined && (
+                            <div>
+                                <PageLink href={linkToPage()}>
+                                    {linkToPage()}
+                                </PageLink>
+                            </div>
+                        )}
+                    </MetricInnerLayout>
+                </Metric>
+            </MetricListContainer>
+            {!loadingPrices ? (
+                <NAVTableSectionContainer
+                    tokenPrices={tokenPrices}
+                    rawTokenBalances={rawTokenBalances}
+                    tokenList={tokenList}
+                    liquidityPositions={principalList}
+                    onNAVUSDValueChange={(value) => setNavUSD(value)}
+                />
+            ) : (
+                <LoadingContainer>Loading...</LoadingContainer>
+            )}
+            <Footer />
         </Container>
     );
 }

@@ -13,7 +13,6 @@ export const DXDAO_ADDRESS_LIST: {
     address: string;
     chainId: ChainId[];
     label: string;
-    isMultichain?: boolean;
 }[] = [
     {
         address: "0x519b70055af55a007110b4ff99b0ea33071c720a",

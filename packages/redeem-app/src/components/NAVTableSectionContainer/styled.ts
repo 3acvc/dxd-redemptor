@@ -1,11 +1,24 @@
 import styled from "styled-components";
 
-export const HeaderLayout = styled.div`
+export const MetricListContainer = styled.div`
     display: flex;
-    justify-content: center;
-    align-items: center;
     gap: 10px;
     margin-bottom: 15px;
+
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 15px;
+    align-items: stretch;
+
+    @media (min-width: 768px) {
+        flex-direction: row;
+
+        & > div {
+            flex: 1;
+        }
+    }
+
 `;
 
 export const Metric = styled.div`
@@ -14,12 +27,13 @@ export const Metric = styled.div`
     border-radius: 3px;
     padding: 10px;
     text-align: center;
+    min-height: 100px;
 `;
 
 export const MetricInnerLayout = styled.div`
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-around;
     height: 100%;
 `;
 
@@ -37,10 +51,8 @@ export const TokenInfoContainer = styled.div`
 
 export const NAVTable = styled.table`
     width: 100%;
-
-    /** stickey first column */
     table-layout: fixed;
-    border-collapse: collapse;
+    border-collapse: separate;
     border-spacing: 0;
 
     caption {

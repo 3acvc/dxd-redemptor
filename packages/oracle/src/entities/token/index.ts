@@ -237,10 +237,14 @@ export const NAV_TOKEN_LIST = [
     GNO[ChainId.ETHEREUM],
     ENS,
     SWPR[ChainId.ETHEREUM],
+    DPI[ChainId.ETHEREUM],
+    WBTC[ChainId.ETHEREUM],
     // gnosis
     WXDAI,
     WETH[ChainId.GNOSIS],
     USDC[ChainId.GNOSIS],
     GNO[ChainId.GNOSIS],
     SWPR[ChainId.GNOSIS],
+    WBTC[ChainId.GNOSIS],
+    DPI[ChainId.GNOSIS],
 ];
