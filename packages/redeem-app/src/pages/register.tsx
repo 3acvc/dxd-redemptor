@@ -14,7 +14,7 @@ const Container = styled.div`
     width: 100%;
 `;
 
-export function RegisterPage() {
+export default function RegisterPage() {
     const [isRegistering, setIsRegistering] = useState(false);
     const [endpoint, setEndpoint] = useState("");
     const [error, setError] = useState<Error | null>(null);

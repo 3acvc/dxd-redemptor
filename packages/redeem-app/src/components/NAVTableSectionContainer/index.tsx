@@ -11,7 +11,6 @@ import { TokenInfoContainer, NAVTable, NAVTableSection } from "./styled";
 import { CurrencyChainLogo } from "../CurrencyChainLogo";
 import { DXDAO_ADDRESS_LIST } from "../../constants";
 import { getCurrencyChainId } from "../../utils";
-import { useState } from "react";
 
 type SnapshotParams = Awaited<
     ReturnType<typeof getTokenBalancesSnapshotAtBlock>

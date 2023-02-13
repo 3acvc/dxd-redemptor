@@ -1,20 +1,46 @@
-import { RegisterPage } from "./pages/register";
-import { IndexPage } from "./pages/index";
-import { NAVMetricsPage } from "./pages/nav-metrics";
+import {
+    createBrowserRouter,
+    RouterProvider,
+    Navigate,
+} from "react-router-dom";
 
-export function App() {
+import RegisterPage from "./pages/register";
+import IndexPage from "./pages/index";
+import NAVMetricsPage from "./pages/nav-metrics";
+
+const router = createBrowserRouter([
+    {
+        path: "/register",
+        element: <RegisterPage />,
+    },
+    {
+        path: "/nav",
+        element: <NAVMetricsPage />,
+    },
+    {
+        path: "*",
+        element: <OldRedirects />,
+    },
+]);
+
+function OldRedirects() {
     const params = new URLSearchParams(window.location.search);
 
     const page = params.get("page");
 
+    console.log({ page });
+
     if (page === "register") {
-        return <RegisterPage />;
+        return <Navigate to="/register" />;
     }
 
     if (page === "nav") {
-        return <NAVMetricsPage />;
+        return <Navigate to="/nav" />;
     }
 
-    // Default to index page
     return <IndexPage />;
+}
+
+export function App() {
+    return <RouterProvider router={router} />;
 }

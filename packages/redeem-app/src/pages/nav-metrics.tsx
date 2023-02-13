@@ -78,7 +78,7 @@ const tokenList = [
     return aChainId - bChainId;
 });
 
-export function NAVMetricsPage() {
+export default function NAVMetricsPage() {
     const ethBlockNumberFromSearch = new URLSearchParams(
         window.location.search
     ).get("block");
