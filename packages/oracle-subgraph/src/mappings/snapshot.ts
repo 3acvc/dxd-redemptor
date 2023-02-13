@@ -5,7 +5,7 @@ import {
     TreasuryBalancesSnapshot,
 } from "../../generated/schema";
 import {
-    getNativeTokenBalanceForAddressAndSum,
+    getNativeTokenBalanceForAddress,
     getTokenBalancesForAddressList,
 } from "../helpers/balances";
 import { getDXDTotalAndCirculatingSupply } from "../helpers/dxd";
@@ -21,33 +21,38 @@ import {
 function takeNativeTokenBalanceSnapshot(
     block: BigInt,
     treasuryBalancesSnapshotId: string
-): TokenBalance {
-    let nativeTokenEntityId =
-        block.toString() +
-        "/" +
-        NATIVE_TOKEN_ADDRESS.toHex() +
-        "/" +
-        DXdaoAvatar.address().toHex();
-    // If a snapshot for this block exists, don't invoke onchain
-    let nativeTokenEntity = TokenBalance.load(nativeTokenEntityId);
-    if (nativeTokenEntity !== null) {
-        return nativeTokenEntity as TokenBalance;
-    }
-    // treasury ETH balance = avatar + swapr relayer + dxd token contract
-    const treasuryNativeTokenBalance = getNativeTokenBalanceForAddressAndSum(
-        [DXdaoAvatar.address(), SwaprRelayer.address(), DXD.address()].concat(
-            DXdaoSafes.addressList()
-        )
-    );
-    // Native token balance
-    const nativeTokenBalanceEntity = new TokenBalance(nativeTokenEntityId);
-    nativeTokenBalanceEntity.token = NATIVE_TOKEN_ADDRESS.toHex();
-    nativeTokenBalanceEntity.amount = treasuryNativeTokenBalance.toBigDecimal();
-    nativeTokenBalanceEntity.snapshot = treasuryBalancesSnapshotId;
-    nativeTokenBalanceEntity.address = DXdaoAvatar.address();
-    nativeTokenBalanceEntity.save();
+): void {
+    const addressList = [
+        DXdaoAvatar.address(),
+        SwaprRelayer.address(),
+        DXD.address(),
+    ].concat(DXdaoSafes.addressList());
 
-    return nativeTokenBalanceEntity;
+    for (let i = 0; i < addressList.length; i++) {
+        const address = addressList[i];
+        const addressBalance = getNativeTokenBalanceForAddress(
+            address
+        )
+        if (addressBalance.equals(BigInt.fromI32(0))) {
+            continue;
+        }
+        let nativeTokenEntityId =
+            block.toString() +
+            "/" +
+            NATIVE_TOKEN_ADDRESS.toHex() +
+            "/" +
+            address.toHex();
+        // treasury ETH balance = avatar + swapr relayer + dxd token contract
+        // Native token balance
+        const tokenBalanceForAddressEntity = new TokenBalance(
+            nativeTokenEntityId
+        );
+        tokenBalanceForAddressEntity.token = NATIVE_TOKEN_ADDRESS.toHex();
+        tokenBalanceForAddressEntity.amount = addressBalance.toBigDecimal();
+        tokenBalanceForAddressEntity.snapshot = treasuryBalancesSnapshotId;
+        tokenBalanceForAddressEntity.address = address;
+        tokenBalanceForAddressEntity.save();
+    }
 }
 
 /**
@@ -68,7 +73,7 @@ export function takeTreasuryBalanceSnapshot(blockNumber: BigInt): void {
 
     let block = blockNumber.toString();
     let treasuryBalancesSnapshot = TreasuryBalancesSnapshot.load(block);
-    if (treasuryBalancesSnapshot === null) {
+    if (treasuryBalancesSnapshot == null) {
         treasuryBalancesSnapshot = new TreasuryBalancesSnapshot(block);
     }
     treasuryBalancesSnapshot.blockNumber = blockNumber;

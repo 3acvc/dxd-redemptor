@@ -1,4 +1,4 @@
-import { Address, dataSource } from "@graphprotocol/graph-ts";
+import { Address, BigInt, dataSource } from "@graphprotocol/graph-ts";
 
 export const ZERO_ADDRESS = Address.fromString(
     "0x0000000000000000000000000000000000000000"
@@ -15,6 +15,8 @@ export const MULTICALL3_ADDRESS = Address.fromString(
 export const MAINNET = "mainnet";
 export const XDAI = "xdai";
 export const ARBITRUM_ONE = "arbitrum-one";
+export const SNAPSHOT_FREQUENCY = BigInt.fromI32(dataSource.network() == MAINNET ? 10 : 60); // 10 blocks on Ethereum, 60 blocks on Gnosis Chain
+export const ZERO = BigInt.fromI32(0)
 
 // DXdao Avatar DXD vesting address
 export let DXDAO_AVATAR_DXD_VESTING_ADDRESS = Address.fromString(
@@ -37,12 +39,19 @@ export class DXdaoSafes {
     static xdai(): Address[] {
         return [];
     }
+
+    static arbitrumOne(): Address[] {
+        return [];
+    }
+
     static addressList(): Address[] {
         let network = dataSource.network() as string;
         if (network == MAINNET)
             return DXdaoSafes.mainnet().concat(DXdaoSafes.multichain());
         if (network == XDAI)
             return DXdaoSafes.xdai().concat(DXdaoSafes.multichain());
+        if (network == ARBITRUM_ONE)
+            return DXdaoSafes.arbitrumOne().concat(DXdaoSafes.multichain());
         return [];
     }
 }
@@ -113,13 +122,19 @@ export class SWPR {
 
 export class DXdaoAvatar {
     static address(): Address {
-        if (dataSource.network() == MAINNET)
+        const network = dataSource.network() as string;
+
+        if (network == MAINNET)
             return Address.fromString(
                 "0x519b70055af55A007110B4Ff99b0eA33071c720a"
             );
-        if (dataSource.network() == XDAI)
+        if (network == XDAI)
             return Address.fromString(
                 "0xe716ec63c5673b3a4732d22909b38d779fa47c3f"
+            );
+        if (network == ARBITRUM_ONE)
+            return Address.fromString(
+                "0x2B240b523f69b9aF3adb1C5924F6dB849683A394"
             );
         return ZERO_ADDRESS;
     }
@@ -154,10 +169,18 @@ export class DXdaoNavTokens {
         ];
     }
 
+    static arbitrumOne(): Address[] {
+        return [
+            Address.fromString("0xff970a61a04b1ca14834a43f5de4533ebddb5cc8"),
+            SWPR.address(),
+        ];
+    }
+
     static addressList(): Address[] {
         let network = dataSource.network() as string;
         if (network == MAINNET) return DXdaoNavTokens.mainnet();
         if (network == XDAI) return DXdaoNavTokens.xdai();
+        if (network == ARBITRUM_ONE) return DXdaoNavTokens.arbitrumOne();
         return [];
     }
 }

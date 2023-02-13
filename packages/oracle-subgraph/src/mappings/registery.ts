@@ -1,4 +1,10 @@
-import { Address, log, dataSource, BigInt } from "@graphprotocol/graph-ts";
+import {
+    Address,
+    log,
+    dataSource,
+    BigInt,
+    ethereum,
+} from "@graphprotocol/graph-ts";
 import {
     DXDCirculatingSupplySnapshot,
     SubgraphStatus,
@@ -12,9 +18,24 @@ import {
     DXdaoNavTokens,
     MAINNET,
     NATIVE_TOKEN_ADDRESS,
+    XDAI,
+    SNAPSHOT_FREQUENCY,
+    ZERO,
 } from "./constants";
 import { getDXDTotalAndCirculatingSupply } from "../helpers/dxd";
 import { takeTreasuryBalanceSnapshot } from "./snapshot";
+
+export function handleBlock(block: ethereum.Block): void {
+    let subgraphStatus = SubgraphStatus.load("1");
+
+    if (subgraphStatus == null) {
+        return initSubgraph(block.number);
+    }
+
+    if (block.number.mod(SNAPSHOT_FREQUENCY).equals(ZERO)) {
+        return takeTreasuryBalanceSnapshot(block.number);
+    }
+}
 
 // This handler is called by block handlers
 export function initSubgraph(blockNumber: BigInt): void {
@@ -51,10 +72,6 @@ export function initSubgraph(blockNumber: BigInt): void {
     }
 }
 
-// export function handleInitSubgraph(event: ethereum.Event): void {
-//     return initSubgraph(event.block.number);
-// }
-
 export function handleInitSubgraph(event: NewCallProposal): void {
     return initSubgraph(event.block.number);
 }
@@ -67,10 +84,12 @@ export function createNativeTokenEntity(): void {
         return;
     }
     nativeToken = new Token(NATIVE_TOKEN_ADDRESS.toHex());
-    if (dataSource.network() === MAINNET) {
+    let network = dataSource.network() as string;
+    if (network == MAINNET) {
         nativeToken.name = "Ether";
         nativeToken.symbol = "ETH";
-    } else {
+    }
+    if (network == XDAI) {
         nativeToken.name = "xDAI";
         nativeToken.symbol = "xDAI";
     }
