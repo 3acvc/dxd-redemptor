@@ -73,9 +73,9 @@ export async function getUserLiquidityPositions(
         amount1: Amount<Token>;
     }[]
 > {
-    const response = await SWAPR_SUBGRAPH_CLIENT[chainId].request<
-        SwaprBurnsAndMintsResponse
-    >(USER_LIQUIDIY_POSITIONS_QUERY, {
+    const response = await SWAPR_SUBGRAPH_CLIENT[
+        chainId
+    ].request<SwaprBurnsAndMintsResponse>(USER_LIQUIDIY_POSITIONS_QUERY, {
         userAddress: userAddress.toLowerCase(),
         blockNumber,
     });

@@ -29,9 +29,9 @@ jobs:
         run: pnpm i
       - name: Prepare subgraph packages
         run: cd packages/oracle-subgraph && pnpm run prepare:mainnet
-      - name: Build
-        run: pnpm build
       - name: Lint
         run: pnpm lint
+      - name: Build
+        run: pnpm build
       - name: Test
         run: pnpm test

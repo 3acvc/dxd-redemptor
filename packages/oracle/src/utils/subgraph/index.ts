@@ -112,13 +112,14 @@ export async function getTokenBalancesSnapshotAtBlock(
     for (const [rawChainId, subgraphEndpoint] of Object.entries(
         subgraphEndpointList
     )) {
-        const chainId = (rawChainId as unknown) as ChainId;
+        const chainId = rawChainId as unknown as ChainId;
         const blockTag = block[chainId];
         enforce(!!blockTag, `no block tag specified for chain id ${chainId}`);
         const graphqlClient = new GraphQLClient(subgraphEndpoint);
-        responseList[chainId] = await graphqlClient.request<
-            NAVSnapshotResponse
-        >(buildSubgraphQuery(blockTag));
+        responseList[chainId] =
+            await graphqlClient.request<NAVSnapshotResponse>(
+                buildSubgraphQuery(blockTag)
+            );
     }
 
     // Total supply is from Ethereum chain
@@ -199,6 +200,6 @@ export async function getTokenBalancesSnapshotAtBlock(
         circulatingDXDSupply,
         tokenBalances: Object.values(tokenBalances),
         rawTokenBalances,
-        tokenList: Object.values(tokenList)
+        tokenList: Object.values(tokenList),
     };
 }

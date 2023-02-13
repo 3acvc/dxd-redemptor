@@ -74,10 +74,8 @@ export async function getQuote({
         redeemedDxdWeiAmount
     );
 
-    const {
-        circulatingDXDSupply,
-        tokenBalances,
-    } = await getTokenBalancesSnapshotAtBlock(block, subgraphEndpointList);
+    const { circulatingDXDSupply, tokenBalances } =
+        await getTokenBalancesSnapshotAtBlock(block, subgraphEndpointList);
 
     const [navUSDValue, tokenPriceList] = await getUSDValueTWAP(
         tokenBalances,
