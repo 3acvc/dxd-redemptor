@@ -10,11 +10,24 @@ import { getTokenBalancesSnapshotAtBlock } from "./utils/subgraph";
 export { quoteToEIP712Hash } from "./utils/signing";
 
 export * from "./types";
-export { ChainId } from "./constants";
+export {
+    ChainId,
+    DXDAO_AVATAR,
+    DXSWAP_RELAYER,
+    NATIVE_TOKEN_ADDRESS,
+    SWAPR_SUBGRAPH_CLIENT,
+} from "./constants";
 export * from "./entities";
 export { hashQuote } from "./hash-quote";
 export { signQuote, verifyQuoteSignature } from "./sign-quote";
-
+export { getTokenBalancesSnapshotAtBlock } from "./utils/subgraph";
+export { getUserLiquidityPositions } from "./utils/liquidity-positions";
+export {
+    toPriceableTokenList,
+    getPriceableToken,
+    getTokenUSDCPriceViaOracle,
+} from "./utils/pricing";
+export { NAV_TOKEN_LIST } from "./entities/token";
 /**
  * Returns the token for a given address
  * @param currenyAddress - address of the token
@@ -61,8 +74,10 @@ export async function getQuote({
         redeemedDxdWeiAmount
     );
 
-    const { circulatingDXDSupply, tokenBalances } =
-        await getTokenBalancesSnapshotAtBlock(block, subgraphEndpointList);
+    const {
+        circulatingDXDSupply,
+        tokenBalances,
+    } = await getTokenBalancesSnapshotAtBlock(block, subgraphEndpointList);
 
     const [navUSDValue, tokenPriceList] = await getUSDValueTWAP(
         tokenBalances,

@@ -20,6 +20,7 @@ import {
 } from "../../entities/token";
 import { enforce } from "../invariant";
 import { getTokenUSDCPriceViaOracle } from "./uniswap";
+export { getTokenUSDCPriceViaOracle } from './uniswap';
 
 export const getPriceableToken = (currency: Currency): Token => {
     if (currency instanceof Token) return handleToken(currency as Token);
@@ -60,6 +61,20 @@ type UniswapV3SubgraphResponse = {
     [priceableTokenSymbol: string]: { price: string }[];
 };
 
+export function toPriceableTokenList(
+    tokenOrCurrencyList: (Amount<Currency> | Amount<Token> | Currency | Token)[]
+): Token[] {
+    return tokenOrCurrencyList.reduce((priceableTokens, amount) => {
+        const priceableToken = getPriceableToken(
+            amount instanceof Currency ? amount : amount.currency
+        );
+        if (priceableTokens.indexOf(priceableToken) < 0) {
+            priceableTokens.push(priceableToken);
+        }
+        return priceableTokens;
+    }, [] as Token[]);
+}
+
 /**
  * Returns a TWAP of the USD value of the given currency amounts.
  * @param currencyAmounts The currency amounts to get the USD value of.
@@ -76,16 +91,7 @@ export async function getUSDValueTWAP(
 ): Promise<
     [Amount<Currency>, Awaited<ReturnType<typeof getTokenUSDCPriceViaOracle>>]
 > {
-    const priceableTokens = currencyAmounts.reduce(
-        (priceableTokens: Token[], amount) => {
-            const priceableToken = getPriceableToken(amount.currency);
-            if (priceableTokens.indexOf(priceableToken) < 0) {
-                priceableTokens.push(priceableToken);
-            }
-            return priceableTokens;
-        },
-        []
-    );
+    const priceableTokens = toPriceableTokenList(currencyAmounts);
 
     const tokenPriceList = await getTokenUSDCPriceViaOracle(
         priceableTokens,
@@ -142,9 +148,10 @@ export const getUSDPrice = async (
     }
 
     const [token0, token1] = mainnetUsdc.sort(priceableToken);
-    const response =
-        await UNISWAP_V3_SUBGRAPH_CLIENT.request<UniswapV3SubgraphResponse>(
-            gql`query { ${priceableTokenSymbol}: pools(
+    const response = await UNISWAP_V3_SUBGRAPH_CLIENT.request<
+        UniswapV3SubgraphResponse
+    >(
+        gql`query { ${priceableTokenSymbol}: pools(
                 where: { token0: "${token0.address.toLowerCase()}", token1: "${token1.address.toLowerCase()}" }
                 block: { number: ${block} }
                 orderBy: liquidity
@@ -155,7 +162,7 @@ export const getUSDPrice = async (
                     token0.equals(mainnetUsdc) ? "token0Price" : "token1Price"
                 }
             }}`
-        );
+    );
 
     const wrappedPrices = response[priceableTokenSymbol];
     enforce(
