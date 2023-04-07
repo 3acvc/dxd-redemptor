@@ -14,6 +14,7 @@ import {
     DXdaoAvatar,
     DXdaoNavTokens,
     DXdaoSafes,
+    DXDAO_AVATAR_DXD_VESTING_ADDRESS,
     NATIVE_TOKEN_ADDRESS,
     SwaprRelayer,
 } from "./constants";
@@ -65,6 +66,7 @@ export function takeTreasuryBalanceSnapshot(blockNumber: BigInt): void {
     const erc20TokenBalances = getTokenBalancesForAddressList(
         navTokenList,
         DXdaoSafes.addressList().concat([
+            DXDAO_AVATAR_DXD_VESTING_ADDRESS,
             DXdaoAvatar.address(),
             SwaprRelayer.address(),
             DXD.address(),

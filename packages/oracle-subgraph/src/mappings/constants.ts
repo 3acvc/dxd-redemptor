@@ -32,6 +32,7 @@ export class DXdaoSafes {
             Address.fromString("0x975e8af284fcFEE19326a26908B45BD2fce1Cef0"), // Carrot Guild Safe
             Address.fromString("0x9467dcfd4519287e3878c018c02f5670465a9003"), // DXdao Multichain Safe
             Address.fromString('0x4942fbdc53b295563d59af51e6ddedceba5e332f'), // DXdao Closure Safe
+            Address.fromString("0x5F239a6671BC6d2bAEf6D7Cd892296e678810882") // DXdao Hats Finance Safe
         ];
     }
     static mainnet(): Address[] {
@@ -157,23 +158,26 @@ export class DXdaoNavTokens {
             Address.fromString("0x6810e776880c02933d47db1b9fc05908e5386b96"),
             Address.fromString("0xc18360217d8f7ab5e7c516566761ea12ce7f9d72"),
             SWPR.address(),
-
+            DXD.address(),
         ];
     }
 
     static xdai(): Address[] {
         return [
-            Address.fromString("0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"),
-            Address.fromString("0x6A023CCd1ff6F2045C3309768eAd9E68F978f6e1"),
-            Address.fromString("0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83"),
-            Address.fromString("0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb"),
+            Address.fromString("0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"), // WXDAI
+            Address.fromString("0x6A023CCd1ff6F2045C3309768eAd9E68F978f6e1"), // WETH
+            Address.fromString("0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83"), // USDC
+            Address.fromString("0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb"), // GNO
+            Address.fromString("0xd3d47d5578e55c880505dc40648f7f9307c3e7a8"), // DPI
+            Address.fromString("0x8e5bbbb09ed1ebde8674cda39a0c169401db4252"), // WBTC
             SWPR.address(),
+            DXD.address(),
         ];
     }
 
     static arbitrumOne(): Address[] {
         return [
-            Address.fromString("0xff970a61a04b1ca14834a43f5de4533ebddb5cc8"),
+            Address.fromString("0xff970a61a04b1ca14834a43f5de4533ebddb5cc8"), // WETH
             SWPR.address(),
         ];
     }
