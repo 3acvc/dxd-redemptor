@@ -31,6 +31,7 @@ export class DXdaoSafes {
             Address.fromString("0x76a48beCaD072b90761859bd2C517A7395775103"), // Swapr Guild Safe
             Address.fromString("0x975e8af284fcFEE19326a26908B45BD2fce1Cef0"), // Carrot Guild Safe
             Address.fromString("0x9467dcfd4519287e3878c018c02f5670465a9003"), // DXdao Multichain Safe
+            Address.fromString('0x4942fbdc53b295563d59af51e6ddedceba5e332f'), // DXdao Closure Safe
         ];
     }
     static mainnet(): Address[] {
@@ -156,6 +157,7 @@ export class DXdaoNavTokens {
             Address.fromString("0x6810e776880c02933d47db1b9fc05908e5386b96"),
             Address.fromString("0xc18360217d8f7ab5e7c516566761ea12ce7f9d72"),
             SWPR.address(),
+
         ];
     }
 
