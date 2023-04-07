@@ -26,6 +26,23 @@ body,
   width: 100%;
 }
 
+body {
+  background-color: #121312;
+  color: #fff;
+}
+
+
+a,
+a:visited,
+a:active a:focus {
+  color: #fff;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
 table {
   display: block;
   width: 100%;
@@ -41,7 +58,7 @@ table {
 table th,
 table td {
   padding: 0.5rem 1rem;
-  border: 1px solid #000;
+  border: 1px solid #646669;
 }
 
 input,
@@ -49,6 +66,10 @@ select {
   padding: 4px 8px;
 }
 
+label {
+  display: block;
+  margin-bottom: 8px;
+}
 button {
   padding: 4px 8px;
   cursor: pointer;

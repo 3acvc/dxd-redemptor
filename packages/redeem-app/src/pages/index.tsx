@@ -1,5 +1,10 @@
-import { Redeem } from "../components/Redeem/Redeem";
+import { PageLayout } from "layout";
+import { RedeemV2Container } from "components/Redeem/RedeemV2";
 
 export default function IndexPage() {
-    return <Redeem />;
+  return (
+    <PageLayout>
+      <RedeemV2Container />
+    </PageLayout>
+  );
 }
