@@ -73,6 +73,7 @@ export function NAVTableSectionContainer({
   tokenPrices,
   onNAVUSDValueChange,
   onTotalETHChange,
+  onTotalDXDChange,
   addressList: addressColumns,
 }: {
   rawTokenBalances: SnapshotParams["rawTokenBalances"];
@@ -81,6 +82,7 @@ export function NAVTableSectionContainer({
   tokenPrices: TokenPrice[];
   onNAVUSDValueChange?: (value: number) => void;
   onTotalETHChange?: (amount: number, value: number) => void;
+  onTotalDXDChange?: (amount: number, value: number) => void;
   addressList: typeof DXDAO_ADDRESS_LIST;
 }) {
   if (rawTokenBalances.length === 0) {
@@ -91,6 +93,7 @@ export function NAVTableSectionContainer({
   let totalETHAmount = 0;
   let totalETHValue = 0;
   let totalStablecoin = 0;
+  let totalDXD = 0;
 
   return (
     <NAVTable>
@@ -125,7 +128,7 @@ export function NAVTableSectionContainer({
             const addressHasToken = rawTokenBalances.find(
               (rawTokenBalance) =>
                 rawTokenBalance.address.toLowerCase() ===
-                  addressColumn.address.toString() &&
+                  addressColumn.address.toLowerCase() &&
                 rawTokenBalance.token.address.toLowerCase() ===
                   token.address.toLowerCase() &&
                 rawTokenBalance.token.symbol.toLowerCase() ===
@@ -186,17 +189,18 @@ export function NAVTableSectionContainer({
               tokenSymbol.toLowerCase()
             )
           ) {
-            console.log({
-              tokenSymbol,
-              tokenTotalFloat,
-            });
             totalETHAmount += tokenTotalFloat;
             totalETHValue += tokenTotalValueFloat;
+          }
+
+          if (tokenSymbol.toLowerCase() === "dxd") {
+            totalDXD += tokenTotalFloat;
           }
 
           if (isLastToken) {
             onNAVUSDValueChange?.(usdValue);
             onTotalETHChange?.(totalETHAmount, totalETHValue);
+            onTotalDXDChange?.(totalDXD, 0); // DXD value is not calculated
           }
           return (
             <tr key={rowKey}>

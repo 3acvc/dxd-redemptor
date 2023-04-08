@@ -74,9 +74,14 @@ export const DXDAO_ADDRESS_LIST: {
     chainId: [ChainId.ETHEREUM, ChainId.GNOSIS],
     label: "DXdao Closure Safe",
   },
-//   {
-//     address: "0x571f39d351513146248AcafA9D0509319A327C4D",
-//     chainId: [ChainId.ETHEREUM],
-//       label: "Hats Finance Vault",
-//   },
+  {
+    address: "0xbd12ebb77ef167a5ff93b7e572b33f2526ae3fd0",
+    chainId: [ChainId.ETHEREUM],
+    label: "DXdao DXD Vesting Contract",
+  },
+  {
+    address: "0x5f239a6671bc6d2baef6d7cd892296e678810882",
+    chainId: [ChainId.ETHEREUM],
+    label: "Hats Finance Committee Safe",
+  },
 ];

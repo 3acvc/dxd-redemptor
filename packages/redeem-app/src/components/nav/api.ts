@@ -13,7 +13,8 @@ import {
 import type { LiquidityPosition } from "../NAVTableSectionContainer";
 import { GraphQLClient, gql } from "graphql-request";
 import { BigNumber } from "ethers";
-import { parseEther } from "ethers/lib/utils.js";
+import { formatUnits, parseEther } from "ethers/lib/utils.js";
+import { isDXDToken } from "./utils";
 
 export const providerList: Record<ChainId, Provider> = {
   [ChainId.ETHEREUM]: new JsonRpcProvider(
@@ -24,9 +25,9 @@ export const providerList: Record<ChainId, Provider> = {
 
 const subgraphEndpointList = {
   [ChainId.ETHEREUM]:
-    "https://api.thegraph.com/subgraphs/name/adamazad/dxdao-dxd-redemption-ethereum",
+    "https://api.thegraph.com/subgraphs/name/adamazad/dxdao-nav-ethereum-v1-1-0",
   [ChainId.GNOSIS]:
-    "https://api.thegraph.com/subgraphs/name/adamazad/dxdao-dxd-redemption-gnosis",
+    "https://api.thegraph.com/subgraphs/name/adamazad/dxdao-nav-gnosis-v1-1-0",
 };
 
 const SUBGRAPH_BLOCKS_CLIENT = {
@@ -132,15 +133,42 @@ export async function fetchNAVInformationAtBlock(
     return balance;
   });
 
-  console.log({
-    rawTokenBalancesWithoutDebt,
-  });
+  const dxdUnderDXdaoControl = rawTokenBalances
+    .filter((tokenBalance) => isDXDToken(tokenBalance.token.address))
+    .reduce((acc, tokenBalance) => {
+      return (
+        acc +
+        parseFloat(
+          formatUnits(tokenBalance.amount, tokenBalance.token.decimals)
+        )
+      );
+    }, 0);
+
+  // Find LP position with DXD token
+  const dxdLPPositions = principalList.reduce((acc, principal) => {
+    const isAmount0DXD = isDXDToken(principal.amount0.currency.address);
+    const isAmount1DXD = isDXDToken(principal.amount1.currency.address);
+
+    if (isAmount0DXD) {
+      return acc + parseFloat(principal.amount0.toFixed(6));
+    }
+
+    if (isAmount1DXD) {
+      return acc + parseFloat(principal.amount1.toFixed(6));
+    }
+
+    return acc;
+  }, 0);
 
   return {
     circulatingDXDSupply: new Amount(
       circulatingDXDSupply.currency,
-      circulatingDXDSupply
-        .sub(DXDAO_DXD_IN_HATS_VAULT_AMOUNT)
+      // Sum DXD under DXdao control, DXD in DXdao's LP positions, DXD in Hats Finance Vault, and DXD to be vested to contributors
+      // Then subtract from total DXD supply
+      dxdTotalSupply
+        .sub(dxdUnderDXdaoControl)
+        .sub(dxdLPPositions)
+        .minus(DXDAO_DXD_IN_HATS_VAULT_AMOUNT)
         .plus(DXDAO_UNVESTED_DXD_TO_CONTRIBUTORS)
     ),
     dxdTotalSupply,
@@ -174,4 +202,36 @@ export async function getGnosisChainBlockByTimestamp(
     }
   );
   return parseInt(res.blocks[0].number);
+}
+
+const GET_SUBGRAPH_STATUS = gql`
+  query getSubgraphStatus {
+    subgraphStatus(id: "1") {
+      id
+      isInitialized
+      lastSnapshotBlock
+    }
+  }
+`;
+
+/**
+ * Get the last synced block number from the subgraph
+ */
+export async function getLastSyncedBlockNumber(): Promise<{
+  [ChainId.ETHEREUM]: number;
+  [ChainId.GNOSIS]: number;
+}> {
+  const client = new GraphQLClient(subgraphEndpointList[ChainId.ETHEREUM]);
+
+  const res = await client.request(GET_SUBGRAPH_STATUS, {});
+
+  const ethereumBlock = parseInt(res.subgraphStatus.lastSnapshotBlock);
+  const gnosisBlock = await getGnosisChainBlockByTimestamp(
+    (await providerList[ChainId.ETHEREUM].getBlock(ethereumBlock)).timestamp
+  );
+
+  return {
+    [ChainId.ETHEREUM]: ethereumBlock,
+    [ChainId.GNOSIS]: gnosisBlock,
+  };
 }

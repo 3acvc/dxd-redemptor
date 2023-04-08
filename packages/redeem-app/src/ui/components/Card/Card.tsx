@@ -33,9 +33,6 @@ export const StyledCard = styled.div<CardProps>(
 );
 
 export function Card(props: PropsWithChildren<CardProps>) {
-  console.log({
-    props,
-  });
   return (
     <StyledCardGutter $height={props.$height} $width={props.$width}>
       <StyledCard {...props}>{props.children}</StyledCard>

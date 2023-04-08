@@ -16,8 +16,7 @@ import {
   DXDAO_DXD_IN_HATS_VAULT_AMOUNT,
   DXDAO_UNVESTED_DXD_TO_CONTRIBUTORS,
   fetchNAVInformationAtBlock,
-  getGnosisChainBlockByTimestamp,
-  providerList,
+  getLastSyncedBlockNumber,
 } from "./api";
 import { NumberInput } from "../form/NumberInput";
 import {
@@ -32,7 +31,7 @@ import { Container } from "ui/components/Container";
 import { FormGroup } from "components/FormGroup";
 
 import { DXDValueBreakdown } from "./DXDValueBreakdown";
-import { currencyFormatter } from "./utils";
+import { currencyFormatter, isDXDToken } from "./utils";
 import {
   CardInnerWrapperLayout,
   MotionOpacity,
@@ -41,6 +40,7 @@ import {
 import { MetricCard, MotionMetricLoader } from "./partials";
 import Select from "react-select";
 import { getStyles } from "components/form/Select";
+import { formatUnits } from "ethers/lib/utils.js";
 
 type AddressOption = typeof DXDAO_ADDRESS_LIST[0];
 
@@ -118,27 +118,13 @@ export function NAVMetricsContainer() {
   const [isLoadingPrices, setIsLoadingPrices] = useState(true);
 
   const [principalList, setPrincipalList] = useState<LiquidityPosition[]>([]);
+
   const updateBlock = async (ethereumBlock?: number) => {
-    let ethBlockNumber =
-      (await providerList[ChainId.ETHEREUM].getBlockNumber()) - 10;
-    let gnosisBlockNumber =
-      (await providerList[ChainId.GNOSIS].getBlockNumber()) - 24; // Gnosis chain block time is ~5 seconds
-
-    if (ethereumBlock !== undefined && ethereumBlock !== 0) {
-      const ethBlockTag = await providerList[ChainId.ETHEREUM].getBlock(
-        ethereumBlock
-      );
-      ethBlockNumber = ethBlockTag.number;
-      gnosisBlockNumber = await getGnosisChainBlockByTimestamp(
-        ethBlockTag.timestamp
-      );
-    }
-
-    const block = {
-      [ChainId.ETHEREUM]: ethBlockNumber - SUBGRAPH_BLOCK_BUFFER,
-      [ChainId.GNOSIS]: gnosisBlockNumber - SUBGRAPH_BLOCK_BUFFER,
-    };
-    setBlock(block);
+    const syncedBlocks = await getLastSyncedBlockNumber();
+    console.log({
+      syncedBlocks,
+    });
+    setBlock(syncedBlocks);
   };
 
   useEffect(() => {
@@ -333,7 +319,7 @@ export function NAVMetricsContainer() {
       <MetricListContainer
         $mdColumns={1}
         $mdRows={3}
-        $lgColumns={"1fr 2fr 1fr"}
+        $lgColumns={".98fr 2fr .98fr"} // don't ask me why, but it works
         $lgRows={1}
       >
         <MetricCard>
@@ -438,6 +424,9 @@ const tokenList = [
   Currency.getNative(ChainId.ETHEREUM),
   Currency.getNative(ChainId.GNOSIS),
   ...NAV_TOKEN_LIST,
+  // Add DXD
+  DXD[ChainId.ETHEREUM],
+  DXD[ChainId.GNOSIS],
 ]
   .sort((a, b) => {
     const aChainId = getCurrencyChainId(a);
