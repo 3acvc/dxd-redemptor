@@ -9,7 +9,7 @@ import {
   Currency,
 } from "dxd-redemptor-oracle";
 import { BigNumber } from "ethers";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { Card, CardInnerWrapper, CardTitle } from "ui/components/Card";
 import {
@@ -38,43 +38,7 @@ import {
   MotionOpacityLoader,
 } from "./styled";
 import { MetricCard, MotionMetricLoader } from "./partials";
-import Select from "react-select";
-import { getStyles } from "components/form/Select";
-
-type AddressOption = typeof DXDAO_ADDRESS_LIST[0];
-
-function AddressListOptions({
-  onChange,
-  value,
-}: {
-  value: AddressOption[];
-  onChange: (nextOptions: AddressOption[]) => void;
-}) {
-  const options = useMemo(() => {
-    return DXDAO_ADDRESS_LIST;
-  }, []);
-
-  return (
-    <Select<AddressOption, true>
-      value={value}
-      options={options}
-      getOptionLabel={(option) => option.label}
-      getOptionValue={(option) => option.address}
-      isMulti={true}
-      isSearchable={true}
-      id="address-list"
-      styles={getStyles()}
-      components={{
-        IndicatorSeparator: () => null,
-        DropdownIndicator: () => null,
-      }}
-      onChange={(nextOptions) => {
-        onChange(nextOptions as AddressOption[]);
-      }}
-      closeMenuOnSelect={false}
-    />
-  );
-}
+import { AddressListOptions, AddressOption } from "./AddressListOptions";
 
 export function NAVMetricsContainer() {
   const ethBlockNumberFromSearch = new URLSearchParams(
@@ -365,6 +329,7 @@ export function NAVMetricsContainer() {
             isLoadingPrices={isLoadingPrices}
             circulatingDXDSupply={circulatingDXDSupply}
             navUSD={navUSD}
+            tokenPrices={tokenPrices}
           />
         </MetricCard>
       </MetricListContainer>

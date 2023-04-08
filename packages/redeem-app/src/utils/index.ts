@@ -1,6 +1,8 @@
 import { ChainId, Currency, Token } from "dxd-redemptor-oracle";
 import { NATIVE_TOKEN_ADDRESS } from "../constants";
 
+export const currencyFormatter = new Intl.NumberFormat();
+
 /**
  * Shorten the checksummed version of the input address to have 0x + 4 characters at start and end
  * @param address The input address

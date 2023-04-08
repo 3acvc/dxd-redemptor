@@ -1,7 +1,7 @@
 import { getStyles } from "components/form/Select";
 import { AnimatePresence } from "framer-motion";
 import { Amount, Token } from "dxd-redemptor-oracle";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Select from "react-select";
 import { CardTitle } from "ui/components/Card";
 import {
@@ -10,6 +10,8 @@ import {
   MotionOpacityLoader,
 } from "./styled";
 import { currencyFormatter } from "./utils";
+import { TokenPrice } from "components/NAVTableSectionContainer";
+import { formatUnits } from "ethers/lib/utils.js";
 
 type PercentageOption = {
   label: string;
@@ -27,14 +29,35 @@ export function DXDValueBreakdown({
   navUSD: initialNavUSD,
   isLoadingPrices,
   circulatingDXDSupply,
+  tokenPrices,
 }: {
   navUSD: number;
   circulatingDXDSupply: Amount<Token>;
   isLoadingPrices: boolean;
+  tokenPrices: TokenPrice[];
 }) {
   const [navUSD, setNavUSD] = useState(initialNavUSD);
   const [totalNavPercentage, setTotalNavPercentage] = useState(1);
   const [dxdUSDPriceBackedByNAV, setDXDUSDPriceBackedByNAV] = useState(0);
+
+  const ethUSDPrice = useMemo(() => {
+    return tokenPrices.find((tokenPrice) => tokenPrice.token.symbol === "WETH")
+      ?.usdPrice;
+  }, [tokenPrices]);
+
+  // NAV/ETH price
+  const navWETHPrice = useMemo(() => {
+    if (!ethUSDPrice) return 0;
+    const ethUSDPriceFloat = parseFloat(formatUnits(ethUSDPrice, 18));
+    return navUSD / ethUSDPriceFloat;
+  }, [ethUSDPrice, navUSD]);
+
+  // DXD/ETH price
+  const dxdWETHPrice = useMemo(() => {
+    if (!ethUSDPrice) return 0;
+    const ethUSDPriceFloat = parseFloat(formatUnits(ethUSDPrice, 18));
+    return dxdUSDPriceBackedByNAV / ethUSDPriceFloat;
+  }, [ethUSDPrice, dxdUSDPriceBackedByNAV]);
 
   useEffect(() => {
     const nexNAVUSD = totalNavPercentage * initialNavUSD;
@@ -82,20 +105,22 @@ export function DXDValueBreakdown({
                   }}
                 />
               </div>
-              <small>
+              <div>
                 <strong>NAV at {totalNavPercentage * 100}% </strong>
-              </small>
-              <small>
-                <span>${currencyFormatter.format(navUSD)}</span>
-              </small>
-              <small>
+              </div>
+              <div>
+                <span>${currencyFormatter.format(navUSD)}</span> /{" "}
+                <span>{currencyFormatter.format(navWETHPrice)} ETH</span>
+              </div>
+              <div>
                 <strong>
                   DXD price backed by {totalNavPercentage * 100}% NAV allocation
                 </strong>
-              </small>
-              <small>
-                <span>${currencyFormatter.format(dxdUSDPriceBackedByNAV)}</span>
-              </small>
+              </div>
+              <div>
+                <span>${currencyFormatter.format(dxdUSDPriceBackedByNAV)}</span>{" "}
+                / <span>{currencyFormatter.format(dxdWETHPrice)} ETH</span>
+              </div>
             </CardInnerWrapperLayout>
           </MotionOpacity>
         )}
