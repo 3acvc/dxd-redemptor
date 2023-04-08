@@ -1,10 +1,15 @@
-import { PropsWithChildren } from 'react';
-import styled from 'styled-components';
+import { PropsWithChildren } from "react";
+import styled from "styled-components";
 
 /**
  * Max width of the container.
  */
-const CONTAINER_MAX_WIDTH = '1300px';
+const CONTAINER_MAX_WIDTH = "1300px";
+
+/**
+ * Padding of the container.
+ */
+export const padding = "16px";
 
 interface ContainerProps {
   /**
@@ -21,8 +26,12 @@ export const Container = styled.div<ContainerProps>(
   (props) => `
   height: 100%;
   margin: 0 auto;
-  ${props.$fluid ? '' : `max-width: ${props.$maxWidth ? props.$maxWidth : CONTAINER_MAX_WIDTH};`}
-  padding: 0 16px;
+  ${
+    props.$fluid
+      ? ""
+      : `max-width: ${props.$maxWidth ? props.$maxWidth : CONTAINER_MAX_WIDTH};`
+  }
+  padding: 0 ${padding};
   width: 100%;
 `
 );

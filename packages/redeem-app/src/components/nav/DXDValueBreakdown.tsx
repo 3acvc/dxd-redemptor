@@ -34,15 +34,13 @@ export function DXDValueBreakdown({
 }) {
   const [navUSD, setNavUSD] = useState(initialNavUSD);
   const [totalNavPercentage, setTotalNavPercentage] = useState(1);
-  const [dxdNAVPercentage, setDXDNAVPercentage] = useState(1);
   const [dxdUSDPriceBackedByNAV, setDXDUSDPriceBackedByNAV] = useState(0);
 
   useEffect(() => {
     const nexNAVUSD = totalNavPercentage * initialNavUSD;
     setNavUSD(nexNAVUSD);
     setDXDUSDPriceBackedByNAV(
-      (nexNAVUSD * dxdNAVPercentage) /
-        parseFloat(circulatingDXDSupply.toFixed())
+      nexNAVUSD / parseFloat(circulatingDXDSupply.toFixed())
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialNavUSD, circulatingDXDSupply]);
@@ -78,43 +76,12 @@ export function DXDValueBreakdown({
                     setTotalNavPercentage(nextTotalNavPercentage);
                     setNavUSD(nextTotalNavPercentage * initialNavUSD);
                     setDXDUSDPriceBackedByNAV(
-                      (nextTotalNavPercentage *
-                        initialNavUSD *
-                        dxdNAVPercentage) /
+                      (nextTotalNavPercentage * initialNavUSD) /
                         parseFloat(circulatingDXDSupply.toFixed())
                     );
                   }}
                 />
               </div>
-              {/*
-      <FormGroup>
-        <label>DXD Allocation of NAV</label>
-        <Select<PercentageOption, false>
-          isMulti={false}
-          isClearable={false}
-          styles={getStyles({
-            fontSize: 12,
-          })}
-          components={{
-            IndicatorSeparator: () => null,
-          }}
-          options={navPercentageOptions}
-          value={
-            navPercentageOptions.find(
-              (option) => option.value === dxdNAVPercentage
-            ) || navPercentageOptions[0]
-          }
-          onChange={(e) => {
-            const nextDXDNAVPercentage = e?.value as number;
-            setDXDNAVPercentage(nextDXDNAVPercentage);
-            setDXDUSDPriceBackedByNAV(
-              (navUSD * nextDXDNAVPercentage) /
-                parseFloat(circulatingDXDSupply.toFixed())
-            );
-          }}
-        />
-      </FormGroup>
-      */}
               <small>
                 <strong>NAV at {totalNavPercentage * 100}% </strong>
               </small>

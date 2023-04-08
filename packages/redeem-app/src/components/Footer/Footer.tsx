@@ -14,7 +14,7 @@ export function Footer() {
   );
 }
 
-const FooterLink = styled.a`
+export const FooterLink = styled.a`
   :active,
   :focus,
   :visited {
@@ -28,7 +28,7 @@ const FooterLink = styled.a`
   font-weight: bold;
 `;
 
-const FooterTitle = styled.span`
+export const FooterTitle = styled.span`
   font-size: 12px;
   font-weight: bold;
 `;

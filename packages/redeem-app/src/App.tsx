@@ -25,10 +25,7 @@ const router = createBrowserRouter([
 
 function OldRedirects() {
     const params = new URLSearchParams(window.location.search);
-
     const page = params.get("page");
-
-    console.log({ page });
 
     if (page === "register") {
         return <Navigate to="/register" />;

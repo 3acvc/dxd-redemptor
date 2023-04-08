@@ -7,5 +7,5 @@ const address = getRequiredEnv("REDEMPTOR_ADDRESS");
 const provider = new JsonRpcProvider(getRequiredEnv("ETHEREUM_RPC_ENDPOINT"));
 
 export const getRedemptor = (): Contract => {
-    return new Contract(address, REDEMPTOR_ABI, provider);
+  return new Contract(address, REDEMPTOR_ABI, provider);
 };

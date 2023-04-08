@@ -6,7 +6,8 @@ import { ReactComponent as Burger } from "./burger.svg";
 
 import logoURL from "assets/3ac-logo.svg";
 
-import { Container } from "../../ui/components/Container";
+import { Container, padding } from "ui/components/Container";
+import { borderRadius } from "ui/components/base/constants";
 import { WalletConnectButton } from "components/form/WalletConnectButton";
 
 export const HEADER_HEIGHT = "88px"; // 4px * 22
@@ -71,8 +72,9 @@ const SidebarToggle = styled.button`
   font-weight: bold;
   text-transform: uppercase;
   position: fixed;
-  right: 10px;
-  top: 10px;
+  ${borderRadius};
+  right: ${padding};
+  top: ${padding};
   z-index: 1000;
   width: ${TOGGLE_BUTTON_SIZE};
   height: ${TOGGLE_BUTTON_SIZE};

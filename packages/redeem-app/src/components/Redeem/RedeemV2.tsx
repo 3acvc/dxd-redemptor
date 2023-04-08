@@ -3,7 +3,6 @@ import { useState } from "react";
 import styled from "styled-components";
 import { useSigner, useSignTypedData } from "wagmi";
 import { DXD } from "../../utils/tokens";
-import { ERC20_ABI } from "../../abis/erc20";
 import { REDEMPTOR_ABI } from "../../abis/redemptor";
 import { FormGroup } from "../FormGroup";
 import { WalletConnectButton } from "../form/WalletConnectButton";
@@ -45,6 +44,8 @@ export function RedeemV2Container() {
         await dxdTokenContract.version(),
       ]);
 
+      // TODO: Add logic for redeeming DXD to ETH
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const permitSignature = utils.splitSignature(
         await signTypedDataAsync({
           domain: {
@@ -88,7 +89,7 @@ export function RedeemV2Container() {
       );
 
       // const unsignedRedeemTx =
-      //   await dxdTokenContract.populateTransaction.redeem(
+      //   await dxdTokenContract.(
       //     oracleQuoteResponse.quote,
       //     oracleQuoteResponse.signatures,
       //     permitNonce,
@@ -99,6 +100,8 @@ export function RedeemV2Container() {
       //   );
     } catch (error) {
       console.error(error);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setRedeemError(error as any);
     } finally {
       setIsRedeeming(false);
     }

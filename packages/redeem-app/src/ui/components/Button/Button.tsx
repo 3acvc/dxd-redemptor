@@ -1,11 +1,6 @@
 import styled from "styled-components";
 
-import {
-  border,
-  boxShadow,
-  backgroundColorDark,
-  borderRadius,
-} from "../base/constants";
+import { border, borderRadius } from "../base/constants";
 
 interface ButtonProps {
   $minWidth?: string;

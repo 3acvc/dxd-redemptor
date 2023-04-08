@@ -111,18 +111,12 @@ export function NAVMetricsContainer() {
 
   const [totalETHAmount, setTotalETHAmount] = useState(0);
   const [totalETHAmountValue, setTotalETHAmountValue] = useState(0);
-
   const [tokenPrices, setTokenPrices] = useState<TokenPrice[]>([]);
-
   const [isLoadingPrices, setIsLoadingPrices] = useState(true);
-
   const [principalList, setPrincipalList] = useState<LiquidityPosition[]>([]);
 
   const updateBlock = async (ethereumBlock?: number) => {
     const syncedBlocks = await getLastSyncedBlockNumber();
-    console.log({
-      syncedBlocks,
-    });
     setBlock(syncedBlocks);
   };
 
@@ -207,7 +201,7 @@ export function NAVMetricsContainer() {
                       DXD
                     </span>
                     <small>
-                      <code>DXD.totalySupply()</code> on Ethereum
+                      <code>DXD.totalSupply()</code> on Ethereum
                     </small>
                   </CardInnerWrapperLayout>
                 </MotionOpacity>
@@ -231,11 +225,10 @@ export function NAVMetricsContainer() {
                       DXD
                     </span>
                     <small>
-                      DXD outside Treasury, Guild Safes, Hats Finance and DXD
-                      contract
+                      <code>Total supply - DXD supply under DXdao control</code>
                     </small>
                     <small>
-                      <strong>Hats Finance Vault</strong>{" "}
+                      <strong>Hats Finance Vault*</strong>{" "}
                       <span>
                         -
                         {currencyFormatter.format(
@@ -244,7 +237,7 @@ export function NAVMetricsContainer() {
                       </span>
                     </small>
                     <small>
-                      <strong>Unvested DXD to Contributors</strong>{" "}
+                      <strong>Unvested DXD to Contributors*</strong>{" "}
                       <span>
                         +
                         {currencyFormatter.format(
@@ -252,6 +245,7 @@ export function NAVMetricsContainer() {
                         )}
                       </span>
                     </small>
+                    <small>* Manually calculated</small>
                   </CardInnerWrapperLayout>
                 </MotionOpacity>
               )}

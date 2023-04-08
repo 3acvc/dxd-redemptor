@@ -157,11 +157,6 @@ export function RedeemContainer() {
         permitSignature.r,
         permitSignature.s
       );
-
-      console.log({
-        unsignedRedeemTx,
-      });
-
       const redeemTx = await signer.sendTransaction(unsignedRedeemTx);
 
       setTransactionList((prev) => {

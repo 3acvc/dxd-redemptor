@@ -175,7 +175,7 @@ contract Redemptor is Owned, IRedemptor {
             _oracleMessage.redeemedAmount,
             _oracleMessage.collateralUSDValue,
             _signatures
-            );
+        );
 
         if (_oracleMessage.redeemedToken == ETH) {
             IERC20(WETH_ADDRESS).safeTransferFrom(

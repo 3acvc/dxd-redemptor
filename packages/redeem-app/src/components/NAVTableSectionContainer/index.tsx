@@ -92,7 +92,6 @@ export function NAVTableSectionContainer({
   let usdValue = 0;
   let totalETHAmount = 0;
   let totalETHValue = 0;
-  let totalStablecoin = 0;
   let totalDXD = 0;
 
   return (

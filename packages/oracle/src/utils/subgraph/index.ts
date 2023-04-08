@@ -101,7 +101,13 @@ export async function getTokenBalancesSnapshotAtBlock(
 ): Promise<{
   dxdTotalSupply: Amount<Token>;
   circulatingDXDSupply: Amount<Token>;
+  /**
+   * Token balances in the treasury plus hardcoded LP tokens
+   */
   tokenBalances: Amount<Token | Currency>[];
+  /**
+   * Raw token balances from subgraph
+   */
   rawTokenBalances: TreasuryBalancesSnapshotsTokenBalance[];
   tokenList: Currency[];
 }> {

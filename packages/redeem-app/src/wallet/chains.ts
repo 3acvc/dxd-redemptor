@@ -1,7 +1,7 @@
 import { Chain } from 'wagmi';
 import { mainnet } from 'wagmi/chains';
 
-const gnosisChain: Chain = {
+export const gnosisChain: Chain = {
   id: 100,
   name: 'Gnosis',
   network: 'gnosis',

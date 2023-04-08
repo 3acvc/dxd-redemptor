@@ -1,5 +1,5 @@
 import { InputHTMLAttributes, useCallback, useState } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import {
   border,
   borderRadius,

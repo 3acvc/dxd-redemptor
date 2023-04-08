@@ -21,7 +21,7 @@ const { abi: redemptorAbi } = require("./out/Redemptor.sol/Redemptor.json");
 const outPath = join(__dirname, "abis");
 if (!existsSync(outPath)) mkdirSync(outPath);
 writeFileSync(
-    join(outPath, "redemptor.json"),
-    JSON.stringify(redemptorAbi, undefined, 4)
+  join(outPath, "redemptor.json"),
+  JSON.stringify(redemptorAbi, undefined, 4)
 );
 console.log("Files prepared");

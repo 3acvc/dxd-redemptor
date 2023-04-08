@@ -1,7 +1,6 @@
-import { css } from 'styled-components';
+import { css } from "styled-components";
 
-
-const pageBackgroundColor = '#121312';
+export const pageBackgroundColor = "#121312";
 
 /**
  * Simple atomic constants for use in styled components.
@@ -31,7 +30,6 @@ export const marginBottom8 = css`
   margin-bottom: 8px;
 `;
 
-
 /**
  *
  */
@@ -41,9 +39,8 @@ export const backgroundColorLight = css`
 
 export const backgroundColorDark = css`
   background: #1c1c1c;
-  `;
-
+`;
 
 export const textColorDark = css`
   color: #fff;
-  `;
+`;
