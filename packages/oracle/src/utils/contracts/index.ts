@@ -9,7 +9,7 @@ import { MULTICALL_ABI } from "../../abis/multicall";
  * @returns
  */
 export function getMulticallContractForProvider(provider: Provider): Contract {
-    return new Contract(MULTICALL_ADDRESS, MULTICALL_ABI, provider);
+  return new Contract(MULTICALL_ADDRESS, MULTICALL_ABI, provider);
 }
 
 /**
@@ -18,14 +18,14 @@ export function getMulticallContractForProvider(provider: Provider): Contract {
  * @returns
  */
 export function getMulticallContract(
-    providerList: Record<ChainId, Provider>
+  providerList: Record<ChainId, Provider>
 ): Record<ChainId, Contract> {
-    return {
-        [ChainId.ETHEREUM]: getMulticallContractForProvider(
-            providerList[ChainId.ETHEREUM]
-        ),
-        [ChainId.GNOSIS]: getMulticallContractForProvider(
-            providerList[ChainId.GNOSIS]
-        ),
-    };
+  return {
+    [ChainId.ETHEREUM]: getMulticallContractForProvider(
+      providerList[ChainId.ETHEREUM]
+    ),
+    [ChainId.GNOSIS]: getMulticallContractForProvider(
+      providerList[ChainId.GNOSIS]
+    ),
+  };
 }

@@ -10,31 +10,31 @@ import { ORACLE_MESSAGE_TYPE_HASH } from "../constants";
  * @returns The quote struct hash.
  */
 export function hashQuote(quote: Quote): string {
-    return keccak256(
-        ["bytes"],
+  return keccak256(
+    ["bytes"],
+    [
+      defaultAbiCoder.encode(
         [
-            defaultAbiCoder.encode(
-                [
-                    "bytes32",
-                    "uint256",
-                    "uint256",
-                    "address",
-                    "uint256",
-                    "uint256",
-                    "uint256",
-                    "uint256",
-                ],
-                [
-                    ORACLE_MESSAGE_TYPE_HASH,
-                    quote.redeemedDXD,
-                    quote.circulatingDXDSupply,
-                    quote.redeemedToken,
-                    quote.redeemedTokenUSDPrice,
-                    quote.redeemedAmount,
-                    quote.collateralUSDValue,
-                    quote.deadline,
-                ]
-            ),
+          "bytes32",
+          "uint256",
+          "uint256",
+          "address",
+          "uint256",
+          "uint256",
+          "uint256",
+          "uint256",
+        ],
+        [
+          ORACLE_MESSAGE_TYPE_HASH,
+          quote.redeemedDXD,
+          quote.circulatingDXDSupply,
+          quote.redeemedToken,
+          quote.redeemedTokenUSDPrice,
+          quote.redeemedAmount,
+          quote.collateralUSDValue,
+          quote.deadline,
         ]
-    );
+      ),
+    ]
+  );
 }

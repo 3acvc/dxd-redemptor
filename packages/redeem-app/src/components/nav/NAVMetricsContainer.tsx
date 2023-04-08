@@ -25,13 +25,13 @@ import {
   TokenPrice,
 } from "../NAVTableSectionContainer";
 import { MetricListContainer } from "../NAVTableSectionContainer/styled";
-import { DXDAO_ADDRESS_LIST, SUBGRAPH_BLOCK_BUFFER } from "../../constants";
+import { DXDAO_ADDRESS_LIST } from "../../constants";
 import { getCurrencyChainId } from "utils";
 import { Container } from "ui/components/Container";
 import { FormGroup } from "components/FormGroup";
 
 import { DXDValueBreakdown } from "./DXDValueBreakdown";
-import { currencyFormatter, isDXDToken } from "./utils";
+import { currencyFormatter } from "./utils";
 import {
   CardInnerWrapperLayout,
   MotionOpacity,
@@ -40,7 +40,6 @@ import {
 import { MetricCard, MotionMetricLoader } from "./partials";
 import Select from "react-select";
 import { getStyles } from "components/form/Select";
-import { formatUnits } from "ethers/lib/utils.js";
 
 type AddressOption = typeof DXDAO_ADDRESS_LIST[0];
 

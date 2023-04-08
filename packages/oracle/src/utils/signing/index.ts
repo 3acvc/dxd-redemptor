@@ -9,31 +9,31 @@ import { Quote } from "../../types";
  * @returns the hash of the quote
  */
 export function quoteToEIP712Hash(quote: Quote): string {
-    return keccak256(
-        ["string"],
+  return keccak256(
+    ["string"],
+    [
+      defaultAbiCoder.encode(
         [
-            defaultAbiCoder.encode(
-                [
-                    "bytes32",
-                    "uint256",
-                    "uint256",
-                    "address",
-                    "uint256",
-                    "uint256",
-                    "uint256",
-                    "uint256",
-                ],
-                [
-                    ORACLE_MESSAGE_TYPE_HASH,
-                    quote.redeemedDXD,
-                    quote.circulatingDXDSupply,
-                    quote.redeemedToken,
-                    quote.redeemedTokenUSDPrice,
-                    quote.redeemedAmount,
-                    quote.collateralUSDValue,
-                    quote.deadline,
-                ]
-            ),
+          "bytes32",
+          "uint256",
+          "uint256",
+          "address",
+          "uint256",
+          "uint256",
+          "uint256",
+          "uint256",
+        ],
+        [
+          ORACLE_MESSAGE_TYPE_HASH,
+          quote.redeemedDXD,
+          quote.circulatingDXDSupply,
+          quote.redeemedToken,
+          quote.redeemedTokenUSDPrice,
+          quote.redeemedAmount,
+          quote.collateralUSDValue,
+          quote.deadline,
         ]
-    );
+      ),
+    ]
+  );
 }

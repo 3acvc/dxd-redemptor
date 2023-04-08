@@ -4,9 +4,9 @@ import { keccak256 } from "@ethersproject/solidity";
 import type { Wallet } from "@ethersproject/wallet";
 import { recoverAddress } from "@ethersproject/transactions";
 import {
-    DOMAIN_SEPARATOR_NAME,
-    DOMAIN_SEPARATOR_VERSION,
-    EIP712_DOMAIN_TYPE_HASH,
+  DOMAIN_SEPARATOR_NAME,
+  DOMAIN_SEPARATOR_VERSION,
+  EIP712_DOMAIN_TYPE_HASH,
 } from "../constants";
 import { hashQuote } from "../hash-quote";
 import { Quote } from "../types";
@@ -22,29 +22,29 @@ import { Quote } from "../types";
 // the domain separator every time by having an oracle-wide init function that initializes
 // important data and initialization checks around.
 export function quoteEIP712Digest(
-    quote: Quote,
-    redemptorAddress: string
+  quote: Quote,
+  redemptorAddress: string
 ): string {
-    const quoteHash = hashQuote(quote);
-    const domainSeparator = keccak256(
-        ["bytes"],
+  const quoteHash = hashQuote(quote);
+  const domainSeparator = keccak256(
+    ["bytes"],
+    [
+      defaultAbiCoder.encode(
+        ["bytes32", "bytes32", "bytes32", "uint256", "address"],
         [
-            defaultAbiCoder.encode(
-                ["bytes32", "bytes32", "bytes32", "uint256", "address"],
-                [
-                    EIP712_DOMAIN_TYPE_HASH,
-                    DOMAIN_SEPARATOR_NAME,
-                    DOMAIN_SEPARATOR_VERSION,
-                    1,
-                    redemptorAddress,
-                ]
-            ),
+          EIP712_DOMAIN_TYPE_HASH,
+          DOMAIN_SEPARATOR_NAME,
+          DOMAIN_SEPARATOR_VERSION,
+          1,
+          redemptorAddress,
         ]
-    );
-    return keccak256(
-        ["bytes"],
-        [hexConcat(["0x1901", domainSeparator, quoteHash])]
-    );
+      ),
+    ]
+  );
+  return keccak256(
+    ["bytes"],
+    [hexConcat(["0x1901", domainSeparator, quoteHash])]
+  );
 }
 
 /**
@@ -55,12 +55,12 @@ export function quoteEIP712Digest(
  * @returns The quote's signature.
  */
 export function signQuote(
-    signer: Wallet,
-    quote: Quote,
-    redemptorAddress: string
+  signer: Wallet,
+  quote: Quote,
+  redemptorAddress: string
 ): string {
-    const digest = quoteEIP712Digest(quote, redemptorAddress);
-    return joinSignature(signer._signingKey().signDigest(digest));
+  const digest = quoteEIP712Digest(quote, redemptorAddress);
+  return joinSignature(signer._signingKey().signDigest(digest));
 }
 
 /**
@@ -71,10 +71,10 @@ export function signQuote(
  * @returns The quote's signer.
  */
 export function verifyQuoteSignature(
-    quote: Quote,
-    redemptorAddress: string,
-    signature: string
+  quote: Quote,
+  redemptorAddress: string,
+  signature: string
 ): string {
-    const digest = quoteEIP712Digest(quote, redemptorAddress);
-    return recoverAddress(digest, signature);
+  const digest = quoteEIP712Digest(quote, redemptorAddress);
+  return recoverAddress(digest, signature);
 }

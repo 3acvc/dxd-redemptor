@@ -1,11 +1,11 @@
 {
-    "extends": "tsconfig/oracle.json",
-    "exclude": ["node_modules", "dist", "./src/**/*.test.ts"],
-    "include": ["./src/**/*.ts"],
-    "compilerOptions": {
-        "outDir": "./dist",
-        "paths": {
-            "tslib": ["./node_modules/tslib"]
-        }
+  "extends": "tsconfig/oracle.json",
+  "exclude": ["node_modules", "dist", "./src/**/*.test.ts"],
+  "include": ["./src/**/*.ts"],
+  "compilerOptions": {
+    "outDir": "./dist",
+    "paths": {
+      "tslib": ["./node_modules/tslib"]
     }
+  }
 }

@@ -13,19 +13,19 @@ const STATIC_ORACLE_ADDRESS = "0xB210CE856631EeEB767eFa666EC7C1C57738d438";
 const TWAP_PERIOD = 1000;
 
 async function getSWPRUSDCPrice(): Promise<BigNumber> {
-    return parseUnits("0.02237756", SWPR[ChainId.ETHEREUM].decimals); // @todo: get this from oracle
+  return parseUnits("0.02237756", SWPR[ChainId.ETHEREUM].decimals); // @todo: get this from oracle
 }
 
 interface TokenPrice {
-    token: Token;
-    /**
-     * Price of token against WETH
-     */
-    wethPrice: BigNumber;
-    /**
-     * Price of token against USDC (scaled to 18 decimals)
-     */
-    usdPrice: BigNumber;
+  token: Token;
+  /**
+   * Price of token against WETH
+   */
+  wethPrice: BigNumber;
+  /**
+   * Price of token against USDC (scaled to 18 decimals)
+   */
+  usdPrice: BigNumber;
 }
 
 /**
@@ -37,52 +37,51 @@ interface TokenPrice {
  * @returns token price map. The key is the token address and the value is the price against WETH.
  */
 async function getPriceAgainstWETH(
-    tokenList: Token[],
-    provider: Provider,
-    block: number,
-    twapPeriod = TWAP_PERIOD
+  tokenList: Token[],
+  provider: Provider,
+  block: number,
+  twapPeriod = TWAP_PERIOD
 ): Promise<Record<string, BigNumber>> {
-    const tokenPriceMap: Record<string, BigNumber> = {};
-    const multicallContract = getMulticallContractForProvider(provider);
-    const staticOralceInterface = Contract.getInterface(
-        STATIC_ORACLE_ABI
-    ) as unknown as StaticOracle["interface"];
+  const tokenPriceMap: Record<string, BigNumber> = {};
+  const multicallContract = getMulticallContractForProvider(provider);
+  const staticOralceInterface = Contract.getInterface(
+    STATIC_ORACLE_ABI
+  ) as unknown as StaticOracle["interface"];
 
-    const calls = tokenList.map((token) => ({
-        target: STATIC_ORACLE_ADDRESS,
-        callData: staticOralceInterface.encodeFunctionData(
-            "quoteAllAvailablePoolsWithTimePeriod",
-            [
-                parseUnits("1", token.decimals),
-                token.address,
-                WETH[ChainId.ETHEREUM].address,
-                twapPeriod,
-            ]
-        ),
-    }));
+  const calls = tokenList.map((token) => ({
+    target: STATIC_ORACLE_ADDRESS,
+    callData: staticOralceInterface.encodeFunctionData(
+      "quoteAllAvailablePoolsWithTimePeriod",
+      [
+        parseUnits("1", token.decimals),
+        token.address,
+        WETH[ChainId.ETHEREUM].address,
+        twapPeriod,
+      ]
+    ),
+  }));
 
-    const mcResults = (await multicallContract.callStatic.tryAggregate(
-        false,
-        calls,
-        {
-            blockTag: block,
-        }
-    )) as { success: boolean; returnData: string }[];
-
-    for (let i = 0; i < mcResults.length; i++) {
-        const results = mcResults[i];
-
-        if (results.success) {
-            const [wethPriceTWAPBN] =
-                staticOralceInterface.decodeFunctionResult(
-                    "quoteAllAvailablePoolsWithTimePeriod",
-                    results.returnData
-                );
-            tokenPriceMap[tokenList[i].address] = wethPriceTWAPBN;
-        }
+  const mcResults = (await multicallContract.callStatic.tryAggregate(
+    false,
+    calls,
+    {
+      blockTag: block,
     }
+  )) as { success: boolean; returnData: string }[];
 
-    return tokenPriceMap;
+  for (let i = 0; i < mcResults.length; i++) {
+    const results = mcResults[i];
+
+    if (results.success) {
+      const [wethPriceTWAPBN] = staticOralceInterface.decodeFunctionResult(
+        "quoteAllAvailablePoolsWithTimePeriod",
+        results.returnData
+      );
+      tokenPriceMap[tokenList[i].address] = wethPriceTWAPBN;
+    }
+  }
+
+  return tokenPriceMap;
 }
 
 /**
@@ -94,118 +93,117 @@ async function getPriceAgainstWETH(
  * @returns token price map. The key is the token address and the value is the price against WETH.
  */
 export async function getTokenUSDCPriceViaOracle(
-    tokenList: Token[],
-    provider: Provider,
-    block: number,
-    twapPeriod = TWAP_PERIOD
+  tokenList: Token[],
+  provider: Provider,
+  block: number,
+  twapPeriod = TWAP_PERIOD
 ): Promise<TokenPrice[]> {
-    const hasNonEthereumToken = tokenList.find(
-        (token) => token.chainId !== ChainId.ETHEREUM
+  const hasNonEthereumToken = tokenList.find(
+    (token) => token.chainId !== ChainId.ETHEREUM
+  );
+
+  if (hasNonEthereumToken) {
+    throw new Error(
+      `Only Ethereum tokens are supported. ${hasNonEthereumToken.address} is not supported.`
+    );
+  }
+
+  const tokenPriceList: TokenPrice[] = [];
+
+  const staticOralce = new Contract(
+    STATIC_ORACLE_ADDRESS,
+    STATIC_ORACLE_ABI,
+    provider
+  ) as unknown as StaticOracle;
+
+  // get the pool address of WETH against USDC
+  const [_wethPriceTWAPBN] =
+    await staticOralce.callStatic.quoteAllAvailablePoolsWithTimePeriod(
+      parseEther("1"),
+      WETH[ChainId.ETHEREUM].address,
+      USDC[ChainId.ETHEREUM].address,
+      twapPeriod,
+      {
+        blockTag: block,
+      }
     );
 
-    if (hasNonEthereumToken) {
-        throw new Error(
-            `Only Ethereum tokens are supported. ${hasNonEthereumToken.address} is not supported.`
-        );
+  // Scale the price to 18 decimals
+  const wethUSDCPrice = _wethPriceTWAPBN.mul(
+    10 ** (18 - USDC[ChainId.ETHEREUM].decimals)
+  );
+
+  const tokenPriceAgainstWETHList = await getPriceAgainstWETH(
+    tokenList.filter(
+      (t) =>
+        !t.equals(WETH[ChainId.ETHEREUM]) && !t.equals(USDC[ChainId.ETHEREUM])
+    ), // remove WETH and USDC from the list
+    provider,
+    block
+  );
+
+  for (const token of tokenList) {
+    // if the token is WETH, return the price against USDC
+    if (token.equals(WETH[ChainId.ETHEREUM])) {
+      tokenPriceList.push({
+        token,
+        usdPrice: wethUSDCPrice,
+        wethPrice: parseEther("1"), // 1 WETH = 1 WETH 😤
+      });
     }
-
-    const tokenPriceList: TokenPrice[] = [];
-
-    const staticOralce = new Contract(
-        STATIC_ORACLE_ADDRESS,
-        STATIC_ORACLE_ABI,
-        provider
-    ) as unknown as StaticOracle;
-
-    // get the pool address of WETH against USDC
-    const [_wethPriceTWAPBN] =
+    // Stakewise reward token has a direct pool against
+    else if (token.equals(RETH2)) {
+      const [_RETH2_SETH2PriceTWAP] =
         await staticOralce.callStatic.quoteAllAvailablePoolsWithTimePeriod(
-            parseEther("1"),
-            WETH[ChainId.ETHEREUM].address,
-            USDC[ChainId.ETHEREUM].address,
-            twapPeriod,
-            {
-                blockTag: block,
-            }
+          parseEther("1"),
+          RETH2.address,
+          SETH2.address,
+          twapPeriod,
+          {
+            blockTag: block,
+          }
         );
 
-    // Scale the price to 18 decimals
-    const wethUSDCPrice = _wethPriceTWAPBN.mul(
-        10 ** (18 - USDC[ChainId.ETHEREUM].decimals)
-    );
+      const tokenWETHPrice = tokenPriceAgainstWETHList[SETH2.address]
+        .mul(_RETH2_SETH2PriceTWAP)
+        .div(parseEther("1"));
 
-    const tokenPriceAgainstWETHList = await getPriceAgainstWETH(
-        tokenList.filter(
-            (t) =>
-                !t.equals(WETH[ChainId.ETHEREUM]) &&
-                !t.equals(USDC[ChainId.ETHEREUM])
-        ), // remove WETH and USDC from the list
-        provider,
-        block
-    );
+      const tokenUSDCPrice = tokenWETHPrice
+        .mul(wethUSDCPrice)
+        .div(parseEther("1"));
 
-    for (const token of tokenList) {
-        // if the token is WETH, return the price against USDC
-        if (token.equals(WETH[ChainId.ETHEREUM])) {
-            tokenPriceList.push({
-                token,
-                usdPrice: wethUSDCPrice,
-                wethPrice: parseEther("1"), // 1 WETH = 1 WETH 😤
-            });
-        }
-        // Stakewise reward token has a direct pool against
-        else if (token.equals(RETH2)) {
-            const [_RETH2_SETH2PriceTWAP] =
-                await staticOralce.callStatic.quoteAllAvailablePoolsWithTimePeriod(
-                    parseEther("1"),
-                    RETH2.address,
-                    SETH2.address,
-                    twapPeriod,
-                    {
-                        blockTag: block,
-                    }
-                );
+      tokenPriceList.push({
+        token,
+        wethPrice: tokenWETHPrice,
+        usdPrice: tokenUSDCPrice,
+      });
+    } else if (token.equals(SWPR[ChainId.ETHEREUM])) {
+      const swprUSDCPrice = await getSWPRUSDCPrice();
+      const swprWETHPrice = swprUSDCPrice
+        .mul(parseEther("1"))
+        .div(wethUSDCPrice);
 
-            const tokenWETHPrice = tokenPriceAgainstWETHList[SETH2.address]
-                .mul(_RETH2_SETH2PriceTWAP)
-                .div(parseEther("1"));
-
-            const tokenUSDCPrice = tokenWETHPrice
-                .mul(wethUSDCPrice)
-                .div(parseEther("1"));
-
-            tokenPriceList.push({
-                token,
-                wethPrice: tokenWETHPrice,
-                usdPrice: tokenUSDCPrice,
-            });
-        } else if (token.equals(SWPR[ChainId.ETHEREUM])) {
-            const swprUSDCPrice = await getSWPRUSDCPrice();
-            const swprWETHPrice = swprUSDCPrice
-                .mul(parseEther("1"))
-                .div(wethUSDCPrice);
-
-            tokenPriceList.push({
-                token,
-                usdPrice: swprUSDCPrice,
-                wethPrice: swprWETHPrice,
-            });
-        }
-        //  Token exists in TOKEN/WETH price list
-        else if (tokenPriceAgainstWETHList[token.address]) {
-            const tokenWETHPrice = tokenPriceAgainstWETHList[token.address];
-            // const divBase = 10 ** (18 - token.decimals);
-            const tokenUSDCPrice = tokenWETHPrice
-                .mul(wethUSDCPrice)
-                .div(parseUnits("1"));
-
-            tokenPriceList.push({
-                token,
-                wethPrice: tokenWETHPrice,
-                usdPrice: tokenUSDCPrice,
-            });
-        }
+      tokenPriceList.push({
+        token,
+        usdPrice: swprUSDCPrice,
+        wethPrice: swprWETHPrice,
+      });
     }
+    //  Token exists in TOKEN/WETH price list
+    else if (tokenPriceAgainstWETHList[token.address]) {
+      const tokenWETHPrice = tokenPriceAgainstWETHList[token.address];
+      // const divBase = 10 ** (18 - token.decimals);
+      const tokenUSDCPrice = tokenWETHPrice
+        .mul(wethUSDCPrice)
+        .div(parseUnits("1"));
 
-    return tokenPriceList;
+      tokenPriceList.push({
+        token,
+        wethPrice: tokenWETHPrice,
+        usdPrice: tokenUSDCPrice,
+      });
+    }
+  }
+
+  return tokenPriceList;
 }
