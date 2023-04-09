@@ -8,12 +8,10 @@ import {
   toPriceableTokenList,
   NAV_TOKEN_LIST,
   Amount,
-  DXDAO_AVATAR,
 } from "dxd-redemptor-oracle";
 import type { LiquidityPosition } from "../NAVTableSectionContainer";
 import { GraphQLClient, gql } from "graphql-request";
-import { BigNumber } from "ethers";
-import { formatUnits, parseEther } from "ethers/lib/utils.js";
+import { formatUnits } from "ethers/lib/utils.js";
 import { isDXDToken } from "./utils";
 
 export const providerList: Record<ChainId, Provider> = {
@@ -46,12 +44,6 @@ export const DXDAO_DXD_IN_HATS_VAULT_AMOUNT = 790;
  * From Dave's spreadsheet
  */
 export const DXDAO_UNVESTED_DXD_TO_CONTRIBUTORS = 3829.744;
-
-/**
- * 1kx ETH debt
- */
-export const ONEKX_ETH_DEBT = 835.3;
-export const ONEKX_DAI_DEBT = 655_795.8;
 
 export async function fetchNAVInformationAtBlock(
   block: Record<ChainId, number>
@@ -103,35 +95,7 @@ export async function fetchNAVInformationAtBlock(
   );
 
   // Remove 1kx ETH debt
-  const rawTokenBalancesWithoutDebt = rawTokenBalances.map((balance, i) => {
-    if (
-      balance.token.symbol === "ETH" &&
-      balance.address.toLowerCase() ===
-        DXDAO_AVATAR[ChainId.ETHEREUM].toLowerCase()
-    ) {
-      return {
-        ...balance,
-        amount: BigNumber.from(balance.amount)
-          .sub(parseEther(ONEKX_ETH_DEBT.toString()))
-          .toString(),
-      };
-    }
-
-    if (
-      balance.token.symbol === "DAI" &&
-      balance.address.toLowerCase() ===
-        DXDAO_AVATAR[ChainId.ETHEREUM].toLowerCase()
-    ) {
-      return {
-        ...balance,
-        amount: BigNumber.from(balance.amount)
-          .sub(parseEther(ONEKX_DAI_DEBT.toString()))
-          .toString(),
-      };
-    }
-
-    return balance;
-  });
+  const rawTokenBalancesWithoutDebt = rawTokenBalances;
 
   const dxdUnderDXdaoControl = rawTokenBalances
     .filter((tokenBalance) => isDXDToken(tokenBalance.token.address))

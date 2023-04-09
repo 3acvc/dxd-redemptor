@@ -29,7 +29,6 @@ import { DXDAO_ADDRESS_LIST } from "../../constants";
 import { getCurrencyChainId } from "utils";
 import { Container } from "ui/components/Container";
 import { FormGroup } from "components/FormGroup";
-
 import { DXDValueBreakdown } from "./DXDValueBreakdown";
 import { currencyFormatter } from "./utils";
 import {
