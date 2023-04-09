@@ -11,6 +11,7 @@
         "@types/react-dom": "^18.0.9",
         "@wagmi/core": "^0.7.9",
         "@walletconnect/ethereum-provider": "^2.1.4",
+        "crypto-browserify": "^3.12.0",
         "dxd-redemptor-oracle": "workspace:*",
         "ethers": "^5.7.2",
         "framer-motion": "^10.11.2",

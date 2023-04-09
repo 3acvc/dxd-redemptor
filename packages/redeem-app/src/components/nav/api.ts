@@ -195,12 +195,16 @@ const GET_BLOCK_BY_TIMESTAMP = gql`
 export async function getGnosisChainBlockByTimestamp(
   timestamp: number | string
 ): Promise<number> {
-  const res = await SUBGRAPH_BLOCKS_CLIENT[ChainId.GNOSIS].request(
-    GET_BLOCK_BY_TIMESTAMP,
+  const res = await SUBGRAPH_BLOCKS_CLIENT[ChainId.GNOSIS].request<
     {
-      timestamp: timestamp.toString(),
+      blocks: { number: string }[];
+    },
+    {
+      timestamp: string;
     }
-  );
+  >(GET_BLOCK_BY_TIMESTAMP, {
+    timestamp: timestamp.toString(),
+  });
   return parseInt(res.blocks[0].number);
 }
 
@@ -223,7 +227,14 @@ export async function getLastSyncedBlockNumber(): Promise<{
 }> {
   const client = new GraphQLClient(subgraphEndpointList[ChainId.ETHEREUM]);
 
-  const res = await client.request(GET_SUBGRAPH_STATUS, {});
+  const res = await client.request<
+    {
+      subgraphStatus: {
+        lastSnapshotBlock: string;
+      };
+    },
+    {}
+  >(GET_SUBGRAPH_STATUS, {});
 
   const ethereumBlock = parseInt(res.subgraphStatus.lastSnapshotBlock);
   const gnosisBlock = await getGnosisChainBlockByTimestamp(
