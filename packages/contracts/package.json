@@ -32,5 +32,8 @@
     "eslint-config-custom": "workspace:*",
     "ganache": "^7.5.0",
     "ora": "^6.1.2"
+  },
+  "dependencies": {
+    "@connext/interfaces": "^2.0.3"
   }
 }
